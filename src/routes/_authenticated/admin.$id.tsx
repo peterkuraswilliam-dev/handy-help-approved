@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db";
 import { STATUS_LABEL, getSignedUrl, type AppStatus } from "@/lib/application-helpers";
 import { ArrowLeft, CheckCircle2, XCircle, Pause, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -37,17 +38,17 @@ function Review() {
   useEffect(() => { void load(); }, [id]);
 
   async function load() {
-    const { data } = await supabase.from("contractor_applications").select("*").eq("id", id).maybeSingle();
+    const { data } = await db.from("contractor_applications").select("*").eq("id", id).maybeSingle();
     const a = data as App | null;
     setApp(a);
     if (!a) return;
     if (a.logo_path) setLogoUrl(await getSignedUrl(a.logo_path));
     const [{ data: s }, { data: ar }, { data: d }, { data: n }, { data: h }] = await Promise.all([
-      supabase.from("contractor_services").select("service").eq("application_id", id),
-      supabase.from("contractor_areas").select("area").eq("application_id", id),
-      supabase.from("contractor_documents").select("id,kind,path,original_name").eq("application_id", id),
-      supabase.from("admin_notes").select("id,note,created_at").eq("application_id", id).order("created_at", { ascending: false }),
-      supabase.from("application_status_history").select("status,reason,created_at").eq("application_id", id).order("created_at", { ascending: false }),
+      db.from("contractor_services").select("service").eq("application_id", id),
+      db.from("contractor_areas").select("area").eq("application_id", id),
+      db.from("contractor_documents").select("id,kind,path,original_name").eq("application_id", id),
+      db.from("admin_notes").select("id,note,created_at").eq("application_id", id).order("created_at", { ascending: false }),
+      db.from("application_status_history").select("status,reason,created_at").eq("application_id", id).order("created_at", { ascending: false }),
     ]);
     setServices(((s as { service: string }[]) ?? []).map(x => x.service));
     setAreas(((ar as { area: string }[]) ?? []).map(x => x.area));
@@ -61,7 +62,7 @@ function Review() {
   async function addNote() {
     if (!newNote.trim() || !app) return;
     const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.from("admin_notes").insert({
+    const { error } = await db.from("admin_notes").insert({
       application_id: app.id, admin_id: u.user!.id, note: newNote.trim(),
     });
     if (error) return toast.error(error.message);
@@ -74,10 +75,10 @@ function Review() {
     setBusy(true);
     const patch: Record<string, unknown> = { status, decision_reason: reason || null };
     if (status === "approved") patch.approved_at = new Date().toISOString();
-    const { error } = await supabase.from("contractor_applications").update(patch).eq("id", app.id);
+    const { error } = await db.from("contractor_applications").update(patch).eq("id", app.id);
     if (error) { toast.error(error.message); setBusy(false); return; }
     const { data: u } = await supabase.auth.getUser();
-    await supabase.from("application_status_history").insert({
+    await db.from("application_status_history").insert({
       application_id: app.id, status, reason: reason || null, changed_by: u.user!.id,
     });
     toast.success("Status updated to " + STATUS_LABEL[status]);

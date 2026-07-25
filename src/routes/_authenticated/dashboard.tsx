@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db";
 import { STATUS_LABEL, completionPercent, missingFields, type AppStatus } from "@/lib/application-helpers";
 import { toast } from "sonner";
 import { CheckCircle2, LogOut, ShieldCheck, Pencil, Send } from "lucide-react";
@@ -46,19 +47,19 @@ function Dashboard() {
     const uid = user.user?.id;
     if (!uid) return;
     const [{ data: roles }, { data: application }] = await Promise.all([
-      supabase.from("user_roles").select("role").eq("user_id", uid),
-      supabase.from("contractor_applications").select("*").eq("user_id", uid).maybeSingle(),
+      db.from("user_roles").select("role").eq("user_id", uid),
+      db.from("contractor_applications").select("*").eq("user_id", uid).maybeSingle(),
     ]);
     setIsAdmin(!!(roles as { role: string }[] | null)?.some((r) => r.role === "admin"));
     const a = application as Application | null;
     setApp(a);
     if (a) {
       const [{ data: s }, { data: ar }, { data: d }, { data: n }] = await Promise.all([
-        supabase.from("contractor_services").select("id,service").eq("application_id", a.id),
-        supabase.from("contractor_areas").select("id,area").eq("application_id", a.id),
-        supabase.from("contractor_documents").select("id,kind,path").eq("application_id", a.id),
+        db.from("contractor_services").select("id,service").eq("application_id", a.id),
+        db.from("contractor_areas").select("id,area").eq("application_id", a.id),
+        db.from("contractor_documents").select("id,kind,path").eq("application_id", a.id),
         a.status === "more_info_required"
-          ? supabase.from("admin_notes").select("note,created_at").eq("application_id", a.id).order("created_at", { ascending: false })
+          ? db.from("admin_notes").select("note,created_at").eq("application_id", a.id).order("created_at", { ascending: false })
           : Promise.resolve({ data: [] }),
       ]);
       setServices((s as { id: string; service: string }[]) ?? []);
@@ -78,7 +79,7 @@ function Dashboard() {
       .from("contractor_applications")
       .update({ status: "submitted" }).eq("id", app.id);
     if (!error) {
-      await supabase.from("application_status_history").insert({
+      await db.from("application_status_history").insert({
         application_id: app.id, status: "submitted",
         changed_by: (await supabase.auth.getUser()).data.user?.id,
       });

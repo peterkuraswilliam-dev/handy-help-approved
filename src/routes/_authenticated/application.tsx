@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db";
 import { uploadFile } from "@/lib/application-helpers";
 import { toast } from "sonner";
 import { ArrowLeft, Trash2, Upload, X } from "lucide-react";
@@ -56,17 +57,17 @@ function ApplicationForm() {
         references_text: e.references_text ?? "", agreed_rules: e.agreed_rules, confirmed_accurate: e.confirmed_accurate,
       });
       const [{ data: s }, { data: ar }, { data: d }, { data: g }] = await Promise.all([
-        supabase.from("contractor_services").select("id,service").eq("application_id", e.id),
-        supabase.from("contractor_areas").select("id,area").eq("application_id", e.id),
-        supabase.from("contractor_documents").select("id,kind,path,original_name").eq("application_id", e.id),
-        supabase.from("contractor_gallery").select("id,path").eq("application_id", e.id),
+        db.from("contractor_services").select("id,service").eq("application_id", e.id),
+        db.from("contractor_areas").select("id,area").eq("application_id", e.id),
+        db.from("contractor_documents").select("id,kind,path,original_name").eq("application_id", e.id),
+        db.from("contractor_gallery").select("id,path").eq("application_id", e.id),
       ]);
       setServices((s as { id: string; service: string }[]) ?? []);
       setAreas((ar as { id: string; area: string }[]) ?? []);
       setDocs((d as Doc[]) ?? []);
       setGallery((g as { id: string; path: string }[]) ?? []);
     } else {
-      const { data: profile } = await supabase.from("profiles").select("email,full_name").eq("id", u).maybeSingle();
+      const { data: profile } = await db.from("profiles").select("email,full_name").eq("id", u).maybeSingle();
       const p = profile as { email: string | null; full_name: string | null } | null;
       setForm((f) => ({ ...f, email: p?.email ?? "", contact_name: p?.full_name ?? "" }));
     }
@@ -94,7 +95,7 @@ function ApplicationForm() {
     try {
       const id = await ensureApp();
       if (!id) return;
-      const { error } = await supabase.from("contractor_applications")
+      const { error } = await db.from("contractor_applications")
         .update({ ...form, logo_path: logoPath }).eq("id", id);
       if (error) throw error;
       toast.success("Saved");
@@ -106,7 +107,7 @@ function ApplicationForm() {
   async function addService() {
     if (!newService.trim()) return;
     const id = await ensureApp(); if (!id) return;
-    const { data, error } = await supabase.from("contractor_services")
+    const { data, error } = await db.from("contractor_services")
       .insert({ application_id: id, service: newService.trim() }).select("id,service").single();
     if (error) return toast.error(error.message);
     setServices((s) => [...s, data as { id: string; service: string }]);
@@ -114,13 +115,13 @@ function ApplicationForm() {
   }
   async function removeService(id?: string) {
     if (!id) return;
-    await supabase.from("contractor_services").delete().eq("id", id);
+    await db.from("contractor_services").delete().eq("id", id);
     setServices((s) => s.filter((x) => x.id !== id));
   }
   async function addArea() {
     if (!newArea.trim()) return;
     const id = await ensureApp(); if (!id) return;
-    const { data, error } = await supabase.from("contractor_areas")
+    const { data, error } = await db.from("contractor_areas")
       .insert({ application_id: id, area: newArea.trim() }).select("id,area").single();
     if (error) return toast.error(error.message);
     setAreas((a) => [...a, data as { id: string; area: string }]);
@@ -128,7 +129,7 @@ function ApplicationForm() {
   }
   async function removeArea(id?: string) {
     if (!id) return;
-    await supabase.from("contractor_areas").delete().eq("id", id);
+    await db.from("contractor_areas").delete().eq("id", id);
     setAreas((a) => a.filter((x) => x.id !== id));
   }
 
@@ -139,15 +140,15 @@ function ApplicationForm() {
       const path = await uploadFile(uid, kind, file);
       if (kind === "logo") {
         setLogoPath(path);
-        await supabase.from("contractor_applications").update({ logo_path: path }).eq("id", id);
+        await db.from("contractor_applications").update({ logo_path: path }).eq("id", id);
         toast.success("Logo uploaded");
       } else if (kind === "gallery") {
-        const { data } = await supabase.from("contractor_gallery")
+        const { data } = await db.from("contractor_gallery")
           .insert({ application_id: id, path }).select("id,path").single();
         setGallery((g) => [...g, data as { id: string; path: string }]);
         toast.success("Photo added");
       } else {
-        const { data } = await supabase.from("contractor_documents")
+        const { data } = await db.from("contractor_documents")
           .insert({ application_id: id, kind, path, original_name: file.name })
           .select("id,kind,path,original_name").single();
         setDocs((d) => [...d, data as Doc]);
@@ -160,13 +161,13 @@ function ApplicationForm() {
 
   async function removeDoc(d: Doc) {
     await supabase.storage.from("contractor-files").remove([d.path]);
-    await supabase.from("contractor_documents").delete().eq("id", d.id);
+    await db.from("contractor_documents").delete().eq("id", d.id);
     setDocs((x) => x.filter((y) => y.id !== d.id));
   }
 
   async function removeGalleryItem(g: { id: string; path: string }) {
     await supabase.storage.from("contractor-files").remove([g.path]);
-    await supabase.from("contractor_gallery").delete().eq("id", g.id);
+    await db.from("contractor_gallery").delete().eq("id", g.id);
     setGallery((x) => x.filter((y) => y.id !== g.id));
   }
 

@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db";
 import { STATUS_LABEL, type AppStatus } from "@/lib/application-helpers";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -31,13 +32,13 @@ function Admin() {
     const { data: user } = await supabase.auth.getUser();
     const uid = user.user?.id;
     if (!uid) return;
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle();
+    const { data } = await db.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle();
     setIsAdmin(!!data);
     setLoading(false);
   }
 
   async function load() {
-    let q = supabase.from("contractor_applications")
+    let q = db.from("contractor_applications")
       .select("id,user_id,business_name,contact_name,status,created_at,email")
       .order("created_at", { ascending: false });
     if (filter !== "all") q = q.eq("status", filter);
