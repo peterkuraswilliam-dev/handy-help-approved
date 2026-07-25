@@ -7,66 +7,34 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
+        <h1 className="text-6xl font-bold text-[color:var(--color-gold)]">404</h1>
+        <p className="mt-3 text-muted-foreground">This page doesn't exist.</p>
+        <Link to="/" className="btn-gold mt-6">Go home</Link>
       </div>
     </div>
   );
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
-
+  useEffect(() => { reportLovableError(error, { boundary: "root" }); }, [error]);
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
-        </div>
+        <h1 className="text-2xl font-semibold">Something went wrong</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+        <button className="btn-gold mt-6" onClick={() => { router.invalidate(); reset(); }}>Try again</button>
       </div>
     </div>
   );
@@ -77,20 +45,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Handy Help Aberdeenshire — Approved Contractor Network" },
+      { name: "description", content: "Become an Approved Contractor with Handy Help Aberdeenshire. Free while our contractor application platform is being developed." },
+      { property: "og:title", content: "Handy Help Aberdeenshire" },
+      { property: "og:description", content: "Join our growing network of approved local contractors across Aberdeenshire." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -103,9 +69,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
+      <head><HeadContent /></head>
       <body>
         {children}
         <Scripts />
@@ -114,13 +78,75 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function Header() {
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((e) => {
+      if (e === "SIGNED_IN" || e === "SIGNED_OUT" || e === "USER_UPDATED") {
+        setSignedIn(e !== "SIGNED_OUT");
+      }
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+  return (
+    <header className="border-b border-border/60 sticky top-0 z-30 backdrop-blur bg-[color:var(--color-background)]/85">
+      <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between gap-3">
+        <Link to="/" className="flex items-center gap-2">
+          <span className="inline-block h-8 w-8 rounded-md bg-[color:var(--color-gold)] text-[color:var(--color-primary-foreground)] font-bold grid place-items-center">H</span>
+          <span className="font-display text-lg leading-tight">
+            <span className="text-[color:var(--color-gold)]">Handy Help</span>
+            <span className="block text-xs text-muted-foreground -mt-0.5">Aberdeenshire</span>
+          </span>
+        </Link>
+        <nav className="flex items-center gap-1 text-sm">
+          {signedIn ? (
+            <Link to="/dashboard" className="btn-outline">Dashboard</Link>
+          ) : (
+            <>
+              <Link to="/auth" className="btn-ghost hidden sm:inline-flex">Sign in</Link>
+              <Link to="/become-approved" className="btn-gold">Apply</Link>
+            </>
+          )}
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+function Banner() {
+  return (
+    <div className="bg-[color:var(--color-gold)] text-[color:var(--color-primary-foreground)] text-center text-sm font-semibold px-3 py-2">
+      Free while the Handy Help Aberdeenshire application is being developed.
+    </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-t border-border/60 mt-16">
+      <div className="mx-auto max-w-5xl px-4 py-6 text-xs text-muted-foreground flex flex-wrap gap-3 justify-between">
+        <span>© {new Date().getFullYear()} Handy Help Aberdeenshire</span>
+        <div className="flex gap-4">
+          <Link to="/community-rules" className="hover:text-[color:var(--color-gold)]">Community rules</Link>
+          <Link to="/become-approved" className="hover:text-[color:var(--color-gold)]">Become approved</Link>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <Banner />
+      <Header />
+      <main className="mx-auto max-w-5xl px-4 py-6 min-h-[70vh]">
+        <Outlet />
+      </main>
+      <Footer />
+      <Toaster theme="dark" position="top-center" richColors />
     </QueryClientProvider>
   );
 }
