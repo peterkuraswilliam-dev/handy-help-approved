@@ -46,19 +46,19 @@ function Dashboard() {
     const uid = user.user?.id;
     if (!uid) return;
     const [{ data: roles }, { data: application }] = await Promise.all([
-      supabase.from("user_roles" as never).select("role").eq("user_id", uid),
-      supabase.from("contractor_applications" as never).select("*").eq("user_id", uid).maybeSingle(),
+      supabase.from("user_roles").select("role").eq("user_id", uid),
+      supabase.from("contractor_applications").select("*").eq("user_id", uid).maybeSingle(),
     ]);
     setIsAdmin(!!(roles as { role: string }[] | null)?.some((r) => r.role === "admin"));
     const a = application as Application | null;
     setApp(a);
     if (a) {
       const [{ data: s }, { data: ar }, { data: d }, { data: n }] = await Promise.all([
-        supabase.from("contractor_services" as never).select("id,service").eq("application_id", a.id),
-        supabase.from("contractor_areas" as never).select("id,area").eq("application_id", a.id),
-        supabase.from("contractor_documents" as never).select("id,kind,path").eq("application_id", a.id),
+        supabase.from("contractor_services").select("id,service").eq("application_id", a.id),
+        supabase.from("contractor_areas").select("id,area").eq("application_id", a.id),
+        supabase.from("contractor_documents").select("id,kind,path").eq("application_id", a.id),
         a.status === "more_info_required"
-          ? supabase.from("admin_notes" as never).select("note,created_at").eq("application_id", a.id).order("created_at", { ascending: false })
+          ? supabase.from("admin_notes").select("note,created_at").eq("application_id", a.id).order("created_at", { ascending: false })
           : Promise.resolve({ data: [] }),
       ]);
       setServices((s as { id: string; service: string }[]) ?? []);
@@ -75,10 +75,10 @@ function Dashboard() {
     if (missing.length) return toast.error("Complete: " + missing.join(", "));
     setBusy(true);
     const { error } = await supabase
-      .from("contractor_applications" as never)
+      .from("contractor_applications")
       .update({ status: "submitted" }).eq("id", app.id);
     if (!error) {
-      await supabase.from("application_status_history" as never).insert({
+      await supabase.from("application_status_history").insert({
         application_id: app.id, status: "submitted",
         changed_by: (await supabase.auth.getUser()).data.user?.id,
       });

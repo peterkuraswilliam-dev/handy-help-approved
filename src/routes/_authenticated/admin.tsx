@@ -31,13 +31,13 @@ function Admin() {
     const { data: user } = await supabase.auth.getUser();
     const uid = user.user?.id;
     if (!uid) return;
-    const { data } = await supabase.from("user_roles" as never).select("role").eq("user_id", uid).eq("role", "admin").maybeSingle();
+    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle();
     setIsAdmin(!!data);
     setLoading(false);
   }
 
   async function load() {
-    let q = supabase.from("contractor_applications" as never)
+    let q = supabase.from("contractor_applications")
       .select("id,user_id,business_name,contact_name,status,created_at,email")
       .order("created_at", { ascending: false });
     if (filter !== "all") q = q.eq("status", filter);
