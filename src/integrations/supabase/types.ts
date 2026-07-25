@@ -14,16 +14,330 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_notes: {
+        Row: {
+          admin_id: string
+          application_id: string
+          created_at: string
+          id: string
+          note: string
+        }
+        Insert: {
+          admin_id: string
+          application_id: string
+          created_at?: string
+          id?: string
+          note: string
+        }
+        Update: {
+          admin_id?: string
+          application_id?: string
+          created_at?: string
+          id?: string
+          note?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_notes_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      application_status_history: {
+        Row: {
+          application_id: string
+          changed_by: string | null
+          created_at: string
+          id: string
+          reason: string | null
+          status: Database["public"]["Enums"]["application_status"]
+        }
+        Insert: {
+          application_id: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          reason?: string | null
+          status: Database["public"]["Enums"]["application_status"]
+        }
+        Update: {
+          application_id?: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          reason?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_status_history_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contractor_applications: {
+        Row: {
+          agreed_rules: boolean
+          approved_at: string | null
+          business_name: string | null
+          confirmed_accurate: boolean
+          contact_name: string | null
+          created_at: string
+          decision_reason: string | null
+          description: string | null
+          email: string | null
+          facebook: string | null
+          id: string
+          insurance_evidence_path: string | null
+          insurance_status: string | null
+          logo_path: string | null
+          main_area: string | null
+          phone: string | null
+          qualifications: string | null
+          references_text: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          agreed_rules?: boolean
+          approved_at?: string | null
+          business_name?: string | null
+          confirmed_accurate?: boolean
+          contact_name?: string | null
+          created_at?: string
+          decision_reason?: string | null
+          description?: string | null
+          email?: string | null
+          facebook?: string | null
+          id?: string
+          insurance_evidence_path?: string | null
+          insurance_status?: string | null
+          logo_path?: string | null
+          main_area?: string | null
+          phone?: string | null
+          qualifications?: string | null
+          references_text?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          agreed_rules?: boolean
+          approved_at?: string | null
+          business_name?: string | null
+          confirmed_accurate?: boolean
+          contact_name?: string | null
+          created_at?: string
+          decision_reason?: string | null
+          description?: string | null
+          email?: string | null
+          facebook?: string | null
+          id?: string
+          insurance_evidence_path?: string | null
+          insurance_status?: string | null
+          logo_path?: string | null
+          main_area?: string | null
+          phone?: string | null
+          qualifications?: string | null
+          references_text?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      contractor_areas: {
+        Row: {
+          application_id: string
+          area: string
+          id: string
+        }
+        Insert: {
+          application_id: string
+          area: string
+          id?: string
+        }
+        Update: {
+          application_id?: string
+          area?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_areas_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contractor_documents: {
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["document_kind"]
+          original_name: string | null
+          path: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          kind: Database["public"]["Enums"]["document_kind"]
+          original_name?: string | null
+          path: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["document_kind"]
+          original_name?: string | null
+          path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_documents_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contractor_gallery: {
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          path: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          path: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_gallery_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contractor_services: {
+        Row: {
+          application_id: string
+          id: string
+          service: string
+        }
+        Insert: {
+          application_id: string
+          id?: string
+          service: string
+        }
+        Update: {
+          application_id?: string
+          id?: string
+          service?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_services_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "contractor"
+      application_status:
+        | "draft"
+        | "submitted"
+        | "under_review"
+        | "more_info_required"
+        | "approved"
+        | "rejected"
+        | "suspended"
+      document_kind: "logo" | "insurance" | "qualification" | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +464,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "contractor"],
+      application_status: [
+        "draft",
+        "submitted",
+        "under_review",
+        "more_info_required",
+        "approved",
+        "rejected",
+        "suspended",
+      ],
+      document_kind: ["logo", "insurance", "qualification", "other"],
+    },
   },
 } as const
