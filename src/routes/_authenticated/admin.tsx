@@ -63,9 +63,10 @@ function Admin() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <Link to="/dashboard" className="btn-ghost -ml-2"><ArrowLeft className="h-4 w-4" /> Dashboard</Link>
-        <h1 className="text-2xl font-bold">Admin</h1>
+        <h1 className="text-2xl font-bold flex-1 text-center">Admin</h1>
+        <Link to="/admin/roles" className="btn-outline"><ShieldCheck className="h-4 w-4" /> Admins</Link>
       </div>
       <div className="flex flex-wrap gap-2">
         {STATUSES.map((s) => (
