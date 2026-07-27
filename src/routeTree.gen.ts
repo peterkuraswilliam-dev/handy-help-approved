@@ -14,6 +14,8 @@ import { Route as BecomeApprovedRouteImport } from './routes/become-approved'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ContractorsIndexRouteImport } from './routes/contractors.index'
+import { Route as ContractorsIdRouteImport } from './routes/contractors.$id'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedApplicationRouteImport } from './routes/_authenticated/application'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -42,6 +44,16 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContractorsIndexRoute = ContractorsIndexRouteImport.update({
+  id: '/contractors/',
+  path: '/contractors/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContractorsIdRoute = ContractorsIdRouteImport.update({
+  id: '/contractors/$id',
+  path: '/contractors/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -79,6 +91,8 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/application': typeof AuthenticatedApplicationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/contractors/$id': typeof ContractorsIdRoute
+  '/contractors/': typeof ContractorsIndexRoute
   '/admin/$id': typeof AuthenticatedAdminIdRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
 }
@@ -90,6 +104,8 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/application': typeof AuthenticatedApplicationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/contractors/$id': typeof ContractorsIdRoute
+  '/contractors': typeof ContractorsIndexRoute
   '/admin/$id': typeof AuthenticatedAdminIdRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
 }
@@ -103,6 +119,8 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/application': typeof AuthenticatedApplicationRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/contractors/$id': typeof ContractorsIdRoute
+  '/contractors/': typeof ContractorsIndexRoute
   '/_authenticated/admin/$id': typeof AuthenticatedAdminIdRoute
   '/_authenticated/admin/roles': typeof AuthenticatedAdminRolesRoute
 }
@@ -116,6 +134,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/application'
     | '/dashboard'
+    | '/contractors/$id'
+    | '/contractors/'
     | '/admin/$id'
     | '/admin/roles'
   fileRoutesByTo: FileRoutesByTo
@@ -127,6 +147,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/application'
     | '/dashboard'
+    | '/contractors/$id'
+    | '/contractors'
     | '/admin/$id'
     | '/admin/roles'
   id:
@@ -139,6 +161,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/application'
     | '/_authenticated/dashboard'
+    | '/contractors/$id'
+    | '/contractors/'
     | '/_authenticated/admin/$id'
     | '/_authenticated/admin/roles'
   fileRoutesById: FileRoutesById
@@ -149,6 +173,8 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BecomeApprovedRoute: typeof BecomeApprovedRoute
   CommunityRulesRoute: typeof CommunityRulesRoute
+  ContractorsIdRoute: typeof ContractorsIdRoute
+  ContractorsIndexRoute: typeof ContractorsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -186,6 +212,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contractors/': {
+      id: '/contractors/'
+      path: '/contractors'
+      fullPath: '/contractors/'
+      preLoaderRoute: typeof ContractorsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contractors/$id': {
+      id: '/contractors/$id'
+      path: '/contractors/$id'
+      fullPath: '/contractors/$id'
+      preLoaderRoute: typeof ContractorsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/dashboard': {
@@ -260,17 +300,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BecomeApprovedRoute: BecomeApprovedRoute,
   CommunityRulesRoute: CommunityRulesRoute,
+  ContractorsIdRoute: ContractorsIdRoute,
+  ContractorsIndexRoute: ContractorsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

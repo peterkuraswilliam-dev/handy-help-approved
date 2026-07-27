@@ -100,6 +100,7 @@ function Header() {
           </span>
         </Link>
         <nav className="flex items-center gap-1 text-sm">
+          <Link to="/contractors" className="btn-ghost hidden sm:inline-flex">Contractors</Link>
           {signedIn ? (
             <Link to="/dashboard" className="btn-outline">Dashboard</Link>
           ) : (
