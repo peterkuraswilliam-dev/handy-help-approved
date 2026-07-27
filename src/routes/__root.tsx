@@ -100,6 +100,7 @@ function Header() {
           </span>
         </Link>
         <nav className="flex items-center gap-1 text-sm">
+          <Link to="/contractors" className="btn-ghost hidden sm:inline-flex">Contractors</Link>
           {signedIn ? (
             <Link to="/dashboard" className="btn-outline">Dashboard</Link>
           ) : (
@@ -128,6 +129,7 @@ function Footer() {
       <div className="mx-auto max-w-5xl px-4 py-6 text-xs text-muted-foreground flex flex-wrap gap-3 justify-between">
         <span>© {new Date().getFullYear()} Handy Help Aberdeenshire</span>
         <div className="flex gap-4">
+          <Link to="/contractors" className="hover:text-[color:var(--color-gold)]">Contractors</Link>
           <Link to="/community-rules" className="hover:text-[color:var(--color-gold)]">Community rules</Link>
           <Link to="/become-approved" className="hover:text-[color:var(--color-gold)]">Become approved</Link>
         </div>
