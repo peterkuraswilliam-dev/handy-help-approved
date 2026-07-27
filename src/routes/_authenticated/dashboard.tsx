@@ -199,7 +199,12 @@ function Dashboard() {
           {areas.length > 0 && (
             <p className="text-sm"><span className="text-muted-foreground">Areas: </span>{areas.map(a=>a.area).join(", ")}</p>
           )}
-          <Link to="/application" className="btn-outline w-fit"><Pencil className="h-4 w-4" /> Edit profile</Link>
+          <div className="flex flex-wrap gap-2">
+            <Link to="/contractors/$id" params={{ id: app.id }} className="btn-gold w-fit">
+              <CheckCircle2 className="h-4 w-4" /> View public profile
+            </Link>
+            <Link to="/application" className="btn-outline w-fit"><Pencil className="h-4 w-4" /> Edit profile</Link>
+          </div>
           <p className="text-xs text-muted-foreground border-t border-border pt-3">
             Approval confirms that the contractor has supplied the requested information and agreed
             to follow our community standards. Customers should still carry out their own checks
