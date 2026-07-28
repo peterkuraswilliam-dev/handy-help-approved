@@ -25,8 +25,32 @@ type ApplicationRow = {
   updated_at: string | null;
 };
 
+type StatusFilter = "all" | AppStatus;
+
+const STATUS_FILTERS: Array<{ label: string; value: StatusFilter }> = [
+  { label: "All", value: "all" },
+  { label: "Draft", value: "draft" },
+  { label: "Submitted", value: "submitted" },
+  { label: "Under Review", value: "under_review" },
+  { label: "More Information Required", value: "more_info_required" },
+  { label: "Approved", value: "approved" },
+  { label: "Rejected", value: "rejected" },
+  { label: "Suspended", value: "suspended" },
+];
+
+const STATUS_BADGE_CLASS: Record<AppStatus, string> = {
+  draft: "border-slate-500 bg-slate-600 text-white",
+  submitted: "border-blue-500 bg-blue-600 text-white",
+  under_review: "border-yellow-300 bg-yellow-400 text-slate-950",
+  more_info_required: "border-orange-400 bg-orange-500 text-slate-950",
+  approved: "border-green-500 bg-green-600 text-white",
+  rejected: "border-red-500 bg-red-600 text-white",
+  suspended: "border-red-950 bg-red-900 text-white",
+};
+
 function AdminApplicationList() {
   const [applications, setApplications] = useState<ApplicationRow[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -52,6 +76,11 @@ function AdminApplicationList() {
     void loadApplications();
   }, [loadApplications]);
 
+  const visibleApplications =
+    selectedStatus === "all"
+      ? applications
+      : applications.filter((application) => application.status === selectedStatus);
+
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       <Link to="/" className="btn-ghost -ml-2">
@@ -64,6 +93,33 @@ function AdminApplicationList() {
           Review contractor applications for Handy Help Aberdeenshire.
         </p>
       </header>
+
+      {!loading && !error && applications.length > 0 && (
+        <div
+          className="flex flex-wrap gap-2"
+          role="group"
+          aria-label="Filter applications by status"
+        >
+          {STATUS_FILTERS.map((filter) => {
+            const selected = selectedStatus === filter.value;
+            return (
+              <button
+                key={filter.value}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => setSelectedStatus(filter.value)}
+                className={`min-h-11 rounded-md border px-3 py-2 text-sm font-semibold transition-colors ${
+                  selected
+                    ? "border-[color:var(--color-gold)] bg-[color:var(--color-gold)] text-[color:var(--color-primary-foreground)]"
+                    : "border-border bg-secondary/40 text-foreground hover:border-[color:var(--color-gold)] hover:text-[color:var(--color-gold)]"
+                }`}
+              >
+                {filter.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {loading && (
         <section
@@ -93,9 +149,27 @@ function AdminApplicationList() {
         </section>
       )}
 
-      {!loading && !error && applications.length > 0 && (
+      {!loading &&
+        !error &&
+        applications.length > 0 &&
+        visibleApplications.length === 0 && (
+          <section className="card-panel space-y-3 py-10 text-center">
+            <p className="text-sm text-muted-foreground">
+              No applications match this status.
+            </p>
+            <button
+              type="button"
+              className="btn-outline"
+              onClick={() => setSelectedStatus("all")}
+            >
+              View All Applications
+            </button>
+          </section>
+        )}
+
+      {!loading && !error && visibleApplications.length > 0 && (
         <ul className="space-y-3">
-          {applications.map((application) => {
+          {visibleApplications.map((application) => {
             const contactName = application.contact_name?.trim() || "Not available";
             const title =
               application.business_name?.trim() ||
@@ -116,7 +190,9 @@ function AdminApplicationList() {
                     Contact: {contactName}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    <span className="badge-status mr-2">
+                    <span
+                      className={`mr-2 inline-flex rounded-full border px-2 py-0.5 font-semibold ${STATUS_BADGE_CLASS[application.status]}`}
+                    >
                       {STATUS_LABEL[application.status]}
                     </span>
                     Last updated: {updatedDate}
