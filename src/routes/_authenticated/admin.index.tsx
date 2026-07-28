@@ -83,7 +83,7 @@ function AdminApplicationList() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <Link to="/" className="btn-ghost -ml-2">
+      <Link to="/" className="btn-ghost -ml-2 inline-flex w-fit items-center gap-2">
         <ArrowLeft className="h-4 w-4" /> Back to main app
       </Link>
 
