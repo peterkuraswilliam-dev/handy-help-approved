@@ -6,5 +6,6 @@ if (!existsSync(".output/server/index.mjs")) {
 
 rmSync("dist", { recursive: true, force: true });
 cpSync(".output", "dist", { recursive: true });
-cpSync(".output/public", "dist", { recursive: true });
+// Sites exposes static files from dist/client through its ASSETS binding.
+cpSync(".output/public", "dist/client", { recursive: true });
 copyFileSync("dist/server/index.mjs", "dist/server/index.js");
