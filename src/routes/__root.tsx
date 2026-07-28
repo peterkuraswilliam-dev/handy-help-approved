@@ -80,11 +80,22 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function Header() {
   const [signedIn, setSignedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
-    const { data: sub } = supabase.auth.onAuthStateChange((e) => {
+    const check = async (uid: string | undefined) => {
+      if (!uid) { setIsAdmin(false); return; }
+      const { data } = await supabase.rpc("has_role", { _user_id: uid, _role: "admin" });
+      setIsAdmin(!!data);
+    };
+    supabase.auth.getSession().then(({ data }) => {
+      setSignedIn(!!data.session);
+      void check(data.session?.user.id);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((e, session) => {
       if (e === "SIGNED_IN" || e === "SIGNED_OUT" || e === "USER_UPDATED") {
         setSignedIn(e !== "SIGNED_OUT");
+        if (e === "SIGNED_OUT") setIsAdmin(false);
+        else void check(session?.user.id);
       }
     });
     return () => sub.subscription.unsubscribe();
@@ -102,7 +113,10 @@ function Header() {
         <nav className="flex items-center gap-1 text-sm">
           <Link to="/contractors" className="btn-ghost hidden sm:inline-flex">Contractors</Link>
           {signedIn ? (
-            <Link to="/dashboard" className="btn-outline">Dashboard</Link>
+            <>
+              {isAdmin && <Link to="/admin" className="btn-outline">Admin Dashboard</Link>}
+              <Link to="/dashboard" className="btn-outline">Dashboard</Link>
+            </>
           ) : (
             <>
               <Link to="/auth" className="btn-ghost hidden sm:inline-flex">Sign in</Link>
@@ -114,6 +128,7 @@ function Header() {
     </header>
   );
 }
+
 
 function Banner() {
   return (
