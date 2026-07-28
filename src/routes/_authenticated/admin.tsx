@@ -1,28 +1,35 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
 import { STATUS_LABEL, type AppStatus } from "@/lib/application-helpers";
-import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
       { title: "Admin Dashboard — Handy Help Aberdeenshire" },
-      { name: "description", content: "Admin dashboard for reviewing contractor applications." },
+      {
+        name: "description",
+        content: "Admin dashboard for reviewing contractor applications.",
+      },
     ],
   }),
   beforeLoad: async () => {
     const { data: userData } = await supabase.auth.getUser();
     const uid = userData.user?.id;
     if (!uid) throw redirect({ to: "/auth" });
-    const { data, error } = await supabase.rpc("has_role", { _user_id: uid, _role: "admin" });
+
+    const { data, error } = await supabase.rpc("has_role", {
+      _user_id: uid,
+      _role: "admin",
+    });
     if (error || !data) throw redirect({ to: "/dashboard" });
   },
   component: Admin,
 });
 
-type Row = {
+type ApplicationRow = {
   id: string;
   business_name: string | null;
   contact_name: string | null;
@@ -31,96 +38,106 @@ type Row = {
 };
 
 function Admin() {
-  const [rows, setRows] = useState<Row[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [applications, setApplications] = useState<ApplicationRow[]>([]);
+  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(async () => {
+  const loadApplications = useCallback(async () => {
     setLoading(true);
-    setError(null);
-    const { data, error } = await db
+    setError(false);
+
+    const { data, error: loadError } = await db
       .from("contractor_applications")
       .select("id,business_name,contact_name,status,updated_at")
       .order("updated_at", { ascending: false });
-    if (error) {
-      setError(error.message);
-      setRows(null);
+
+    if (loadError) {
+      setApplications([]);
+      setError(true);
     } else {
-      setRows((data as Row[]) ?? []);
+      setApplications((data as ApplicationRow[]) ?? []);
     }
     setLoading(false);
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    void loadApplications();
+  }, [loadApplications]);
 
   return (
-    <div className="max-w-3xl mx-auto space-y-5">
-      <div className="flex items-center gap-2">
-        <Link to="/" className="btn-ghost -ml-2">
-          <ArrowLeft className="h-4 w-4" /> Back to main app
-        </Link>
-      </div>
+    <div className="mx-auto max-w-3xl space-y-5">
+      <Link to="/" className="btn-ghost -ml-2">
+        <ArrowLeft className="h-4 w-4" /> Back to main app
+      </Link>
 
       <header className="space-y-2">
         <h1 className="text-3xl font-bold">Contractor Applications</h1>
         <p className="text-muted-foreground">
-          Review and manage contractor applications for Handy Help Aberdeenshire.
+          Review contractor applications for Handy Help Aberdeenshire.
         </p>
       </header>
 
-      <div className="rounded-md border border-[color:var(--color-gold)]/40 bg-[color:var(--color-gold)]/10 px-4 py-3 text-sm font-medium">
-        Free while the Handy Help Aberdeenshire application is being developed.
-      </div>
-
       {loading && (
-        <section className="card-panel text-center py-12 text-sm text-muted-foreground">
+        <section
+          className="card-panel py-12 text-center text-sm text-muted-foreground"
+          aria-live="polite"
+        >
           Loading applications…
         </section>
       )}
 
       {!loading && error && (
-        <section className="card-panel text-center py-10 space-y-3">
+        <section className="card-panel space-y-3 py-10 text-center" role="alert">
           <p className="text-sm text-[color:var(--color-destructive,#ef4444)]">
-            Couldn't load applications: {error}
+            Applications could not be loaded. Please try again.
           </p>
-          <button className="btn-outline" onClick={() => void load()}>Retry</button>
+          <button className="btn-outline" onClick={() => void loadApplications()}>
+            Retry
+          </button>
         </section>
       )}
 
-      {!loading && !error && rows && rows.length === 0 && (
-        <section className="card-panel text-center py-12">
-          <h2 className="text-lg font-semibold text-[color:var(--color-gold)]">
-            No applications yet
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
-            Contractor applications will appear here as they are submitted.
+      {!loading && !error && applications.length === 0 && (
+        <section className="card-panel py-12 text-center">
+          <p className="mx-auto max-w-md text-sm text-muted-foreground">
+            No contractor applications have been submitted yet.
           </p>
         </section>
       )}
 
-      {!loading && !error && rows && rows.length > 0 && (
+      {!loading && !error && applications.length > 0 && (
         <ul className="space-y-3">
-          {rows.map((r) => {
-            const title = r.business_name?.trim() || r.contact_name?.trim() || "(no name)";
-            const updated = r.updated_at
-              ? new Date(r.updated_at).toLocaleString()
+          {applications.map((application) => {
+            const contactName = application.contact_name?.trim() || "Not available";
+            const title =
+              application.business_name?.trim() ||
+              application.contact_name?.trim() ||
+              "Not available";
+            const updatedDate = application.updated_at
+              ? new Date(application.updated_at).toLocaleString()
               : "Not available";
+
             return (
-              <li key={r.id} className="card-panel flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
-                <div className="min-w-0">
-                  <h2 className="font-semibold truncate">{title}</h2>
-                  <p className="text-sm text-muted-foreground truncate">
-                    {r.contact_name || "—"}
+              <li
+                key={application.id}
+                className="card-panel flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="min-w-0 space-y-1">
+                  <h2 className="truncate font-semibold">{title}</h2>
+                  <p className="truncate text-sm text-muted-foreground">
+                    Contact: {contactName}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    <span className="badge-status mr-2">{STATUS_LABEL[r.status]}</span>
-                    Updated: {updated}
+                  <p className="text-xs text-muted-foreground">
+                    <span className="badge-status mr-2">
+                      {STATUS_LABEL[application.status]}
+                    </span>
+                    Last updated: {updatedDate}
                   </p>
                 </div>
                 <Link
                   to="/admin/applications/$applicationId"
-                  params={{ applicationId: r.id }}
-                  className="btn-gold sm:self-center whitespace-nowrap"
+                  params={{ applicationId: application.id }}
+                  className="btn-gold whitespace-nowrap sm:self-center"
                 >
                   Open Application
                 </Link>
