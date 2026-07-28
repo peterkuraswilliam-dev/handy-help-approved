@@ -21,6 +21,7 @@ type ApplicationRow = {
   id: string;
   business_name: string | null;
   contact_name: string | null;
+  email: string | null;
   status: AppStatus;
   updated_at: string | null;
 };
@@ -51,6 +52,7 @@ const STATUS_BADGE_CLASS: Record<AppStatus, string> = {
 function AdminApplicationList() {
   const [applications, setApplications] = useState<ApplicationRow[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -60,7 +62,7 @@ function AdminApplicationList() {
 
     const { data, error: loadError } = await db
       .from("contractor_applications")
-      .select("id,business_name,contact_name,status,updated_at")
+      .select("id,business_name,contact_name,email,status,updated_at")
       .order("updated_at", { ascending: false });
 
     if (loadError) {
@@ -76,10 +78,18 @@ function AdminApplicationList() {
     void loadApplications();
   }, [loadApplications]);
 
-  const visibleApplications =
+  const statusFilteredApplications =
     selectedStatus === "all"
       ? applications
       : applications.filter((application) => application.status === selectedStatus);
+  const normalizedSearch = searchTerm.trim().toLocaleLowerCase();
+  const visibleApplications = normalizedSearch
+    ? statusFilteredApplications.filter((application) =>
+        [application.business_name, application.contact_name, application.email].some((value) =>
+          value?.toLocaleLowerCase().includes(normalizedSearch),
+        ),
+      )
+    : statusFilteredApplications;
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
@@ -95,30 +105,55 @@ function AdminApplicationList() {
       </header>
 
       {!loading && !error && applications.length > 0 && (
-        <div
-          className="flex flex-wrap gap-2"
-          role="group"
-          aria-label="Filter applications by status"
-        >
-          {STATUS_FILTERS.map((filter) => {
-            const selected = selectedStatus === filter.value;
-            return (
+        <>
+          <div
+            className="flex flex-wrap gap-2"
+            role="group"
+            aria-label="Filter applications by status"
+          >
+            {STATUS_FILTERS.map((filter) => {
+              const selected = selectedStatus === filter.value;
+              return (
+                <button
+                  key={filter.value}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => setSelectedStatus(filter.value)}
+                  className={`min-h-11 rounded-md border px-3 py-2 text-sm font-semibold transition-colors ${
+                    selected
+                      ? "border-[color:var(--color-gold)] bg-[color:var(--color-gold)] text-[color:var(--color-primary-foreground)]"
+                      : "border-border bg-secondary/40 text-foreground hover:border-[color:var(--color-gold)] hover:text-[color:var(--color-gold)]"
+                  }`}
+                >
+                  {filter.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <label className="sr-only" htmlFor="application-search">
+              Search contractor applications
+            </label>
+            <input
+              id="application-search"
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search contractor applications"
+              className="min-h-11 w-full rounded-md border border-border bg-secondary/40 px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-[color:var(--color-gold)]"
+            />
+            {searchTerm && (
               <button
-                key={filter.value}
                 type="button"
-                aria-pressed={selected}
-                onClick={() => setSelectedStatus(filter.value)}
-                className={`min-h-11 rounded-md border px-3 py-2 text-sm font-semibold transition-colors ${
-                  selected
-                    ? "border-[color:var(--color-gold)] bg-[color:var(--color-gold)] text-[color:var(--color-primary-foreground)]"
-                    : "border-border bg-secondary/40 text-foreground hover:border-[color:var(--color-gold)] hover:text-[color:var(--color-gold)]"
-                }`}
+                className="btn-outline min-h-11 whitespace-nowrap"
+                onClick={() => setSearchTerm("")}
               >
-                {filter.label}
+                Clear Search
               </button>
-            );
-          })}
-        </div>
+            )}
+          </div>
+        </>
       )}
 
       {loading && (
@@ -155,14 +190,18 @@ function AdminApplicationList() {
         visibleApplications.length === 0 && (
           <section className="card-panel space-y-3 py-10 text-center">
             <p className="text-sm text-muted-foreground">
-              No applications match this status.
+              {normalizedSearch
+                ? "No contractor applications match your search."
+                : "No applications match this status."}
             </p>
             <button
               type="button"
               className="btn-outline"
-              onClick={() => setSelectedStatus("all")}
+              onClick={() =>
+                normalizedSearch ? setSearchTerm("") : setSelectedStatus("all")
+              }
             >
-              View All Applications
+              {normalizedSearch ? "Clear Search" : "View All Applications"}
             </button>
           </section>
         )}
