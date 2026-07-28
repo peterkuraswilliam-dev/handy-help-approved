@@ -9,3 +9,4 @@ cpSync(".output", "dist", { recursive: true });
 // Sites exposes static files from dist/client through its ASSETS binding.
 cpSync(".output/public", "dist/client", { recursive: true });
 copyFileSync("dist/server/index.mjs", "dist/server/index.js");
+cpSync(".openai", "dist/.openai", { recursive: true });
