@@ -109,7 +109,7 @@ function Review() {
         {logoUrl && <img src={logoUrl} alt="Logo" className="col-span-full h-24 w-24 object-contain rounded border border-border" />}
         <Info label="Main area" value={app.main_area} />
         <Info label="Company registration number" value={app.company_registration_number} />
-        <Info label="Working hours" value={app.working_hours} />
+        <WorkingHoursInfo value={app.working_hours} />
         <Info label="Insurance" value={app.insurance_status} />
         <Info label="Website" value={app.website} />
         <Info label="Facebook" value={app.facebook} />
@@ -190,6 +190,24 @@ function Review() {
       </div>
     </div>
   );
+}
+
+function WorkingHoursInfo({ value }: { value: string | null }) {
+  try {
+    const schedule = JSON.parse(value ?? "") as { days?: Record<string, { closed?: boolean; opens?: string; closes?: string }>; note?: string };
+    if (!schedule.days) throw new Error("Legacy working hours");
+    return (
+      <div className="col-span-full">
+        <p className="text-xs text-muted-foreground">Working hours</p>
+        <div className="mt-1 grid gap-x-4 gap-y-1 sm:grid-cols-2">
+          {Object.entries(schedule.days).map(([day, hours]) => <p key={day}>{day}: {hours.closed ? "Closed" : `${hours.opens ?? "Not available"} to ${hours.closes ?? "Not available"}`}</p>)}
+        </div>
+        {schedule.note && <p className="mt-2 text-muted-foreground">{schedule.note}</p>}
+      </div>
+    );
+  } catch {
+    return <Info label="Working hours" value={value} />;
+  }
 }
 
 function Info({ label, value }: { label: string; value: string | null }) {

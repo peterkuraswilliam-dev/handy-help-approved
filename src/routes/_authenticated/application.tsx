@@ -13,10 +13,35 @@ export const Route = createFileRoute("/_authenticated/application")({
 
 const emptyApp = {
   business_name: "", contact_name: "", email: "", phone: "",
-  company_registration_number: "", working_hours: "", main_area: "", description: "", website: "", facebook: "",
+  company_registration_number: "", main_area: "", description: "", website: "", facebook: "",
   insurance_status: "", qualifications: "", references_text: "",
   agreed_rules: false, confirmed_accurate: false,
 };
+
+const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
+type WeekDay = (typeof weekDays)[number];
+type WorkingHours = { days: Record<WeekDay, { closed: boolean; opens: string; closes: string }>; note: string };
+
+function defaultWorkingHours(): WorkingHours {
+  return {
+    days: Object.fromEntries(weekDays.map((day) => [day, { closed: day === "Saturday" || day === "Sunday", opens: "09:00", closes: "17:00" }])) as WorkingHours["days"],
+    note: "",
+  };
+}
+
+function parseWorkingHours(value: string | null | undefined): WorkingHours {
+  try {
+    const parsed = JSON.parse(value ?? "") as Partial<WorkingHours>;
+    if (!parsed.days) return defaultWorkingHours();
+    const fallback = defaultWorkingHours();
+    return {
+      days: Object.fromEntries(weekDays.map((day) => [day, { ...fallback.days[day], ...parsed.days?.[day] }])) as WorkingHours["days"],
+      note: typeof parsed.note === "string" ? parsed.note : "",
+    };
+  } catch {
+    return { ...defaultWorkingHours(), note: value ?? "" };
+  }
+}
 
 type Doc = { id: string; kind: string; path: string; original_name: string | null };
 
@@ -33,6 +58,7 @@ function ApplicationForm() {
   const [docs, setDocs] = useState<Doc[]>([]);
   const [logoPath, setLogoPath] = useState<string | null>(null);
   const [gallery, setGallery] = useState<{ id: string; path: string }[]>([]);
+  const [workingHours, setWorkingHours] = useState<WorkingHours>(defaultWorkingHours);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => { void load(); }, []);
@@ -52,12 +78,13 @@ function ApplicationForm() {
       setForm({
         business_name: e.business_name ?? "", contact_name: e.contact_name ?? "",
         email: e.email ?? "", phone: e.phone ?? "",
-        company_registration_number: e.company_registration_number ?? "", working_hours: e.working_hours ?? "",
+        company_registration_number: e.company_registration_number ?? "",
         main_area: e.main_area ?? "",
         description: e.description ?? "", website: e.website ?? "", facebook: e.facebook ?? "",
         insurance_status: e.insurance_status ?? "", qualifications: e.qualifications ?? "",
         references_text: e.references_text ?? "", agreed_rules: e.agreed_rules, confirmed_accurate: e.confirmed_accurate,
       });
+      setWorkingHours(parseWorkingHours(e.working_hours));
       const [{ data: s }, { data: ar }, { data: d }, { data: g }] = await Promise.all([
         db.from("contractor_services").select("id,service").eq("application_id", e.id),
         db.from("contractor_areas").select("id,area").eq("application_id", e.id),
@@ -84,7 +111,7 @@ function ApplicationForm() {
     if (!uid) return null;
     const { data, error } = await supabase
       .from("contractor_applications")
-      .insert({ user_id: uid, status: "draft", ...form })
+      .insert({ user_id: uid, status: "draft", ...form, working_hours: JSON.stringify(workingHours) })
       .select("id").single();
     if (error) { toast.error(error.message); return null; }
     const id = (data as { id: string }).id;
@@ -98,7 +125,7 @@ function ApplicationForm() {
       const id = await ensureApp();
       if (!id) return;
       const { error } = await db.from("contractor_applications")
-        .update({ ...form, logo_path: logoPath }).eq("id", id);
+        .update({ ...form, working_hours: JSON.stringify(workingHours), logo_path: logoPath }).eq("id", id);
       if (error) throw error;
       toast.success("Saved");
     } catch (err) {
@@ -187,7 +214,22 @@ function ApplicationForm() {
         <Field label="Email address"><input type="email" value={form.email} onChange={(e) => upd("email", e.target.value)} disabled={locked} /></Field>
         <Field label="Phone number"><input value={form.phone} onChange={(e) => upd("phone", e.target.value)} disabled={locked} maxLength={30} /></Field>
         <Field label="Company registration number"><input value={form.company_registration_number} onChange={(e) => upd("company_registration_number", e.target.value)} disabled={locked} maxLength={20} /></Field>
-        <Field label="Working hours"><input value={form.working_hours} onChange={(e) => upd("working_hours", e.target.value)} disabled={locked} placeholder="e.g. Mon–Fri, 9am–5pm" maxLength={200} /></Field>
+        <div>
+          <label>Working hours</label>
+          <div className="mt-1 space-y-2 rounded-md border border-border p-3">
+            {weekDays.map((day) => {
+              const hours = workingHours.days[day];
+              return (
+                <div key={day} className="grid grid-cols-[minmax(5rem,1fr)_auto] items-center gap-2 sm:grid-cols-[8rem_auto_1fr]">
+                  <span className="text-sm font-medium">{day}</span>
+                  <label className="flex items-center gap-1 text-sm text-muted-foreground"><input type="checkbox" className="w-auto" checked={hours.closed} disabled={locked} onChange={(e) => setWorkingHours((current) => ({ ...current, days: { ...current.days, [day]: { ...current.days[day], closed: e.target.checked } } }))} /> Closed</label>
+                  {!hours.closed && <div className="col-span-2 flex items-center gap-2 sm:col-span-1"><input aria-label={`${day} opening time`} type="time" value={hours.opens} disabled={locked} onChange={(e) => setWorkingHours((current) => ({ ...current, days: { ...current.days, [day]: { ...current.days[day], opens: e.target.value } } }))} /><span className="text-sm text-muted-foreground">to</span><input aria-label={`${day} closing time`} type="time" value={hours.closes} disabled={locked} onChange={(e) => setWorkingHours((current) => ({ ...current, days: { ...current.days, [day]: { ...current.days[day], closes: e.target.value } } }))} /></div>}
+                </div>
+              );
+            })}
+            <textarea aria-label="Working hours note" rows={2} value={workingHours.note} disabled={locked} onChange={(e) => setWorkingHours((current) => ({ ...current, note: e.target.value }))} placeholder="Optional note, e.g. appointments only or emergency call-outs" maxLength={300} />
+          </div>
+        </div>
         <Field label="Main operating area"><input value={form.main_area} onChange={(e) => upd("main_area", e.target.value)} disabled={locked} placeholder="e.g. Aberdeen" /></Field>
         <Field label="Short business description">
           <textarea rows={3} value={form.description} onChange={(e) => upd("description", e.target.value)} disabled={locked} maxLength={1000} />
