@@ -22,11 +22,20 @@ type ApplicationRow = {
   business_name: string | null;
   contact_name: string | null;
   email: string | null;
+  phone: string | null;
+  main_area: string | null;
+  description: string | null;
+  insurance_status: string | null;
+  qualifications: string | null;
+  references_text: string | null;
+  agreed_rules: boolean;
+  confirmed_accurate: boolean;
   status: AppStatus;
   updated_at: string | null;
 };
 
 type StatusFilter = "all" | AppStatus;
+type SortOption = "newest" | "oldest" | "business_name" | "status";
 
 const STATUS_FILTERS: Array<{ label: string; value: StatusFilter }> = [
   { label: "All", value: "all" },
@@ -53,6 +62,7 @@ function AdminApplicationList() {
   const [applications, setApplications] = useState<ApplicationRow[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -62,7 +72,7 @@ function AdminApplicationList() {
 
     const { data, error: loadError } = await db
       .from("contractor_applications")
-      .select("id,business_name,contact_name,email,status,updated_at")
+      .select("id,business_name,contact_name,email,phone,main_area,description,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,updated_at")
       .order("updated_at", { ascending: false });
 
     if (loadError) {
@@ -83,13 +93,24 @@ function AdminApplicationList() {
       ? applications
       : applications.filter((application) => application.status === selectedStatus);
   const normalizedSearch = searchTerm.trim().toLocaleLowerCase();
-  const visibleApplications = normalizedSearch
+  const filteredApplications = normalizedSearch
     ? statusFilteredApplications.filter((application) =>
         [application.business_name, application.contact_name, application.email].some((value) =>
           value?.toLocaleLowerCase().includes(normalizedSearch),
         ),
       )
     : statusFilteredApplications;
+  const visibleApplications = [...filteredApplications].sort((a, b) => {
+    if (sortOption === "business_name") return (a.business_name ?? a.contact_name ?? "").localeCompare(b.business_name ?? b.contact_name ?? "");
+    if (sortOption === "status") return STATUS_LABEL[a.status].localeCompare(STATUS_LABEL[b.status]);
+    const aDate = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+    const bDate = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+    return sortOption === "oldest" ? aDate - bDate : bDate - aDate;
+  });
+  const statusCounts = applications.reduce<Record<AppStatus, number>>((counts, application) => {
+    counts[application.status] += 1;
+    return counts;
+  }, { draft: 0, submitted: 0, under_review: 0, more_info_required: 0, approved: 0, rejected: 0, suspended: 0 });
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
@@ -106,6 +127,12 @@ function AdminApplicationList() {
 
       {!loading && !error && applications.length > 0 && (
         <>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <SummaryCard label="Total" value={applications.length} />
+            <SummaryCard label="Submitted" value={statusCounts.submitted} />
+            <SummaryCard label="Under review" value={statusCounts.under_review} />
+            <SummaryCard label="Approved" value={statusCounts.approved} />
+          </div>
           <div
             className="flex flex-wrap gap-2"
             role="group"
@@ -152,6 +179,12 @@ function AdminApplicationList() {
                 Clear Search
               </button>
             )}
+            <select aria-label="Sort applications" value={sortOption} onChange={(event) => setSortOption(event.target.value as SortOption)} className="min-h-11 rounded-md border border-border bg-secondary/40 px-3 text-sm text-foreground">
+              <option value="newest">Sort: Newest</option>
+              <option value="oldest">Sort: Oldest</option>
+              <option value="business_name">Sort: Business name</option>
+              <option value="status">Sort: Status</option>
+            </select>
           </div>
         </>
       )}
@@ -217,13 +250,25 @@ function AdminApplicationList() {
             const updatedDate = application.updated_at
               ? new Date(application.updated_at).toLocaleString()
               : "Not available";
+            const missing = [
+              !application.business_name && "business name",
+              !application.contact_name && "contact name",
+              !application.email && "email",
+              !application.phone && "phone",
+              !application.main_area && "main area",
+              !application.description && "description",
+              !application.insurance_status && "insurance",
+              !application.agreed_rules && "rules agreement",
+              !application.confirmed_accurate && "accuracy confirmation",
+            ].filter(Boolean) as string[];
+            const completed = 9 - missing.length;
 
             return (
               <li
                 key={application.id}
                 className="card-panel flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div className="min-w-0 space-y-1">
+                <div className="min-w-0 flex-1 space-y-2">
                   <h2 className="truncate font-semibold">{title}</h2>
                   <p className="truncate text-sm text-muted-foreground">
                     Contact: {contactName}
@@ -236,6 +281,11 @@ function AdminApplicationList() {
                     </span>
                     Last updated: {updatedDate}
                   </p>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs text-muted-foreground"><span>Application details</span><span>{completed}/9 completed</span></div>
+                    <div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-[color:var(--color-gold)]" style={{ width: `${(completed / 9) * 100}%` }} /></div>
+                  </div>
+                  {missing.length > 0 && <p className="text-xs text-[color:var(--color-gold)]">Missing: {missing.join(", ")}</p>}
                 </div>
                 <Link
                   to="/admin/$id"
@@ -251,4 +301,8 @@ function AdminApplicationList() {
       )}
     </div>
   );
+}
+
+function SummaryCard({ label, value }: { label: string; value: number }) {
+  return <div className="card-panel p-3"><p className="text-xs text-muted-foreground">{label}</p><p className="mt-1 text-2xl font-bold text-[color:var(--color-gold)]">{value}</p></div>;
 }
