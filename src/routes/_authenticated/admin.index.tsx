@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import { db } from "@/lib/db";
 import { STATUS_LABEL, type AppStatus } from "@/lib/application-helpers";
 
@@ -113,21 +113,26 @@ function AdminApplicationList() {
   }, { draft: 0, submitted: 0, under_review: 0, more_info_required: 0, approved: 0, rejected: 0, suspended: 0 });
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5">
+    <div className="cinematic-admin mx-auto max-w-5xl space-y-6">
       <Link to="/" className="btn-ghost -ml-2 inline-flex w-fit items-center gap-2">
         <ArrowLeft className="h-4 w-4" /> Back to main app
       </Link>
 
-      <header className="space-y-2">
-        <h1 className="text-3xl font-bold">Contractor Applications</h1>
+      <header className="cinematic-admin-hero relative overflow-hidden rounded-2xl border border-[color:color-mix(in_oklch,var(--color-gold)_35%,var(--color-border))] px-6 py-8 sm:px-8">
+        <div className="relative z-10 space-y-2">
+        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-[color:var(--color-gold)]"><Sparkles className="h-4 w-4" /> Admin command centre</p>
+        <h1 className="text-4xl font-bold sm:text-5xl">Contractor Applications</h1>
         <p className="text-muted-foreground">
-          Review contractor applications for Handy Help Aberdeenshire.
+          Review, prioritise and manage contractor applications for Handy Help Aberdeenshire.
         </p>
+        </div>
+        <div className="cinematic-admin-orb cinematic-admin-orb-one" aria-hidden="true" />
+        <div className="cinematic-admin-orb cinematic-admin-orb-two" aria-hidden="true" />
       </header>
 
       {!loading && !error && applications.length > 0 && (
         <>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="cinematic-summary grid grid-cols-2 gap-3 sm:grid-cols-4">
             <SummaryCard label="Total" value={applications.length} />
             <SummaryCard label="Submitted" value={statusCounts.submitted} />
             <SummaryCard label="Under review" value={statusCounts.under_review} />
@@ -266,7 +271,7 @@ function AdminApplicationList() {
             return (
               <li
                 key={application.id}
-                className="card-panel flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+                className="cinematic-application-card card-panel flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0 flex-1 space-y-2">
                   <h2 className="truncate font-semibold">{title}</h2>
@@ -304,5 +309,5 @@ function AdminApplicationList() {
 }
 
 function SummaryCard({ label, value }: { label: string; value: number }) {
-  return <div className="card-panel p-3"><p className="text-xs text-muted-foreground">{label}</p><p className="mt-1 text-2xl font-bold text-[color:var(--color-gold)]">{value}</p></div>;
+  return <div className="card-panel p-4"><p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p><p className="mt-1 text-3xl font-bold text-[color:var(--color-gold)]">{value}</p></div>;
 }
