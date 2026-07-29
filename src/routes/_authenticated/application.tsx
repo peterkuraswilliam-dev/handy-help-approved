@@ -133,6 +133,37 @@ function ApplicationForm() {
     } finally { setSaving(false); }
   }
 
+  async function submit() {
+    const missing = [
+      !form.business_name.trim() && "business name",
+      !form.contact_name.trim() && "contact name",
+      !form.email.trim() && "email address",
+      !form.phone.trim() && "phone number",
+      !form.main_area.trim() && "main operating area",
+      !form.description.trim() && "business description",
+      services.length === 0 && "a service offered",
+      areas.length === 0 && "an area covered",
+      !form.agreed_rules && "agreement to the community rules",
+      !form.confirmed_accurate && "confirmation that the information is accurate",
+    ].filter(Boolean) as string[];
+    if (missing.length > 0) {
+      toast.error(`Complete: ${missing.join(", ")}.`);
+      return;
+    }
+    setSaving(true);
+    try {
+      const id = await ensureApp();
+      if (!id) return;
+      const { error } = await db.from("contractor_applications")
+        .update({ ...form, working_hours: JSON.stringify(workingHours), logo_path: logoPath, status: "submitted" }).eq("id", id);
+      if (error) throw error;
+      setStatus("submitted");
+      toast.success("Application submitted for review");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to submit application");
+    } finally { setSaving(false); }
+  }
+
   async function addService() {
     if (!newService.trim()) return;
     const id = await ensureApp(); if (!id) return;
@@ -309,8 +340,9 @@ function ApplicationForm() {
         </label>
       </Section>
 
-      <div className="flex gap-2 sticky bottom-3 bg-[color:var(--color-background)]/90 backdrop-blur p-2 rounded-md">
-        <button className="btn-gold flex-1" onClick={save} disabled={saving || locked}>{saving ? "Saving…" : "Save application"}</button>
+      <div className="flex flex-wrap gap-2 sticky bottom-3 bg-[color:var(--color-background)]/90 backdrop-blur p-2 rounded-md">
+        <button className="btn-outline flex-1" onClick={save} disabled={saving || locked}>{saving ? "Saving…" : "Save draft"}</button>
+        {status === "draft" && <button className="btn-gold flex-1" onClick={submit} disabled={saving || locked}>{saving ? "Saving…" : "Submit application"}</button>}
         <button className="btn-outline" onClick={() => router.navigate({ to: "/dashboard" })}>Done</button>
       </div>
     </div>
