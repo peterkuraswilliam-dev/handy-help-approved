@@ -86,6 +86,7 @@ export type Database = {
           agreed_rules: boolean
           approved_at: string | null
           business_name: string | null
+          company_registration_number: string | null
           confirmed_accurate: boolean
           contact_name: string | null
           created_at: string
@@ -105,11 +106,13 @@ export type Database = {
           updated_at: string
           user_id: string
           website: string | null
+          working_hours: string | null
         }
         Insert: {
           agreed_rules?: boolean
           approved_at?: string | null
           business_name?: string | null
+          company_registration_number?: string | null
           confirmed_accurate?: boolean
           contact_name?: string | null
           created_at?: string
@@ -129,11 +132,13 @@ export type Database = {
           updated_at?: string
           user_id: string
           website?: string | null
+          working_hours?: string | null
         }
         Update: {
           agreed_rules?: boolean
           approved_at?: string | null
           business_name?: string | null
+          company_registration_number?: string | null
           confirmed_accurate?: boolean
           contact_name?: string | null
           created_at?: string
@@ -153,6 +158,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           website?: string | null
+          working_hours?: string | null
         }
         Relationships: []
       }
