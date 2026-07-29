@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/application")({
 
 const emptyApp = {
   business_name: "", contact_name: "", email: "", phone: "",
-  main_area: "", description: "", website: "", facebook: "",
+  company_registration_number: "", working_hours: "", main_area: "", description: "", website: "", facebook: "",
   insurance_status: "", qualifications: "", references_text: "",
   agreed_rules: false, confirmed_accurate: false,
 };
@@ -51,7 +51,9 @@ function ApplicationForm() {
       setLogoPath(e.logo_path);
       setForm({
         business_name: e.business_name ?? "", contact_name: e.contact_name ?? "",
-        email: e.email ?? "", phone: e.phone ?? "", main_area: e.main_area ?? "",
+        email: e.email ?? "", phone: e.phone ?? "",
+        company_registration_number: e.company_registration_number ?? "", working_hours: e.working_hours ?? "",
+        main_area: e.main_area ?? "",
         description: e.description ?? "", website: e.website ?? "", facebook: e.facebook ?? "",
         insurance_status: e.insurance_status ?? "", qualifications: e.qualifications ?? "",
         references_text: e.references_text ?? "", agreed_rules: e.agreed_rules, confirmed_accurate: e.confirmed_accurate,
@@ -184,6 +186,8 @@ function ApplicationForm() {
         <Field label="Contact name"><input value={form.contact_name} onChange={(e) => upd("contact_name", e.target.value)} disabled={locked} maxLength={100} /></Field>
         <Field label="Email address"><input type="email" value={form.email} onChange={(e) => upd("email", e.target.value)} disabled={locked} /></Field>
         <Field label="Phone number"><input value={form.phone} onChange={(e) => upd("phone", e.target.value)} disabled={locked} maxLength={30} /></Field>
+        <Field label="Company registration number"><input value={form.company_registration_number} onChange={(e) => upd("company_registration_number", e.target.value)} disabled={locked} maxLength={20} /></Field>
+        <Field label="Working hours"><input value={form.working_hours} onChange={(e) => upd("working_hours", e.target.value)} disabled={locked} placeholder="e.g. Mon–Fri, 9am–5pm" maxLength={200} /></Field>
         <Field label="Main operating area"><input value={form.main_area} onChange={(e) => upd("main_area", e.target.value)} disabled={locked} placeholder="e.g. Aberdeen" /></Field>
         <Field label="Short business description">
           <textarea rows={3} value={form.description} onChange={(e) => upd("description", e.target.value)} disabled={locked} maxLength={1000} />

@@ -14,6 +14,7 @@ export const Route = createFileRoute("/_authenticated/admin/$id")({
 type App = {
   id: string; user_id: string; business_name: string | null; contact_name: string | null;
   email: string | null; phone: string | null; main_area: string | null;
+  company_registration_number: string | null; working_hours: string | null;
   description: string | null; website: string | null; facebook: string | null;
   logo_path: string | null; insurance_status: string | null;
   qualifications: string | null; references_text: string | null;
@@ -107,6 +108,8 @@ function Review() {
       <div className="card-panel grid sm:grid-cols-2 gap-3 text-sm">
         {logoUrl && <img src={logoUrl} alt="Logo" className="col-span-full h-24 w-24 object-contain rounded border border-border" />}
         <Info label="Main area" value={app.main_area} />
+        <Info label="Company registration number" value={app.company_registration_number} />
+        <Info label="Working hours" value={app.working_hours} />
         <Info label="Insurance" value={app.insurance_status} />
         <Info label="Website" value={app.website} />
         <Info label="Facebook" value={app.facebook} />
