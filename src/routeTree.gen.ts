@@ -9,33 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as BecomeApprovedRouteImport } from './routes/become-approved'
 import { Route as CommunityRulesRouteImport } from './routes/community-rules'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedApplicationRouteImport } from './routes/_authenticated/application'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as BecomeApprovedRouteImport } from './routes/become-approved'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContractorsIndexRouteImport } from './routes/contractors.index'
 import { Route as ContractorsIdRouteImport } from './routes/contractors.$id'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedApplicationRouteImport } from './routes/_authenticated/application'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
-import { Route as AuthenticatedAdminIdRouteImport } from './routes/_authenticated/admin.$id'
 import { Route as AuthenticatedAdminRolesRouteImport } from './routes/_authenticated/admin.roles'
+import { Route as AuthenticatedAdminIdRouteImport } from './routes/_authenticated/admin.$id'
 import { Route as AuthenticatedAdminApplicationsApplicationIdRouteImport } from './routes/_authenticated/admin.applications.$applicationId'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const CommunityRulesRoute = CommunityRulesRouteImport.update({
+  id: '/community-rules',
+  path: '/community-rules',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BecomeApprovedRoute = BecomeApprovedRouteImport.update({
@@ -43,26 +34,19 @@ const BecomeApprovedRoute = BecomeApprovedRouteImport.update({
   path: '/become-approved',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CommunityRulesRoute = CommunityRulesRouteImport.update({
-  id: '/community-rules',
-  path: '/community-rules',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedApplicationRoute =
-  AuthenticatedApplicationRouteImport.update({
-    id: '/application',
-    path: '/application',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ContractorsIndexRoute = ContractorsIndexRouteImport.update({
   id: '/contractors/',
@@ -74,19 +58,35 @@ const ContractorsIdRoute = ContractorsIdRouteImport.update({
   path: '/contractors/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedApplicationRoute =
+  AuthenticatedApplicationRouteImport.update({
+    id: '/application',
+    path: '/application',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
-const AuthenticatedAdminIdRoute = AuthenticatedAdminIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AuthenticatedAdminRoute,
-} as any)
 const AuthenticatedAdminRolesRoute = AuthenticatedAdminRolesRouteImport.update({
   id: '/roles',
   path: '/roles',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminIdRoute = AuthenticatedAdminIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const AuthenticatedAdminApplicationsApplicationIdRoute =
@@ -202,25 +202,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/community-rules': {
+      id: '/community-rules'
+      path: '/community-rules'
+      fullPath: '/community-rules'
+      preLoaderRoute: typeof CommunityRulesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/become-approved': {
@@ -230,33 +216,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BecomeApprovedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/community-rules': {
-      id: '/community-rules'
-      path: '/community-rules'
-      fullPath: '/community-rules'
-      preLoaderRoute: typeof CommunityRulesRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/application': {
-      id: '/_authenticated/application'
-      path: '/application'
-      fullPath: '/application'
-      preLoaderRoute: typeof AuthenticatedApplicationRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/contractors/': {
       id: '/contractors/'
@@ -272,6 +251,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContractorsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/application': {
+      id: '/_authenticated/application'
+      path: '/application'
+      fullPath: '/application'
+      preLoaderRoute: typeof AuthenticatedApplicationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
@@ -279,18 +279,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/$id': {
-      id: '/_authenticated/admin/$id'
-      path: '/$id'
-      fullPath: '/admin/$id'
-      preLoaderRoute: typeof AuthenticatedAdminIdRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
     '/_authenticated/admin/roles': {
       id: '/_authenticated/admin/roles'
       path: '/roles'
       fullPath: '/admin/roles'
       preLoaderRoute: typeof AuthenticatedAdminRolesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/$id': {
+      id: '/_authenticated/admin/$id'
+      path: '/$id'
+      fullPath: '/admin/$id'
+      preLoaderRoute: typeof AuthenticatedAdminIdRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/applications/$applicationId': {
