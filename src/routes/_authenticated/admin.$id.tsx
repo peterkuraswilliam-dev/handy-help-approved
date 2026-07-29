@@ -90,6 +90,20 @@ function Review() {
 
   if (!app) return <p className="text-muted-foreground">Loading…</p>;
 
+  const missingInformation = [
+    !app.business_name && "Business or trading name",
+    !app.contact_name && "Contact name",
+    !app.email && "Email address",
+    !app.phone && "Phone number",
+    !app.main_area && "Main operating area",
+    !app.description && "Business description",
+    services.length === 0 && "Services offered",
+    areas.length === 0 && "Areas covered",
+    !app.insurance_status && "Insurance status",
+    !app.agreed_rules && "Agreement to community rules",
+    !app.confirmed_accurate && "Confirmation that information is accurate",
+  ].filter(Boolean) as string[];
+
   return (
     <div className="max-w-3xl mx-auto space-y-5">
       <Link to="/admin" className="btn-ghost -ml-2 text-sm"><ArrowLeft className="h-4 w-4" /> All applications</Link>
@@ -105,8 +119,19 @@ function Review() {
         </div>
       </div>
 
+      {missingInformation.length > 0 && (
+        <div className="card-panel border-[color:var(--color-gold)]">
+          <h2 className="font-semibold text-[color:var(--color-gold)]">Information still needed</h2>
+          <p className="mt-1 text-sm text-muted-foreground">This application is missing:</p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+            {missingInformation.map((item) => <li key={item}>{item}</li>)}
+          </ul>
+        </div>
+      )}
+
       <div className="card-panel grid sm:grid-cols-2 gap-3 text-sm">
         {logoUrl && <img src={logoUrl} alt="Logo" className="col-span-full h-24 w-24 object-contain rounded border border-border" />}
+        <h2 className="col-span-full font-semibold">Business details</h2>
         <Info label="Main area" value={app.main_area} />
         <Info label="Company registration number" value={app.company_registration_number} />
         <WorkingHoursInfo value={app.working_hours} />
@@ -117,8 +142,10 @@ function Review() {
           <p className="text-xs text-muted-foreground">Description</p>
           <p>{app.description ?? "—"}</p>
         </div>
+        <h2 className="col-span-full mt-2 font-semibold">Services and coverage</h2>
         <div><p className="text-xs text-muted-foreground">Services</p><p>{services.join(", ") || "—"}</p></div>
         <div><p className="text-xs text-muted-foreground">Areas</p><p>{areas.join(", ") || "—"}</p></div>
+        <h2 className="col-span-full mt-2 font-semibold">Credentials and references</h2>
         <div className="col-span-full">
           <p className="text-xs text-muted-foreground">Qualifications</p>
           <p className="whitespace-pre-wrap">{app.qualifications ?? "—"}</p>
