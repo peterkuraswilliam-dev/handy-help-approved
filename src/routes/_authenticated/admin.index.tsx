@@ -218,7 +218,15 @@ function AdminApplicationList() {
     for (const g of (galleryData as { application_id: string }[]) ?? []) {
       nextGalleryCounts.set(g.application_id, (nextGalleryCounts.get(g.application_id) ?? 0) + 1);
     }
+    const nextMoreInfoAt = new Map<string, number>();
+    for (const h of (historyData as { application_id: string; created_at: string }[]) ?? []) {
+      const at = new Date(h.created_at).getTime();
+      const prev = nextMoreInfoAt.get(h.application_id) ?? 0;
+      if (at > prev) nextMoreInfoAt.set(h.application_id, at);
+    }
+    setMoreInfoAt(nextMoreInfoAt);
     setDocKinds(nextDocKinds);
+
     setGalleryCounts(nextGalleryCounts);
     setServiceCounts(nextServiceCounts);
 
