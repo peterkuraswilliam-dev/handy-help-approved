@@ -54,7 +54,104 @@ type ApplicationRow = {
   confirmed_accurate: boolean | null;
   status: AppStatus;
   updated_at: string;
+  logo_path: string | null;
 };
+
+type GalleryImage = { id: string; url: string | null };
+
+function MediaFallback({ label }: { label: string }) {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center gap-2 p-4 text-center">
+      <ImageOff className="h-5 w-5 text-muted-foreground" />
+      <p className="text-xs text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+function SafeImage({
+  url,
+  alt,
+  className,
+}: {
+  url: string | null;
+  alt: string;
+  className?: string;
+}) {
+  const [broken, setBroken] = useState(false);
+  if (!url || broken) return <MediaFallback label="Image unavailable" />;
+  return (
+    <img
+      src={url}
+      alt={alt}
+      loading="lazy"
+      className={className}
+      onError={() => setBroken(true)}
+    />
+  );
+}
+
+function PhotoViewer({
+  images,
+  index,
+  onClose,
+  onPrev,
+  onNext,
+}: {
+  images: GalleryImage[];
+  index: number;
+  onClose: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Work photo preview"
+    >
+      <div className="flex w-full max-w-2xl flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">
+            {index + 1} of {images.length}
+          </span>
+          <button className="btn-ghost" onClick={onClose} aria-label="Close photo preview">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="relative flex min-h-[240px] items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/5">
+          <SafeImage
+            url={images[index]?.url ?? null}
+            alt={`Previous work photo ${index + 1}`}
+            className="max-h-[65vh] w-full object-contain"
+          />
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <button
+            className="btn-ghost"
+            onClick={onPrev}
+            disabled={images.length < 2}
+            aria-label="Previous photo"
+          >
+            <ChevronLeft className="h-5 w-5" /> Previous
+          </button>
+          <button
+            className="btn-ghost"
+            onClick={onNext}
+            disabled={images.length < 2}
+            aria-label="Next photo"
+          >
+            Next <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+        <button className="btn-gold w-full justify-center" onClick={onClose}>
+          Close
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 const NOT_PROVIDED = "Not provided";
 
