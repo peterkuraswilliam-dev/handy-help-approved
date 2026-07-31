@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { LayoutDashboard, Menu, Settings, Users, X } from "lucide-react";
+import { FileText, LayoutDashboard, Menu, Settings, Users, X } from "lucide-react";
 
 type Item = { to: string; label: string; icon: typeof Menu };
 
@@ -19,7 +19,11 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
     { to: isAdmin ? "/admin" : "/dashboard", label: "Applications dashboard", icon: LayoutDashboard },
     { to: "/settings", label: "Settings", icon: Settings },
   ];
-  if (isAdmin) items.splice(1, 0, { to: "/admin/roles", label: "Role management", icon: Users });
+  if (isAdmin) {
+    items.splice(1, 0, { to: "/admin/roles", label: "Role management", icon: Users });
+  } else {
+    items.splice(1, 0, { to: "/application", label: "View my application", icon: FileText });
+  }
 
   return (
     <div className="relative">
