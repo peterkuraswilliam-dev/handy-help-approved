@@ -400,6 +400,14 @@ function ApplicationDetail() {
       {activeTab === "review" && (
         <div className="space-y-4">
           <ReviewChecklist applicationId={app.id} qualifications={app.qualifications} />
+          <RequestMoreInfo
+            applicationId={app.id}
+            onRequested={() => {
+              setRequestsKey((k) => k + 1);
+              void load();
+            }}
+          />
+          <InfoRequestList applicationId={app.id} role="admin" refreshKey={requestsKey} />
           <AdminNotes applicationId={app.id} />
         </div>
       )}
