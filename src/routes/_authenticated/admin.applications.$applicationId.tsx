@@ -402,6 +402,20 @@ function ApplicationDetail() {
 
       {activeTab === "review" && (
         <div className="space-y-4">
+          <DecisionActions
+            applicationId={app.id}
+            status={app.status}
+            percent={percent}
+            missingInfo={missingInfo}
+            missingDocs={missingDocs}
+            insuranceStatus={app.insurance_status}
+            qualifications={app.qualifications}
+            approvedAt={app.approved_at}
+            onDecided={() => {
+              setRequestsKey((k) => k + 1);
+              void load();
+            }}
+          />
           <ReviewChecklist applicationId={app.id} qualifications={app.qualifications} />
           <RequestMoreInfo
             applicationId={app.id}
@@ -414,6 +428,7 @@ function ApplicationDetail() {
           <AdminNotes applicationId={app.id} />
         </div>
       )}
+
 
 
       {activeTab === "activity" && (
