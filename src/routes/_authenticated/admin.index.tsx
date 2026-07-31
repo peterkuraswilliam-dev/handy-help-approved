@@ -137,25 +137,34 @@ function AdminApplicationList() {
   const [areaCounts, setAreaCounts] = useState<Map<string, number>>(new Map());
   const [expandedWarnings, setExpandedWarnings] = useState<Set<string>>(new Set());
   const [auxError, setAuxError] = useState(false);
+  const [docKinds, setDocKinds] = useState<Map<string, Set<string>>>(new Map());
+  const [galleryCounts, setGalleryCounts] = useState<Map<string, number>>(new Map());
+  const [docError, setDocError] = useState(false);
+  const [expandedDocs, setExpandedDocs] = useState<Set<string>>(new Set());
 
   const loadApplications = useCallback(async () => {
     setLoading(true);
     setError(false);
     setAuxError(false);
+    setDocError(false);
 
     const [
       { data, error: loadError },
       { data: servicesData, error: servicesError },
       { data: areasData, error: areasError },
+      { data: documentsData, error: documentsError },
+      { data: galleryData, error: galleryError },
     ] = await Promise.all([
       db
         .from("contractor_applications")
         .select(
-          "id,business_name,contact_name,email,phone,main_area,description,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
+          "id,business_name,contact_name,email,phone,main_area,description,insurance_status,insurance_evidence_path,logo_path,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
         )
         .order("updated_at", { ascending: false }),
       db.from("contractor_services").select("application_id,service"),
       db.from("contractor_areas").select("application_id,area"),
+      db.from("contractor_documents").select("application_id,kind"),
+      db.from("contractor_gallery").select("application_id"),
     ]);
 
     if (loadError) {
@@ -168,6 +177,9 @@ function AdminApplicationList() {
     if (servicesError || areasError) {
       setAuxError(true);
     }
+    if (documentsError || galleryError) {
+      setDocError(true);
+    }
 
     const nextServiceCounts = new Map<string, number>();
     const nextAreaCounts = new Map<string, number>();
@@ -177,7 +189,21 @@ function AdminApplicationList() {
     for (const a of (areasData as { application_id: string }[]) ?? []) {
       nextAreaCounts.set(a.application_id, (nextAreaCounts.get(a.application_id) ?? 0) + 1);
     }
+
+    const nextDocKinds = new Map<string, Set<string>>();
+    for (const d of (documentsData as { application_id: string; kind: string }[]) ?? []) {
+      const set = nextDocKinds.get(d.application_id) ?? new Set<string>();
+      set.add(d.kind);
+      nextDocKinds.set(d.application_id, set);
+    }
+    const nextGalleryCounts = new Map<string, number>();
+    for (const g of (galleryData as { application_id: string }[]) ?? []) {
+      nextGalleryCounts.set(g.application_id, (nextGalleryCounts.get(g.application_id) ?? 0) + 1);
+    }
+    setDocKinds(nextDocKinds);
+    setGalleryCounts(nextGalleryCounts);
     setServiceCounts(nextServiceCounts);
+
     setAreaCounts(nextAreaCounts);
     setLoading(false);
   }, []);
