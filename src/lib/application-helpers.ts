@@ -66,3 +66,28 @@ export async function uploadFile(userId: string, folder: string, file: File): Pr
   if (error) throw error;
   return path;
 }
+
+export function insuranceProvided(status: string | null | undefined): boolean {
+  const s = (status ?? "").toLowerCase();
+  if (!s) return false;
+  return !s.includes("no") && !s.includes("none");
+}
+
+export function missingDocuments(opts: {
+  insuranceStatus: string | null;
+  insuranceDocs: number;
+  insuranceEvidencePath: string | null;
+  qualifications: string | null;
+  qualificationDocs: number;
+  photos: number;
+}): string[] {
+  const missing: string[] = [];
+  if (insuranceProvided(opts.insuranceStatus) && opts.insuranceDocs === 0 && !opts.insuranceEvidencePath) {
+    missing.push("Insurance document");
+  }
+  if ((opts.qualifications ?? "").trim().length > 0 && opts.qualificationDocs === 0) {
+    missing.push("Qualification document");
+  }
+  if (opts.photos === 0) missing.push("Previous work photos");
+  return missing;
+}

@@ -1,13 +1,60 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
-import { STATUS_LABEL, completionPercent, missingFields, type AppStatus } from "@/lib/application-helpers";
+import {
+  STATUS_LABEL,
+  completionPercent,
+  missingDocuments,
+  missingFields,
+  type AppStatus,
+} from "@/lib/application-helpers";
 import { toast } from "sonner";
-import { CheckCircle2, LogOut, ShieldCheck, Pencil, Send } from "lucide-react";
+import {
+  Building2,
+  CheckCircle2,
+  ClipboardList,
+  FileText,
+  Images,
+  LayoutGrid,
+  MessageSquare,
+  Pencil,
+  Send,
+  ShieldCheck,
+  Upload,
+} from "lucide-react";
+import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
+import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
+import {
+  ApplicationHeader,
+  EmptyState,
+  InsuranceCard,
+  MissingDocsCard,
+  MissingInfoCard,
+  ProgressCard,
+  StatusBadge,
+  TabNav,
+  type TabDef,
+} from "@/components/application/shared";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Contractor Dashboard — Handy Help Aberdeenshire" }] }),
+  head: () => ({
+    meta: [
+      { title: "My Application — Handy Help Aberdeenshire" },
+      {
+        name: "description",
+        content: "Track your Handy Help Aberdeenshire contractor application progress, photos and documents.",
+      },
+      { property: "og:title", content: "My Application — Handy Help Aberdeenshire" },
+      {
+        property: "og:description",
+        content: "Track your contractor application progress with Handy Help Aberdeenshire.",
+      },
+    ],
+  }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    tab: typeof search.tab === "string" ? search.tab : undefined,
+  }),
   component: Dashboard,
 });
 
@@ -20,55 +67,70 @@ type Application = {
   phone: string | null;
   main_area: string | null;
   description: string | null;
+  website: string | null;
+  facebook: string | null;
   insurance_status: string | null;
+  insurance_evidence_path: string | null;
+  qualifications: string | null;
   agreed_rules: boolean;
   confirmed_accurate: boolean;
   approved_at: string | null;
   decision_reason: string | null;
   logo_path: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
+type HistoryRow = { id: string; status: AppStatus; reason: string | null; created_at: string };
+
 function Dashboard() {
-  const router = useRouter();
+  const { tab } = Route.useSearch();
+  const navigate = Route.useNavigate();
+
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [app, setApp] = useState<Application | null>(null);
   const [services, setServices] = useState<{ id: string; service: string }[]>([]);
   const [areas, setAreas] = useState<{ id: string; area: string }[]>([]);
   const [docs, setDocs] = useState<{ id: string; kind: string; path: string }[]>([]);
-  const [notes, setNotes] = useState<{ note: string; created_at: string }[]>([]);
+  const [history, setHistory] = useState<HistoryRow[]>([]);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    void load();
+  }, []);
 
   async function load() {
     setLoading(true);
     const { data: user } = await supabase.auth.getUser();
     const uid = user.user?.id;
     if (!uid) return;
-    const [{ data: roles }, { data: application }] = await Promise.all([
-      db.from("user_roles").select("role").eq("user_id", uid),
-      db.from("contractor_applications").select("*").eq("user_id", uid).maybeSingle(),
-    ]);
-    setIsAdmin(!!(roles as { role: string }[] | null)?.some((r) => r.role === "admin"));
+    const { data: application } = await db
+      .from("contractor_applications")
+      .select("*")
+      .eq("user_id", uid)
+      .maybeSingle();
     const a = application as Application | null;
     setApp(a);
     if (a) {
-      const [{ data: s }, { data: ar }, { data: d }, { data: n }] = await Promise.all([
+      const [{ data: s }, { data: ar }, { data: d }, { data: h }] = await Promise.all([
         db.from("contractor_services").select("id,service").eq("application_id", a.id),
         db.from("contractor_areas").select("id,area").eq("application_id", a.id),
         db.from("contractor_documents").select("id,kind,path").eq("application_id", a.id),
-        a.status === "more_info_required"
-          ? db.from("admin_notes").select("note,created_at").eq("application_id", a.id).order("created_at", { ascending: false })
-          : Promise.resolve({ data: [] }),
+        db
+          .from("application_status_history")
+          .select("id,status,reason,created_at")
+          .eq("application_id", a.id)
+          .order("created_at", { ascending: false }),
       ]);
       setServices((s as { id: string; service: string }[]) ?? []);
       setAreas((ar as { id: string; area: string }[]) ?? []);
       setDocs((d as { id: string; kind: string; path: string }[]) ?? []);
-      setNotes((n as { note: string; created_at: string }[]) ?? []);
+      setHistory((h as HistoryRow[]) ?? []);
     }
     setLoading(false);
   }
+
+  const { logoUrl, gallery, loading: mediaLoading } = useGallery(app?.id ?? "", app?.logo_path ?? null);
 
   async function submitApp() {
     if (!app) return;
@@ -77,10 +139,12 @@ function Dashboard() {
     setBusy(true);
     const { error } = await supabase
       .from("contractor_applications")
-      .update({ status: "submitted" }).eq("id", app.id);
+      .update({ status: "submitted" })
+      .eq("id", app.id);
     if (!error) {
       await db.from("application_status_history").insert({
-        application_id: app.id, status: "submitted",
+        application_id: app.id,
+        status: "submitted",
         changed_by: (await supabase.auth.getUser()).data.user?.id,
       });
       toast.success("Application submitted for review");
@@ -89,138 +153,271 @@ function Dashboard() {
     setBusy(false);
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
-    router.navigate({ to: "/" });
-  }
-
   if (loading) return <p className="text-muted-foreground">Loading…</p>;
 
-  const pct = completionPercent(app as unknown as Record<string, unknown>, services.length, areas.length, docs.length);
-  const missing = missingFields(app as unknown as Record<string, unknown>, services.length, areas.length);
-  const status = app?.status ?? "draft";
-  const canEdit = ["draft", "submitted", "more_info_required"].includes(status);
+  if (!app) {
+    return (
+      <div className="mx-auto w-full max-w-3xl space-y-4">
+        <div className="card-panel space-y-3">
+          <h1 className="text-2xl font-bold">Start your application</h1>
+          <p className="text-sm text-muted-foreground">
+            You haven't started an Approved Contractor application yet.
+          </p>
+          <Link to="/application" className="btn-gold w-fit">
+            <Pencil className="h-4 w-4" /> Start application
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const record = app as unknown as Record<string, unknown>;
+  const percent = completionPercent(record, services.length, areas.length, docs.length);
+  const missingInfo = missingFields(record, services.length, areas.length);
+  const missingDocs = missingDocuments({
+    insuranceStatus: app.insurance_status,
+    insuranceDocs: docs.filter((d) => d.kind === "insurance").length,
+    insuranceEvidencePath: app.insurance_evidence_path,
+    qualifications: app.qualifications,
+    qualificationDocs: docs.filter((d) => d.kind === "qualification").length,
+    photos: gallery.length,
+  });
+  const submittedAt = [...history].reverse().find((h) => h.status === "submitted")?.created_at ?? null;
+  const heading = app.business_name?.trim() || app.contact_name?.trim() || "My application";
+  const approved = app.status === "approved";
+  const canEdit = ["draft", "submitted", "more_info_required"].includes(app.status);
+  const canResubmit =
+    (app.status === "draft" || app.status === "more_info_required") && missingInfo.length === 0;
+
+  const TABS: TabDef[] = [
+    { id: "overview", label: "Overview", icon: LayoutGrid },
+    { id: "application", label: "Application", icon: ClipboardList },
+    { id: "photos", label: "Photos", icon: Images },
+    { id: "documents", label: "Documents", icon: FileText },
+    { id: "messages", label: "Messages", icon: MessageSquare },
+    { id: "profile", label: "Approved Profile", icon: CheckCircle2, disabled: !approved },
+  ];
+
+  const activeTab = TABS.some((t) => t.id === tab && !t.disabled) ? (tab as string) : "overview";
+  const setTab = (id: string) => void navigate({ to: ".", search: { tab: id }, replace: true });
+
+  const nextSteps: Record<AppStatus, string> = {
+    draft: "Finish your application and submit it when you're ready.",
+    submitted: "We have received your application and it is waiting to be reviewed.",
+    under_review: "We are reviewing your application. We will contact you if we need anything else.",
+    more_info_required: "We need a little more information. Please update your application and resubmit.",
+    approved: "You are an Approved Contractor. Your public profile is now live.",
+    rejected: "Your application was not approved at this time.",
+    suspended: "Your listing is currently suspended.",
+  };
+
+  const latestUpdate = history[0] ?? null;
 
   return (
-    <div className="space-y-5 max-w-3xl mx-auto">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold">Contractor Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Manage your Approved Contractor application.</p>
-        </div>
-        <div className="flex gap-2">
-          {isAdmin && <Link to="/admin" className="btn-outline"><ShieldCheck className="h-4 w-4" /> Admin</Link>}
-          <button onClick={signOut} className="btn-ghost"><LogOut className="h-4 w-4" /></button>
-        </div>
-      </div>
+    <div className="mx-auto w-full max-w-3xl space-y-4 overflow-x-hidden">
+      <ApplicationHeader
+        logo={
+          app.logo_path ? (
+            <SafeImage url={logoUrl} alt={`${heading} logo`} className="h-full w-full object-contain" />
+          ) : (
+            <Building2 className="h-6 w-6 text-muted-foreground" />
+          )
+        }
+        businessName={heading}
+        contactName={app.contact_name}
+        applicationId={app.id}
+        status={app.status}
+        submittedAt={submittedAt}
+        updatedAt={app.updated_at}
+        percent={percent}
+      />
 
-      <div className="card-panel">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Status:</span>
-            {status === "approved"
-              ? <span className="badge-approved"><CheckCircle2 className="h-3.5 w-3.5" /> Approved Contractor</span>
-              : <span className="badge-status">{STATUS_LABEL[status]}</span>}
-          </div>
-          {status === "approved" && app?.approved_at && (
-            <span className="text-xs text-muted-foreground">Approved {new Date(app.approved_at).toLocaleDateString()}</span>
-          )}
-        </div>
-        {app?.decision_reason && (
-          <p className="mt-3 text-sm bg-secondary/50 rounded-md p-2 border border-border">
-            <span className="font-medium">Admin note:</span> {app.decision_reason}
-          </p>
-        )}
-      </div>
+      <TabNav tabs={TABS} active={activeTab} onSelect={setTab} />
 
-      {status !== "approved" && (
-        <div className="card-panel space-y-3">
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span>Application progress</span><span className="text-[color:var(--color-gold)] font-semibold">{pct}%</span>
-            </div>
-            <div className="h-2 bg-secondary rounded-full overflow-hidden">
-              <div className="h-full bg-[color:var(--color-gold)] transition-all" style={{ width: `${pct}%` }} />
-            </div>
+      {activeTab === "overview" && (
+        <div className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <ProgressCard percent={percent} />
+            <MissingInfoCard items={missingInfo} />
+            <MissingDocsCard items={missingDocs} />
+            <InsuranceCard status={app.insurance_status} />
           </div>
-          {missing.length > 0 && (
-            <div>
-              <p className="text-sm font-medium mb-1">Missing information</p>
-              <ul className="text-sm text-muted-foreground list-disc ml-5">
-                {missing.map((m) => <li key={m}>{m}</li>)}
-              </ul>
+
+          <section className="card-panel space-y-2">
+            <h2 className="font-semibold">What happens next</h2>
+            <p className="text-sm text-muted-foreground">{nextSteps[app.status]}</p>
+          </section>
+
+          <section className="card-panel space-y-2">
+            <h2 className="font-semibold">Latest update</h2>
+            {latestUpdate ? (
+              <>
+                <div className="flex flex-wrap items-center gap-2">
+                  <StatusBadge status={latestUpdate.status} />
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(latestUpdate.created_at).toLocaleString()}
+                  </span>
+                </div>
+                {latestUpdate.reason && <p className="text-sm">{latestUpdate.reason}</p>}
+              </>
+            ) : (
+              <p className="text-sm italic text-muted-foreground">No updates yet</p>
+            )}
+            {app.decision_reason && (
+              <p className="rounded-md border border-border bg-secondary/50 p-2 text-sm">
+                <span className="font-medium">Message from the team:</span> {app.decision_reason}
+              </p>
+            )}
+          </section>
+
+          <section className="card-panel space-y-3">
+            <h2 className="font-semibold">Your actions</h2>
+            <div className="flex flex-wrap gap-2">
+              {canEdit && (
+                <Link to="/application" className="btn-outline">
+                  <Pencil className="h-4 w-4" /> Edit application
+                </Link>
+              )}
+              {canEdit && (
+                <Link to="/application" className="btn-outline">
+                  <Upload className="h-4 w-4" /> Upload documents
+                </Link>
+              )}
+              {canResubmit && (
+                <button onClick={submitApp} disabled={busy} className="btn-gold">
+                  <Send className="h-4 w-4" />
+                  {app.status === "draft" ? "Submit application" : "Resubmit application"}
+                </button>
+              )}
+              {approved && (
+                <Link to="/contractors/$id" params={{ id: app.id }} className="btn-gold">
+                  <ShieldCheck className="h-4 w-4" /> View public profile
+                </Link>
+              )}
             </div>
-          )}
-          <div className="flex flex-wrap gap-2 pt-1">
+          </section>
+        </div>
+      )}
+
+      {activeTab === "application" && (
+        <div className="space-y-4">
+          <section className="card-panel space-y-3">
+            <h2 className="font-semibold">Your application information</h2>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Business or trading name" value={app.business_name} />
+              <Field label="Main operating area" value={app.main_area} />
+              <Field label="Contact name" value={app.contact_name} />
+              <Field label="Email address" value={app.email} />
+              <Field label="Phone number" value={app.phone} />
+              <Field label="Insurance status" value={app.insurance_status} />
+              <Field label="Website" value={app.website} />
+              <Field label="Facebook page" value={app.facebook} />
+              <Field label="Services" value={services.map((s) => s.service).join(", ")} />
+              <Field label="Areas covered" value={areas.map((a) => a.area).join(", ")} />
+              <div className="sm:col-span-2">
+                <Field label="Business description" value={app.description} />
+              </div>
+              <div className="sm:col-span-2">
+                <Field label="Qualifications" value={app.qualifications} />
+              </div>
+            </div>
             {canEdit && (
-              <Link to="/application" className="btn-outline">
-                <Pencil className="h-4 w-4" /> {app ? "Edit application" : "Start application"}
+              <Link to="/application" className="btn-gold w-fit">
+                <Pencil className="h-4 w-4" /> Edit application
               </Link>
             )}
-            {(status === "draft" || status === "more_info_required") && app && (
-              <button onClick={submitApp} disabled={busy || missing.length > 0} className="btn-gold">
-                <Send className="h-4 w-4" /> Submit application
-              </button>
-            )}
-          </div>
+          </section>
         </div>
       )}
 
-      {notes.length > 0 && (
-        <div className="card-panel">
-          <h3 className="font-semibold mb-2">Requests from admin</h3>
-          <ul className="space-y-2 text-sm">
-            {notes.map((n, i) => (
-              <li key={i} className="border border-border rounded p-2">
-                <span className="text-xs text-muted-foreground">{new Date(n.created_at).toLocaleString()}</span>
-                <p>{n.note}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+      {activeTab === "photos" && (
+        <PhotosPanel
+          heading={heading}
+          logoPath={app.logo_path}
+          logoUrl={logoUrl}
+          gallery={gallery}
+          loading={mediaLoading}
+          footer={
+            canEdit ? (
+              <Link to="/application" className="btn-outline w-fit">
+                <Upload className="h-4 w-4" /> Upload or replace photos
+              </Link>
+            ) : undefined
+          }
+        />
       )}
 
-      <div className="card-panel grid grid-cols-3 text-center text-sm gap-3">
-        <Stat label="Services" value={services.length} />
-        <Stat label="Areas" value={areas.length} />
-        <Stat label="Documents" value={docs.length} />
-      </div>
-
-      {status === "approved" && app && (
-        <div className="card-panel space-y-3">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl font-semibold">{app.business_name}</h2>
-            <span className="badge-approved"><CheckCircle2 className="h-3.5 w-3.5" /> Approved</span>
-          </div>
-          <p className="text-sm text-muted-foreground">{app.description}</p>
-          {services.length > 0 && (
-            <p className="text-sm"><span className="text-muted-foreground">Services: </span>{services.map(s=>s.service).join(", ")}</p>
-          )}
-          {areas.length > 0 && (
-            <p className="text-sm"><span className="text-muted-foreground">Areas: </span>{areas.map(a=>a.area).join(", ")}</p>
-          )}
-          <div className="flex flex-wrap gap-2">
-            <Link to="/contractors/$id" params={{ id: app.id }} className="btn-gold w-fit">
-              <CheckCircle2 className="h-4 w-4" /> View public profile
+      {activeTab === "documents" && (
+        <div className="space-y-4">
+          <ApplicationDocuments
+            applicationId={app.id}
+            insuranceStatus={app.insurance_status}
+            insuranceEvidencePath={app.insurance_evidence_path}
+            qualifications={app.qualifications}
+          />
+          {canEdit && (
+            <Link to="/application" className="btn-outline w-fit">
+              <Upload className="h-4 w-4" /> Upload or replace documents
             </Link>
-            <Link to="/application" className="btn-outline w-fit"><Pencil className="h-4 w-4" /> Edit profile</Link>
-          </div>
-          <p className="text-xs text-muted-foreground border-t border-border pt-3">
-            Approval confirms that the contractor has supplied the requested information and agreed
-            to follow our community standards. Customers should still carry out their own checks
-            before agreeing to any work.
-          </p>
+          )}
         </div>
       )}
+
+      {activeTab === "messages" && (
+        <EmptyState title="Messages and admin requests will appear here." />
+      )}
+
+      {activeTab === "profile" &&
+        (approved ? (
+          <section className="card-panel space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-xl font-semibold">{app.business_name}</h2>
+              <span className="badge-approved">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Approved
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground">{app.description}</p>
+            {services.length > 0 && (
+              <p className="text-sm">
+                <span className="text-muted-foreground">Services: </span>
+                {services.map((s) => s.service).join(", ")}
+              </p>
+            )}
+            {areas.length > 0 && (
+              <p className="text-sm">
+                <span className="text-muted-foreground">Areas: </span>
+                {areas.map((a) => a.area).join(", ")}
+              </p>
+            )}
+            <Link to="/contractors/$id" params={{ id: app.id }} className="btn-gold w-fit">
+              <ShieldCheck className="h-4 w-4" /> View public profile
+            </Link>
+            <p className="border-t border-border pt-3 text-xs text-muted-foreground">
+              Approval confirms that the contractor has supplied the requested information and agreed to
+              follow our community standards. Customers should still carry out their own checks before
+              agreeing to any work.
+            </p>
+          </section>
+        ) : (
+          <EmptyState title="Your approved contractor profile will become available after approval." />
+        ))}
+
+      <p className="text-center text-xs text-muted-foreground">
+        Current status: {STATUS_LABEL[app.status]}
+      </p>
     </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+function Field({ label, value }: { label: string; value: string | null | undefined }) {
+  const text = value && value.trim().length > 0 ? value : "Not provided";
+  const missing = text === "Not provided";
   return (
-    <div>
-      <div className="text-2xl font-bold text-[color:var(--color-gold)]">{value}</div>
-      <div className="text-xs text-muted-foreground">{label}</div>
+    <div className="min-w-0">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className={`break-words whitespace-pre-wrap ${missing ? "italic text-muted-foreground" : ""}`}>
+        {text}
+      </p>
     </div>
   );
 }

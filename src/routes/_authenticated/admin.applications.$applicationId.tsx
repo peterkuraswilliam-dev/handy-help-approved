@@ -1,21 +1,45 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, ChevronLeft, ChevronRight, ImageOff, RefreshCw, X } from "lucide-react";
+import {
+  Activity,
+  ArrowLeft,
+  Building2,
+  ClipboardCheck,
+  FileText,
+  Images,
+  LayoutGrid,
+  RefreshCw,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
-import { STATUS_LABEL, getSignedUrl, type AppStatus } from "@/lib/application-helpers";
+import {
+  STATUS_LABEL,
+  completionPercent,
+  missingDocuments,
+  missingFields,
+  type AppStatus,
+} from "@/lib/application-helpers";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
+import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
+import {
+  ApplicationHeader,
+  EmptyState,
+  InsuranceCard,
+  MissingDocsCard,
+  MissingInfoCard,
+  ProgressCard,
+  StatusBadge,
+  TabNav,
+  type TabDef,
+} from "@/components/application/shared";
 
-export const Route = createFileRoute(
-  "/_authenticated/admin/applications/$applicationId",
-)({
+export const Route = createFileRoute("/_authenticated/admin/applications/$applicationId")({
   head: () => ({
     meta: [
       { title: "Contractor Application — Handy Help Aberdeenshire" },
       {
         name: "description",
-        content:
-          "Read-only view of a contractor application submitted to Handy Help Aberdeenshire.",
+        content: "Read-only view of a contractor application submitted to Handy Help Aberdeenshire.",
       },
       { property: "og:title", content: "Contractor Application — Handy Help Aberdeenshire" },
       {
@@ -24,15 +48,15 @@ export const Route = createFileRoute(
       },
     ],
   }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    tab: typeof search.tab === "string" ? search.tab : undefined,
+  }),
   beforeLoad: async () => {
     const { data: userData } = await supabase.auth.getUser();
     const uid = userData.user?.id;
     if (!uid) throw redirect({ to: "/auth", search: { mode: "signin" } });
 
-    const { data, error } = await supabase.rpc("has_role", {
-      _user_id: uid,
-      _role: "admin",
-    });
+    const { data, error } = await supabase.rpc("has_role", { _user_id: uid, _role: "admin" });
     if (error || !data) throw redirect({ to: "/dashboard" });
   },
   component: ApplicationDetail,
@@ -54,108 +78,24 @@ type ApplicationRow = {
   agreed_rules: boolean | null;
   confirmed_accurate: boolean | null;
   status: AppStatus;
+  created_at: string;
   updated_at: string;
   logo_path: string | null;
   insurance_evidence_path: string | null;
 };
 
-type GalleryImage = { id: string; url: string | null };
-
-function MediaFallback({ label }: { label: string }) {
-  return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-2 p-4 text-center">
-      <ImageOff className="h-5 w-5 text-muted-foreground" />
-      <p className="text-xs text-muted-foreground">{label}</p>
-    </div>
-  );
-}
-
-function SafeImage({
-  url,
-  alt,
-  className,
-}: {
-  url: string | null;
-  alt: string;
-  className?: string;
-}) {
-  const [broken, setBroken] = useState(false);
-  if (!url || broken) return <MediaFallback label="Image unavailable" />;
-  return (
-    <img
-      src={url}
-      alt={alt}
-      loading="lazy"
-      className={className}
-      onError={() => setBroken(true)}
-    />
-  );
-}
-
-function PhotoViewer({
-  images,
-  index,
-  onClose,
-  onPrev,
-  onNext,
-}: {
-  images: GalleryImage[];
-  index: number;
-  onClose: () => void;
-  onPrev: () => void;
-  onNext: () => void;
-}) {
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Work photo preview"
-    >
-      <div className="flex w-full max-w-2xl flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">
-            {index + 1} of {images.length}
-          </span>
-          <button className="btn-ghost" onClick={onClose} aria-label="Close photo preview">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="relative flex min-h-[240px] items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/5">
-          <SafeImage
-            url={images[index]?.url ?? null}
-            alt={`Previous work photo ${index + 1}`}
-            className="max-h-[65vh] w-full object-contain"
-          />
-        </div>
-        <div className="flex items-center justify-between gap-3">
-          <button
-            className="btn-ghost"
-            onClick={onPrev}
-            disabled={images.length < 2}
-            aria-label="Previous photo"
-          >
-            <ChevronLeft className="h-5 w-5" /> Previous
-          </button>
-          <button
-            className="btn-ghost"
-            onClick={onNext}
-            disabled={images.length < 2}
-            aria-label="Next photo"
-          >
-            Next <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
-        <button className="btn-gold w-full justify-center" onClick={onClose}>
-          Close
-        </button>
-      </div>
-    </div>
-  );
-}
-
+type HistoryRow = { id: string; status: AppStatus; reason: string | null; created_at: string };
 
 const NOT_PROVIDED = "Not provided";
+
+const TABS: TabDef[] = [
+  { id: "overview", label: "Overview", icon: LayoutGrid },
+  { id: "business", label: "Business Details", icon: Building2 },
+  { id: "photos", label: "Logo & Photos", icon: Images },
+  { id: "documents", label: "Documents", icon: FileText },
+  { id: "review", label: "Review", icon: ClipboardCheck },
+  { id: "activity", label: "Activity", icon: Activity },
+];
 
 function BackLink() {
   return (
@@ -171,9 +111,7 @@ function Field({ label, value }: { label: string; value: string | null | undefin
   return (
     <div className="min-w-0">
       <p className="text-xs text-muted-foreground">{label}</p>
-      <p className={`break-words whitespace-pre-wrap ${missing ? "text-muted-foreground italic" : ""}`}>
-        {text}
-      </p>
+      <p className={`break-words whitespace-pre-wrap ${missing ? "text-muted-foreground italic" : ""}`}>{text}</p>
     </div>
   );
 }
@@ -189,41 +127,40 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function ApplicationDetail() {
   const { applicationId } = Route.useParams();
+  const { tab } = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const activeTab = TABS.some((t) => t.id === tab) ? (tab as string) : "overview";
+
   const [app, setApp] = useState<ApplicationRow | null>(null);
   const [services, setServices] = useState<string[]>([]);
   const [areas, setAreas] = useState<string[]>([]);
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [gallery, setGallery] = useState<GalleryImage[]>([]);
-  const [mediaLoading, setMediaLoading] = useState(true);
-  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+  const [history, setHistory] = useState<HistoryRow[]>([]);
+  const [docCounts, setDocCounts] = useState({ insurance: 0, qualification: 0 });
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
-    setMediaLoading(true);
     setFailed(false);
     setNotFound(false);
-    setLogoUrl(null);
-    setGallery([]);
-    setViewerIndex(null);
     try {
-      const [appRes, svcRes, areaRes, galRes] = await Promise.all([
+      const [appRes, svcRes, areaRes, histRes, docRes] = await Promise.all([
         db
           .from("contractor_applications")
           .select(
-            "id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,updated_at,logo_path,insurance_evidence_path",
+            "id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at,logo_path,insurance_evidence_path",
           )
           .eq("id", applicationId)
           .maybeSingle(),
         db.from("contractor_services").select("service").eq("application_id", applicationId),
         db.from("contractor_areas").select("area").eq("application_id", applicationId),
         db
-          .from("contractor_gallery")
-          .select("id,path,created_at")
+          .from("application_status_history")
+          .select("id,status,reason,created_at")
           .eq("application_id", applicationId)
-          .order("created_at", { ascending: true }),
+          .order("created_at", { ascending: false }),
+        db.from("contractor_documents").select("kind").eq("application_id", applicationId),
       ]);
 
       if (appRes.error || svcRes.error || areaRes.error) {
@@ -234,36 +171,27 @@ function ApplicationDetail() {
         setNotFound(true);
         return;
       }
-      const row = appRes.data as ApplicationRow;
-      setApp(row);
+      setApp(appRes.data as ApplicationRow);
       setServices(((svcRes.data as { service: string }[]) ?? []).map((s) => s.service));
       setAreas(((areaRes.data as { area: string }[]) ?? []).map((a) => a.area));
-      setLoading(false);
-
-      const galRows = (galRes.data as { id: string; path: string }[]) ?? [];
-      const [logo, urls] = await Promise.all([
-        row.logo_path ? getSignedUrl(row.logo_path).catch(() => null) : Promise.resolve(null),
-        Promise.all(
-          galRows.map(async (g) => ({
-            id: g.id,
-            url: await getSignedUrl(g.path).catch(() => null),
-          })),
-        ),
-      ]);
-      setLogoUrl(logo);
-      setGallery(urls);
+      setHistory((histRes.data as HistoryRow[]) ?? []);
+      const docs = (docRes.data as { kind: string }[]) ?? [];
+      setDocCounts({
+        insurance: docs.filter((d) => d.kind === "insurance").length,
+        qualification: docs.filter((d) => d.kind === "qualification").length,
+      });
     } catch {
       setFailed(true);
     } finally {
       setLoading(false);
-      setMediaLoading(false);
     }
   }, [applicationId]);
-
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  const { logoUrl, gallery, loading: mediaLoading } = useGallery(applicationId, app?.logo_path ?? null);
 
   if (loading) {
     return (
@@ -276,14 +204,7 @@ function ApplicationDetail() {
         {[0, 1, 2].map((i) => (
           <div key={i} className="card-panel space-y-3">
             <div className="h-5 w-1/3 animate-pulse rounded bg-white/10" />
-            <div className="grid gap-3 sm:grid-cols-2">
-              {[0, 1, 2, 3].map((j) => (
-                <div key={j} className="space-y-2">
-                  <div className="h-3 w-24 animate-pulse rounded bg-white/10" />
-                  <div className="h-4 w-full animate-pulse rounded bg-white/10" />
-                </div>
-              ))}
-            </div>
+            <div className="h-4 w-full animate-pulse rounded bg-white/10" />
           </div>
         ))}
       </div>
@@ -311,9 +232,7 @@ function ApplicationDetail() {
         <BackLink />
         <div className="card-panel space-y-3">
           <h1 className="text-2xl font-bold">Application not found</h1>
-          <p className="text-sm text-muted-foreground">
-            This contractor application could not be found.
-          </p>
+          <p className="text-sm text-muted-foreground">This contractor application could not be found.</p>
           <Link to="/admin" className="btn-gold inline-flex w-fit">
             Back to Applications
           </Link>
@@ -323,145 +242,195 @@ function ApplicationDetail() {
   }
 
   const heading = app.business_name?.trim() || app.contact_name?.trim() || "Contractor application";
+  const record = app as unknown as Record<string, unknown>;
+  const percent = completionPercent(record, services.length, areas.length, docCounts.insurance + docCounts.qualification);
+  const missingInfo = missingFields(record, services.length, areas.length);
+  const missingDocs = missingDocuments({
+    insuranceStatus: app.insurance_status,
+    insuranceDocs: docCounts.insurance,
+    insuranceEvidencePath: app.insurance_evidence_path,
+    qualifications: app.qualifications,
+    qualificationDocs: docCounts.qualification,
+    photos: gallery.length,
+  });
+  const submittedAt = [...history].reverse().find((h) => h.status === "submitted")?.created_at ?? null;
+  const needsAttention =
+    app.status === "submitted" || missingInfo.length > 0 || missingDocs.length > 0;
+
+  const setTab = (id: string) =>
+    void navigate({ to: ".", search: { tab: id }, replace: true });
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4">
-      <BackLink />
-
-      <header className="card-panel space-y-2">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="break-words text-2xl font-bold">{heading}</h1>
-            <p className="text-sm text-muted-foreground">
-              Contact: {app.contact_name?.trim() || NOT_PROVIDED}
-            </p>
-          </div>
-          <span className="badge-status">{STATUS_LABEL[app.status]}</span>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Last updated: {new Date(app.updated_at).toLocaleString()}
-        </p>
-        <p className="break-all text-xs text-muted-foreground">
-          Application ID: <span className="font-mono">{app.id}</span>
-        </p>
-      </header>
-
-      <Section title="Business Details">
-        <Field label="Business or trading name" value={app.business_name} />
-        <Field label="Main operating area" value={app.main_area} />
-        <Field label="Website" value={app.website} />
-        <Field label="Facebook page" value={app.facebook} />
-        <div className="sm:col-span-2">
-          <Field label="Short business description" value={app.description} />
-        </div>
-      </Section>
-
-      <Section title="Contact Details">
-        <Field label="Contact name" value={app.contact_name} />
-        <Field label="Email address" value={app.email} />
-        <Field label="Phone number" value={app.phone} />
-      </Section>
-
-      <Section title="Services and Coverage">
-        <Field label="Services offered" value={services.join(", ")} />
-        <Field label="Areas covered" value={areas.join(", ")} />
-      </Section>
-
-      <Section title="Insurance and Qualifications">
-        <Field label="Public liability insurance status" value={app.insurance_status} />
-        <div className="sm:col-span-2">
-          <Field label="Qualifications or certifications" value={app.qualifications} />
-        </div>
-      </Section>
-
-      <Section title="References and Agreements">
-        <div className="sm:col-span-2">
-          <Field label="Customer references or review links" value={app.references_text} />
-        </div>
-        <Field
-          label="Community rules agreement"
-          value={app.agreed_rules ? "Agreed" : "Not agreed"}
-        />
-        <Field
-          label="Confirmation that all information is accurate"
-          value={app.confirmed_accurate ? "Confirmed" : "Not confirmed"}
-        />
-      </Section>
-
-      <ApplicationDocuments
+    <div className="mx-auto w-full max-w-3xl space-y-4 overflow-x-hidden">
+      <ApplicationHeader
+        back={<BackLink />}
+        logo={
+          app.logo_path ? (
+            <SafeImage url={logoUrl} alt={`${heading} logo`} className="h-full w-full object-contain" />
+          ) : (
+            <Building2 className="h-6 w-6 text-muted-foreground" />
+          )
+        }
+        businessName={heading}
+        contactName={app.contact_name}
         applicationId={app.id}
-        insuranceStatus={app.insurance_status}
-        insuranceEvidencePath={app.insurance_evidence_path}
-        qualifications={app.qualifications}
+        status={app.status}
+        submittedAt={submittedAt}
+        updatedAt={app.updated_at}
+        percent={percent}
+        needsAttention={needsAttention}
       />
 
-      <section className="card-panel space-y-3">
-        <h2 className="font-semibold">Business Logo</h2>
-        {mediaLoading ? (
-          <div className="h-40 w-full max-w-xs animate-pulse rounded-lg bg-white/10" />
-        ) : !app.logo_path ? (
-          <p className="text-sm italic text-muted-foreground">No business logo uploaded</p>
-        ) : (
-          <div className="flex h-40 w-full max-w-xs items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/5 p-3">
-            <SafeImage
-              url={logoUrl}
-              alt={`${heading} logo`}
-              className="max-h-full max-w-full object-contain"
-            />
-          </div>
-        )}
-      </section>
+      <TabNav tabs={TABS} active={activeTab} onSelect={setTab} />
 
-      <section className="card-panel space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="font-semibold">Previous Work</h2>
-          {!mediaLoading && gallery.length > 0 && (
-            <span className="text-xs text-muted-foreground">
-              {gallery.length} photo{gallery.length === 1 ? "" : "s"}
-            </span>
-          )}
+      {activeTab === "overview" && (
+        <div className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <ProgressCard percent={percent} />
+            <MissingInfoCard items={missingInfo} />
+            <MissingDocsCard items={missingDocs} />
+            <InsuranceCard status={app.insurance_status} />
+          </div>
+
+          <section className="card-panel space-y-3">
+            <h2 className="font-semibold">Application Summary</h2>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Application ID" value={app.id} />
+              <Field label="Status" value={STATUS_LABEL[app.status]} />
+              <Field label="Submitted date" value={submittedAt ? new Date(submittedAt).toLocaleDateString() : null} />
+              <Field label="Last updated" value={new Date(app.updated_at).toLocaleString()} />
+              <Field label="Community rules" value={app.agreed_rules ? "Accepted" : "Not accepted"} />
+              <Field label="Information accurate" value={app.confirmed_accurate ? "Confirmed" : "Not confirmed"} />
+            </div>
+          </section>
+
+          <section className="card-panel space-y-2">
+            <h2 className="font-semibold">Section Completion</h2>
+            <SectionRow label="Business details" done={!!app.business_name && !!app.description} />
+            <SectionRow label="Contact details" done={!!app.email && !!app.phone} />
+            <SectionRow label="Services and areas" done={services.length > 0 && areas.length > 0} />
+            <SectionRow label="Logo and photos" done={gallery.length > 0} />
+            <SectionRow label="Documents" done={missingDocs.length === 0} />
+          </section>
+
+          <section className="card-panel space-y-3">
+            <h2 className="font-semibold">Latest Activity</h2>
+            {history.length === 0 ? (
+              <p className="text-sm italic text-muted-foreground">No activity recorded yet</p>
+            ) : (
+              <ul className="space-y-2 text-sm">
+                {history.slice(0, 3).map((h) => (
+                  <li key={h.id} className="rounded-lg border border-white/10 bg-white/5 p-2">
+                    <p className="font-medium">{STATUS_LABEL[h.status]}</p>
+                    <p className="text-xs text-muted-foreground">{new Date(h.created_at).toLocaleString()}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         </div>
-        {mediaLoading ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="aspect-square animate-pulse rounded-lg bg-white/10" />
-            ))}
-          </div>
-        ) : gallery.length === 0 ? (
-          <p className="text-sm italic text-muted-foreground">
-            No previous work photos uploaded
-          </p>
-        ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {gallery.map((g, i) => (
-              <button
-                key={g.id}
-                type="button"
-                onClick={() => setViewerIndex(i)}
-                className="aspect-square overflow-hidden rounded-lg border border-white/10 bg-white/5"
-                aria-label={`View work photo ${i + 1}`}
-              >
-                <SafeImage
-                  url={g.url}
-                  alt={`Previous work photo ${i + 1}`}
-                  className="h-full w-full object-cover"
-                />
-              </button>
-            ))}
-          </div>
-        )}
-      </section>
+      )}
 
-      {viewerIndex !== null && gallery.length > 0 && (
-        <PhotoViewer
-          images={gallery}
-          index={viewerIndex}
-          onClose={() => setViewerIndex(null)}
-          onPrev={() => setViewerIndex((v) => ((v ?? 0) - 1 + gallery.length) % gallery.length)}
-          onNext={() => setViewerIndex((v) => ((v ?? 0) + 1) % gallery.length)}
+      {activeTab === "business" && (
+        <div className="space-y-4">
+          <Section title="Business Details">
+            <Field label="Business or trading name" value={app.business_name} />
+            <Field label="Main operating area" value={app.main_area} />
+            <Field label="Website" value={app.website} />
+            <Field label="Facebook page" value={app.facebook} />
+            <div className="sm:col-span-2">
+              <Field label="Short business description" value={app.description} />
+            </div>
+          </Section>
+
+          <Section title="Contact Details">
+            <Field label="Contact name" value={app.contact_name} />
+            <Field label="Email address" value={app.email} />
+            <Field label="Phone number" value={app.phone} />
+          </Section>
+
+          <Section title="Services and Coverage">
+            <Field label="Services offered" value={services.join(", ")} />
+            <Field label="Areas covered" value={areas.join(", ")} />
+          </Section>
+
+          <Section title="Insurance and Qualifications">
+            <Field label="Public liability insurance status" value={app.insurance_status} />
+            <div className="sm:col-span-2">
+              <Field label="Qualifications or certifications" value={app.qualifications} />
+            </div>
+          </Section>
+
+          <Section title="References and Agreements">
+            <div className="sm:col-span-2">
+              <Field label="Customer references or review links" value={app.references_text} />
+            </div>
+            <Field label="Community rules agreement" value={app.agreed_rules ? "Agreed" : "Not agreed"} />
+            <Field
+              label="Confirmation that all information is accurate"
+              value={app.confirmed_accurate ? "Confirmed" : "Not confirmed"}
+            />
+          </Section>
+        </div>
+      )}
+
+      {activeTab === "photos" && (
+        <PhotosPanel
+          heading={heading}
+          logoPath={app.logo_path}
+          logoUrl={logoUrl}
+          gallery={gallery}
+          loading={mediaLoading}
         />
+      )}
+
+      {activeTab === "documents" && (
+        <ApplicationDocuments
+          applicationId={app.id}
+          insuranceStatus={app.insurance_status}
+          insuranceEvidencePath={app.insurance_evidence_path}
+          qualifications={app.qualifications}
+        />
+      )}
+
+      {activeTab === "review" && (
+        <EmptyState
+          title="Review tools coming next"
+          hint="Notes, review checklist and decisions will appear here in a later stage."
+        />
+      )}
+
+      {activeTab === "activity" && (
+        <section className="card-panel space-y-3">
+          <h2 className="font-semibold">Application Activity</h2>
+          {history.length === 0 ? (
+            <p className="text-sm italic text-muted-foreground">No activity recorded yet</p>
+          ) : (
+            <ol className="space-y-2 text-sm">
+              {history.map((h) => (
+                <li key={h.id} className="rounded-lg border border-white/10 bg-white/5 p-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <StatusBadge status={h.status} />
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(h.created_at).toLocaleString()}
+                    </span>
+                  </div>
+                  {h.reason && <p className="mt-1 break-words text-sm">{h.reason}</p>}
+                </li>
+              ))}
+            </ol>
+          )}
+        </section>
       )}
     </div>
   );
 }
 
+function SectionRow({ label, done }: { label: string; done: boolean }) {
+  return (
+    <div className="flex items-center justify-between gap-3 text-sm">
+      <span className="min-w-0 truncate">{label}</span>
+      <span className={done ? "text-emerald-400" : "text-orange-400"}>{done ? "Complete" : "Incomplete"}</span>
+    </div>
+  );
+}
