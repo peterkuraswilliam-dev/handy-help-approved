@@ -30,7 +30,7 @@ function BecomeApproved() {
         </ol>
         <div className="flex gap-3 pt-2">
           <Link to="/auth" search={{ mode: "signup" as const }} className="btn-gold">Create account</Link>
-          <Link to="/auth" className="btn-outline">Sign in</Link>
+          <Link to="/auth" search={{ mode: "signin" }} className="btn-outline">Sign in</Link>
         </div>
       </div>
       <div className="card-panel">
