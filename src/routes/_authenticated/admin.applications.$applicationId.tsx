@@ -21,6 +21,8 @@ import {
 } from "@/lib/application-helpers";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { ReviewChecklist } from "@/components/admin/ReviewChecklist";
+import { AdminNotes } from "@/components/admin/AdminNotes";
+
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
@@ -396,8 +398,12 @@ function ApplicationDetail() {
       )}
 
       {activeTab === "review" && (
-        <ReviewChecklist applicationId={app.id} qualifications={app.qualifications} />
+        <div className="space-y-4">
+          <ReviewChecklist applicationId={app.id} qualifications={app.qualifications} />
+          <AdminNotes applicationId={app.id} />
+        </div>
       )}
+
 
       {activeTab === "activity" && (
         <ActivityTimeline
