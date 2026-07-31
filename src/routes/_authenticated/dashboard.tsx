@@ -79,6 +79,8 @@ type Application = {
   confirmed_accurate: boolean;
   approved_at: string | null;
   decision_reason: string | null;
+  rejected_at: string | null;
+  contractor_decision_message: string | null;
   logo_path: string | null;
   created_at: string;
   updated_at: string;
@@ -260,6 +262,37 @@ function Dashboard() {
             />
           )}
 
+          {app.status === "approved" && (
+            <section className="card-panel space-y-2 border-emerald-500/40 bg-emerald-500/10">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="badge-approved">Approved Contractor</span>
+                {app.approved_at && (
+                  <span className="text-xs text-muted-foreground">
+                    Approved on {new Date(app.approved_at).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm">Your public profile is live and shows the Approved Contractor badge.</p>
+              {app.contractor_decision_message && <p className="text-sm">{app.contractor_decision_message}</p>}
+            </section>
+          )}
+
+          {app.status === "rejected" && (
+            <section className="card-panel space-y-2 border-red-500/40 bg-red-500/10">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full border border-red-500/40 bg-red-500/15 px-3 py-1 text-xs font-medium text-red-300">
+                  Application not approved
+                </span>
+                {app.rejected_at && (
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(app.rejected_at).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+              {app.contractor_decision_message && <p className="text-sm">{app.contractor_decision_message}</p>}
+            </section>
+          )}
+
           <section className="card-panel space-y-2">
             <h2 className="font-semibold">What happens next</h2>
             <p className="text-sm text-muted-foreground">{nextSteps[app.status]}</p>
@@ -280,9 +313,9 @@ function Dashboard() {
             ) : (
               <p className="text-sm italic text-muted-foreground">No updates yet</p>
             )}
-            {app.decision_reason && (
+            {app.contractor_decision_message && (
               <p className="rounded-md border border-border bg-secondary/50 p-2 text-sm">
-                <span className="font-medium">Message from the team:</span> {app.decision_reason}
+                <span className="font-medium">Message from the team:</span> {app.contractor_decision_message}
               </p>
             )}
           </section>
