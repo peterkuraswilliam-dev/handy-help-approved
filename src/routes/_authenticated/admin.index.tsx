@@ -270,6 +270,31 @@ function AdminApplicationList() {
       )
     : statusFilteredApplications;
 
+  // Calculated from existing application, progress and document data.
+  function needsAttention(application: ApplicationRow): boolean {
+    if (application.status === "submitted") return true;
+    const kinds = docKinds.get(application.id) ?? new Set<string>();
+    if (!auxError) {
+      const missing = missingFields(
+        application as unknown as Record<string, unknown>,
+        serviceCounts.get(application.id) ?? 0,
+        areaCounts.get(application.id) ?? 0,
+      );
+      if (missing.length > 0) return true;
+    }
+    if (!docError) {
+      const docs = documentSummary(application, kinds, galleryCounts.get(application.id) ?? 0);
+      if (docs.required.length > 0) return true;
+      if (insuranceIncomplete(application, kinds)) return true;
+    }
+    if (application.status === "more_info_required") {
+      const requestedAt = moreInfoAt.get(application.id);
+      const updated = application.updated_at ? new Date(application.updated_at).getTime() : 0;
+      if (requestedAt && updated > requestedAt) return true;
+    }
+    return false;
+  }
+
   const visibleApplications = [...filteredApplications].sort((a, b) => {
     const aUpdated = a.updated_at ? new Date(a.updated_at).getTime() : 0;
     const bUpdated = b.updated_at ? new Date(b.updated_at).getTime() : 0;
@@ -277,9 +302,14 @@ function AdminApplicationList() {
     const bSubmitted = b.created_at ? new Date(b.created_at).getTime() : 0;
 
     switch (sortOption) {
-      case "recently_updated":
+      case "recently_updated": {
+        // Default order: applications needing attention first, then most recent.
+        const priority = Number(needsAttention(b)) - Number(needsAttention(a));
+        if (priority !== 0) return priority;
         return bUpdated - aUpdated;
+      }
       case "oldest_updated":
+
         return (
           (a.updated_at ? aUpdated : Number.POSITIVE_INFINITY) -
           (b.updated_at ? bUpdated : Number.POSITIVE_INFINITY)
