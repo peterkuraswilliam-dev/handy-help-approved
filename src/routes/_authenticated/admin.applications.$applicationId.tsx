@@ -385,6 +385,74 @@ function ApplicationDetail() {
           value={app.confirmed_accurate ? "Confirmed" : "Not confirmed"}
         />
       </Section>
+
+      <section className="card-panel space-y-3">
+        <h2 className="font-semibold">Business Logo</h2>
+        {mediaLoading ? (
+          <div className="h-40 w-full max-w-xs animate-pulse rounded-lg bg-white/10" />
+        ) : !app.logo_path ? (
+          <p className="text-sm italic text-muted-foreground">No business logo uploaded</p>
+        ) : (
+          <div className="flex h-40 w-full max-w-xs items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/5 p-3">
+            <SafeImage
+              url={logoUrl}
+              alt={`${heading} logo`}
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
+        )}
+      </section>
+
+      <section className="card-panel space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-semibold">Previous Work</h2>
+          {!mediaLoading && gallery.length > 0 && (
+            <span className="text-xs text-muted-foreground">
+              {gallery.length} photo{gallery.length === 1 ? "" : "s"}
+            </span>
+          )}
+        </div>
+        {mediaLoading ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="aspect-square animate-pulse rounded-lg bg-white/10" />
+            ))}
+          </div>
+        ) : gallery.length === 0 ? (
+          <p className="text-sm italic text-muted-foreground">
+            No previous work photos uploaded
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {gallery.map((g, i) => (
+              <button
+                key={g.id}
+                type="button"
+                onClick={() => setViewerIndex(i)}
+                className="aspect-square overflow-hidden rounded-lg border border-white/10 bg-white/5"
+                aria-label={`View work photo ${i + 1}`}
+              >
+                <SafeImage
+                  url={g.url}
+                  alt={`Previous work photo ${i + 1}`}
+                  className="h-full w-full object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {viewerIndex !== null && gallery.length > 0 && (
+        <PhotoViewer
+          images={gallery}
+          index={viewerIndex}
+          onClose={() => setViewerIndex(null)}
+          onPrev={() => setViewerIndex((v) => ((v ?? 0) - 1 + gallery.length) % gallery.length)}
+          onNext={() => setViewerIndex((v) => ((v ?? 0) + 1) % gallery.length)}
+        />
+      )}
     </div>
   );
 }
+
