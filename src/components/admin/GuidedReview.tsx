@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   Ban,
@@ -112,10 +112,7 @@ export function GuidedReview({
   onAddNote: () => void;
 }) {
   const qualsRelevant = !!(app.qualifications && app.qualifications.trim().length > 0);
-  const checks = useMemo(
-    () => REVIEW_CHECKS.filter((c) => !(c.qualificationOnly && false)),
-    [],
-  );
+  const checks = REVIEW_CHECKS;
 
   const [rows, setRows] = useState<Record<string, StateRow>>({});
   const [loading, setLoading] = useState(true);
@@ -161,7 +158,6 @@ export function GuidedReview({
     setIssueDraft(rows[activeKey]?.issue_note ?? "");
   }, [activeKey, rows]);
 
-  const relevant = checks.filter((c) => !(c.qualificationOnly && !qualsRelevant) || stateOf(c.key) !== "not_reviewed");
   const counted = checks.filter((c) => !(c.qualificationOnly && !qualsRelevant));
   const total = counted.length;
   const done = counted.filter((c) => ["checked", "not_applicable"].includes(stateOf(c.key))).length;
@@ -612,8 +608,6 @@ export function GuidedReview({
           </div>
         </div>
       )}
-
-      {relevant.length === 0 && null}
     </section>
   );
 }
