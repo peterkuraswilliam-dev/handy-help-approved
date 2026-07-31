@@ -74,6 +74,16 @@ function documentSummary(
   return { required, optional };
 }
 
+// Insurance details are incomplete when no status was recorded, or the
+// contractor says they are insured but no evidence exists.
+function insuranceIncomplete(application: ApplicationRow, kinds: Set<string>): boolean {
+  if (!application.insurance_status?.trim()) return true;
+  if (!hasInsurance(application.insurance_status)) return false;
+  return !kinds.has("insurance") && !application.insurance_evidence_path;
+}
+
+
+
 
 type StatusFilter = "all" | AppStatus;
 type SortOption =
