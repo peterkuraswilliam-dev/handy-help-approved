@@ -20,6 +20,7 @@ import {
   type AppStatus,
 } from "@/lib/application-helpers";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
+import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
@@ -64,6 +65,7 @@ export const Route = createFileRoute("/_authenticated/admin/applications/$applic
 
 type ApplicationRow = {
   id: string;
+  user_id: string;
   business_name: string | null;
   contact_name: string | null;
   email: string | null;
@@ -149,7 +151,7 @@ function ApplicationDetail() {
         db
           .from("contractor_applications")
           .select(
-            "id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at,logo_path,insurance_evidence_path",
+            "id,user_id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at,logo_path,insurance_evidence_path",
           )
           .eq("id", applicationId)
           .maybeSingle(),
@@ -401,27 +403,14 @@ function ApplicationDetail() {
       )}
 
       {activeTab === "activity" && (
-        <section className="card-panel space-y-3">
-          <h2 className="font-semibold">Application Activity</h2>
-          {history.length === 0 ? (
-            <p className="text-sm italic text-muted-foreground">No activity recorded yet</p>
-          ) : (
-            <ol className="space-y-2 text-sm">
-              {history.map((h) => (
-                <li key={h.id} className="rounded-lg border border-white/10 bg-white/5 p-3">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <StatusBadge status={h.status} />
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(h.created_at).toLocaleString()}
-                    </span>
-                  </div>
-                  {h.reason && <p className="mt-1 break-words text-sm">{h.reason}</p>}
-                </li>
-              ))}
-            </ol>
-          )}
-        </section>
+        <ActivityTimeline
+          applicationId={app.id}
+          role="admin"
+          createdAt={app.created_at}
+          ownerUserId={app.user_id}
+        />
       )}
+
     </div>
   );
 }

@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   ClipboardList,
   FileText,
+  History,
   Images,
   LayoutGrid,
   MessageSquare,
@@ -24,6 +25,7 @@ import {
   Upload,
 } from "lucide-react";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
+import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
@@ -195,6 +197,7 @@ function Dashboard() {
     { id: "photos", label: "Photos", icon: Images },
     { id: "documents", label: "Documents", icon: FileText },
     { id: "messages", label: "Messages", icon: MessageSquare },
+    { id: "activity", label: "Activity", icon: History },
     { id: "profile", label: "Approved Profile", icon: CheckCircle2, disabled: !approved },
   ];
 
@@ -365,6 +368,10 @@ function Dashboard() {
 
       {activeTab === "messages" && (
         <EmptyState title="Messages and admin requests will appear here." />
+      )}
+
+      {activeTab === "activity" && (
+        <ActivityTimeline applicationId={app.id} role="contractor" createdAt={app.created_at} />
       )}
 
       {activeTab === "profile" &&
