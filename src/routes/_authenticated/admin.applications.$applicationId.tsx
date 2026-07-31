@@ -25,7 +25,7 @@ import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
-  EmptyState,
+  
   InsuranceCard,
   MissingDocsCard,
   MissingInfoCard,
