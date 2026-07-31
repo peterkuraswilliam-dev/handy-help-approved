@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { ArrowLeft, Sparkles, CircleAlert, CircleCheck, ChevronDown } from "lucide-react";
 import { db } from "@/lib/db";
-import { STATUS_LABEL, completionPercent, missingFields, type AppStatus } from "@/lib/application-helpers";
+import { STATUS_LABEL, missingFields, type AppStatus } from "@/lib/application-helpers";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
@@ -369,9 +369,9 @@ function AdminApplicationList() {
               : "Not available";
             const services = serviceCounts.get(application.id) ?? 0;
             const areas = areaCounts.get(application.id) ?? 0;
-            const pct = completionPercent(application as unknown as Record<string, unknown>, services, areas, 0);
             const missing = missingFields(application as unknown as Record<string, unknown>, services, areas);
             const completed = 10 - missing.length;
+            const pct = Math.round((completed / 10) * 100);
             const expanded = expandedWarnings.has(application.id);
 
             return (
