@@ -1,12 +1,20 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { LayoutDashboard, Menu, Settings, Users, X } from "lucide-react";
+import { LayoutDashboard, Menu, Repeat, Settings, Shield, Users, X } from "lucide-react";
 
 type Item = { to: string; label: string; icon: typeof Menu };
 
+const MODE_KEY = "hh-menu-mode";
+
 export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"admin" | "contractor">("admin");
   const panelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? window.localStorage.getItem(MODE_KEY) : null;
+    if (saved === "contractor" || saved === "admin") setMode(saved);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -15,7 +23,9 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const items: Item[] = isAdmin
+  const adminView = isAdmin && mode === "admin";
+
+  const items: Item[] = adminView
     ? [
         { to: "/admin", label: "Applications dashboard", icon: LayoutDashboard },
         { to: "/admin/roles", label: "Role management", icon: Users },
@@ -25,6 +35,14 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
         { to: "/dashboard", label: "My dashboard", icon: LayoutDashboard },
         { to: "/settings", label: "Settings", icon: Settings },
       ];
+
+  const switchMode = () => {
+    const next = mode === "admin" ? "contractor" : "admin";
+    setMode(next);
+    if (typeof window !== "undefined") window.localStorage.setItem(MODE_KEY, next);
+  };
+
+
 
 
 
@@ -48,8 +66,25 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
             ref={panelRef}
             className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-lg border border-border/60 bg-[color:var(--color-background)] shadow-xl"
           >
+            {isAdmin && (
+              <div className="border-b border-border/60 px-4 py-3">
+                <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Shield className="h-3.5 w-3.5" />
+                  {adminView ? "Admin menu" : "Contractor menu"}
+                </p>
+                <button
+                  type="button"
+                  onClick={switchMode}
+                  className="btn-outline mt-2 inline-flex w-full items-center justify-center gap-2 text-xs"
+                >
+                  <Repeat className="h-3.5 w-3.5" />
+                  Switch to {adminView ? "contractor" : "admin"} menu
+                </button>
+              </div>
+            )}
             <nav className="flex flex-col py-1">
               {items.map(({ to, label, icon: Icon }) => (
+
                 <Link
                   key={to}
                   to={to}
