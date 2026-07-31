@@ -19,15 +19,13 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
     ? [
         { to: "/admin", label: "Applications dashboard", icon: LayoutDashboard },
         { to: "/admin/roles", label: "Role management", icon: Users },
-        { to: "/dashboard", label: "My contractor dashboard", icon: LayoutDashboard },
-        { to: "/application", label: "View my application", icon: FileText },
         { to: "/settings", label: "Settings", icon: Settings },
       ]
     : [
-        { to: "/dashboard", label: "Applications dashboard", icon: LayoutDashboard },
-        { to: "/application", label: "View my application", icon: FileText },
+        { to: "/dashboard", label: "My dashboard", icon: LayoutDashboard },
         { to: "/settings", label: "Settings", icon: Settings },
       ];
+
 
 
   return (
