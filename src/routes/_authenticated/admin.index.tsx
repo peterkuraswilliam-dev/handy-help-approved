@@ -31,11 +31,19 @@ type ApplicationRow = {
   agreed_rules: boolean;
   confirmed_accurate: boolean;
   status: AppStatus;
+  created_at: string | null;
   updated_at: string | null;
 };
 
 type StatusFilter = "all" | AppStatus;
-type SortOption = "newest" | "oldest" | "business_name" | "status";
+type SortOption =
+  | "recently_updated"
+  | "oldest_updated"
+  | "newest_submitted"
+  | "oldest_submitted"
+  | "business_name_asc"
+  | "business_name_desc"
+  | "status";
 
 const STATUS_FILTERS: Array<{ label: string; value: StatusFilter }> = [
   { label: "All", value: "all" },
@@ -58,11 +66,31 @@ const STATUS_BADGE_CLASS: Record<AppStatus, string> = {
   suspended: "border-red-950 bg-red-900 text-white",
 };
 
+const STATUS_ORDER: Record<AppStatus, number> = {
+  submitted: 1,
+  under_review: 2,
+  more_info_required: 3,
+  draft: 4,
+  approved: 5,
+  rejected: 6,
+  suspended: 7,
+};
+
+const SORT_OPTIONS: Array<{ label: string; value: SortOption }> = [
+  { label: "Recently Updated", value: "recently_updated" },
+  { label: "Oldest Updated", value: "oldest_updated" },
+  { label: "Newest Submitted", value: "newest_submitted" },
+  { label: "Oldest Submitted", value: "oldest_submitted" },
+  { label: "Business Name A–Z", value: "business_name_asc" },
+  { label: "Business Name Z–A", value: "business_name_desc" },
+  { label: "Application Status", value: "status" },
+];
+
 function AdminApplicationList() {
   const [applications, setApplications] = useState<ApplicationRow[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState<SortOption>("newest");
+  const [sortOption, setSortOption] = useState<SortOption>("recently_updated");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -72,7 +100,9 @@ function AdminApplicationList() {
 
     const { data, error: loadError } = await db
       .from("contractor_applications")
-      .select("id,business_name,contact_name,email,phone,main_area,description,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,updated_at")
+      .select(
+        "id,business_name,contact_name,email,phone,main_area,description,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
+      )
       .order("updated_at", { ascending: false });
 
     if (loadError) {
@@ -100,13 +130,45 @@ function AdminApplicationList() {
         ),
       )
     : statusFilteredApplications;
+
   const visibleApplications = [...filteredApplications].sort((a, b) => {
-    if (sortOption === "business_name") return (a.business_name ?? a.contact_name ?? "").localeCompare(b.business_name ?? b.contact_name ?? "");
-    if (sortOption === "status") return STATUS_LABEL[a.status].localeCompare(STATUS_LABEL[b.status]);
-    const aDate = a.updated_at ? new Date(a.updated_at).getTime() : 0;
-    const bDate = b.updated_at ? new Date(b.updated_at).getTime() : 0;
-    return sortOption === "oldest" ? aDate - bDate : bDate - aDate;
+    const aUpdated = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+    const bUpdated = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+    const aSubmitted = a.created_at ? new Date(a.created_at).getTime() : 0;
+    const bSubmitted = b.created_at ? new Date(b.created_at).getTime() : 0;
+
+    switch (sortOption) {
+      case "recently_updated":
+        return bUpdated - aUpdated;
+      case "oldest_updated":
+        return (
+          (a.updated_at ? aUpdated : Number.POSITIVE_INFINITY) -
+          (b.updated_at ? bUpdated : Number.POSITIVE_INFINITY)
+        );
+      case "newest_submitted":
+        return bSubmitted - aSubmitted;
+      case "oldest_submitted":
+        return (
+          (a.created_at ? aSubmitted : Number.POSITIVE_INFINITY) -
+          (b.created_at ? bSubmitted : Number.POSITIVE_INFINITY)
+        );
+      case "business_name_asc": {
+        const aName = (a.business_name ?? a.contact_name ?? "").toLocaleLowerCase();
+        const bName = (b.business_name ?? b.contact_name ?? "").toLocaleLowerCase();
+        return aName.localeCompare(bName);
+      }
+      case "business_name_desc": {
+        const aName = (a.business_name ?? a.contact_name ?? "").toLocaleLowerCase();
+        const bName = (b.business_name ?? b.contact_name ?? "").toLocaleLowerCase();
+        return bName.localeCompare(aName);
+      }
+      case "status":
+        return STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
+      default:
+        return 0;
+    }
   });
+
   const statusCounts = applications.reduce<Record<AppStatus, number>>((counts, application) => {
     counts[application.status] += 1;
     return counts;
@@ -184,12 +246,24 @@ function AdminApplicationList() {
                 Clear Search
               </button>
             )}
-            <select aria-label="Sort applications" value={sortOption} onChange={(event) => setSortOption(event.target.value as SortOption)} className="min-h-11 rounded-md border border-border bg-secondary/40 px-3 text-sm text-foreground">
-              <option value="newest">Sort: Newest</option>
-              <option value="oldest">Sort: Oldest</option>
-              <option value="business_name">Sort: Business name</option>
-              <option value="status">Sort: Status</option>
-            </select>
+            <div className="flex w-full flex-col gap-1 sm:w-auto">
+              <label htmlFor="application-sort" className="text-xs font-medium text-muted-foreground sm:sr-only">
+                Sort applications
+              </label>
+              <select
+                id="application-sort"
+                aria-label="Sort applications"
+                value={sortOption}
+                onChange={(event) => setSortOption(event.target.value as SortOption)}
+                className="min-h-11 w-full rounded-md border border-border bg-secondary/40 px-3 text-sm text-foreground sm:w-[14rem]"
+              >
+                {SORT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </>
       )}
@@ -293,8 +367,8 @@ function AdminApplicationList() {
                   {missing.length > 0 && <p className="text-xs text-[color:var(--color-gold)]">Missing: {missing.join(", ")}</p>}
                 </div>
                 <Link
-                  to="/admin/$id"
-                  params={{ id: application.id }}
+                  to="/admin/applications/$applicationId"
+                  params={{ applicationId: application.id }}
                   className="btn-gold whitespace-nowrap sm:self-center"
                 >
                   Open Application
