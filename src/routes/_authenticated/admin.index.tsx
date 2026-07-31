@@ -151,6 +151,8 @@ function AdminApplicationList() {
   const [galleryCounts, setGalleryCounts] = useState<Map<string, number>>(new Map());
   const [docError, setDocError] = useState(false);
   const [expandedDocs, setExpandedDocs] = useState<Set<string>>(new Set());
+  const [moreInfoAt, setMoreInfoAt] = useState<Map<string, number>>(new Map());
+
 
   const loadApplications = useCallback(async () => {
     setLoading(true);
