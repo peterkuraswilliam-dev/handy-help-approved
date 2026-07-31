@@ -28,6 +28,8 @@ import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { InfoRequestList } from "@/components/application/InfoRequestList";
 import { RespondToRequest } from "@/components/application/RespondToRequest";
+import { InfoRequestBanner } from "@/components/application/InfoRequestBanner";
+
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
@@ -239,7 +241,14 @@ function Dashboard() {
         percent={percent}
       />
 
+      <InfoRequestBanner
+        applicationId={app.id}
+        refreshKey={requestsKey}
+        onGoToMessages={() => setTab("messages")}
+      />
+
       <TabNav tabs={TABS} active={activeTab} onSelect={setTab} />
+
 
       {activeTab === "overview" && (
         <div className="space-y-4">
