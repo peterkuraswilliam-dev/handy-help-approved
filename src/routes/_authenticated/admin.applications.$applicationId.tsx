@@ -20,11 +20,12 @@ import {
   type AppStatus,
 } from "@/lib/application-helpers";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
+import { ReviewChecklist } from "@/components/admin/ReviewChecklist";
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
-  EmptyState,
+  
   InsuranceCard,
   MissingDocsCard,
   MissingInfoCard,
@@ -395,10 +396,7 @@ function ApplicationDetail() {
       )}
 
       {activeTab === "review" && (
-        <EmptyState
-          title="Review tools coming next"
-          hint="Notes, review checklist and decisions will appear here in a later stage."
-        />
+        <ReviewChecklist applicationId={app.id} qualifications={app.qualifications} />
       )}
 
       {activeTab === "activity" && (

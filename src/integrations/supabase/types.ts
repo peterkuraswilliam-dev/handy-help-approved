@@ -46,6 +46,47 @@ export type Database = {
           },
         ]
       }
+      application_review_checks: {
+        Row: {
+          application_id: string
+          check_key: string
+          completed: boolean
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          check_key: string
+          completed?: boolean
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          check_key?: string
+          completed?: boolean
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_review_checks_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       application_status_history: {
         Row: {
           application_id: string
