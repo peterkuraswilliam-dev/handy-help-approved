@@ -26,6 +26,8 @@ type ApplicationRow = {
   main_area: string | null;
   description: string | null;
   insurance_status: string | null;
+  insurance_evidence_path: string | null;
+  logo_path: string | null;
   qualifications: string | null;
   references_text: string | null;
   agreed_rules: boolean;
@@ -34,6 +36,43 @@ type ApplicationRow = {
   created_at: string | null;
   updated_at: string | null;
 };
+
+type DocumentSummary = {
+  required: string[];
+  optional: string[];
+};
+
+function hasInsurance(value: string | null): boolean {
+  const v = (value ?? "").trim().toLocaleLowerCase();
+  if (!v) return false;
+  return !["no", "none", "not held", "no insurance", "false"].includes(v);
+}
+
+function documentSummary(
+  application: ApplicationRow,
+  kinds: Set<string>,
+  galleryCount: number,
+): DocumentSummary {
+  const required: string[] = [];
+  const optional: string[] = [];
+
+  if (hasInsurance(application.insurance_status)) {
+    if (!kinds.has("insurance") && !application.insurance_evidence_path) {
+      required.push("Insurance document missing");
+    }
+  }
+  if (galleryCount === 0) required.push("No work photos uploaded");
+
+  if (application.qualifications?.trim() && !kinds.has("qualification")) {
+    optional.push("Qualification document missing");
+  }
+  if (!kinds.has("logo") && !application.logo_path) {
+    optional.push("Business logo missing");
+  }
+
+  return { required, optional };
+}
+
 
 type StatusFilter = "all" | AppStatus;
 type SortOption =
