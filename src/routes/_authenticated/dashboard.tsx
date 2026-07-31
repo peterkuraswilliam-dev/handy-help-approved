@@ -366,7 +366,7 @@ function Dashboard() {
       )}
 
       {activeTab === "messages" && (
-        <EmptyState title="Messages and admin requests will appear here." />
+        <InfoRequestList applicationId={app.id} role="contractor" />
       )}
 
       {activeTab === "activity" && (
