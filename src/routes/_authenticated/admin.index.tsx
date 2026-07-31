@@ -449,6 +449,19 @@ function AdminApplicationList() {
             const completed = 10 - missing.length;
             const pct = Math.round((completed / 10) * 100);
             const expanded = expandedWarnings.has(application.id);
+            const docs = documentSummary(
+              application,
+              docKinds.get(application.id) ?? new Set<string>(),
+              galleryCounts.get(application.id) ?? 0,
+            );
+            const docsExpanded = expandedDocs.has(application.id);
+            const docLabel =
+              docs.required.length === 0
+                ? "Documents complete"
+                : docs.required.length === 1
+                  ? docs.required[0]
+                  : `${docs.required.length} documents or uploads missing`;
+
 
             return (
               <li
