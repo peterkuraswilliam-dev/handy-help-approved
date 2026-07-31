@@ -4,6 +4,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight, ImageOff, RefreshCw, X } from "lu
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
 import { STATUS_LABEL, getSignedUrl, type AppStatus } from "@/lib/application-helpers";
+import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 
 export const Route = createFileRoute(
   "/_authenticated/admin/applications/$applicationId",
@@ -55,6 +56,7 @@ type ApplicationRow = {
   status: AppStatus;
   updated_at: string;
   logo_path: string | null;
+  insurance_evidence_path: string | null;
 };
 
 type GalleryImage = { id: string; url: string | null };
@@ -211,7 +213,7 @@ function ApplicationDetail() {
         db
           .from("contractor_applications")
           .select(
-            "id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,updated_at,logo_path",
+            "id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,updated_at,logo_path,insurance_evidence_path",
           )
           .eq("id", applicationId)
           .maybeSingle(),
@@ -385,6 +387,13 @@ function ApplicationDetail() {
           value={app.confirmed_accurate ? "Confirmed" : "Not confirmed"}
         />
       </Section>
+
+      <ApplicationDocuments
+        applicationId={app.id}
+        insuranceStatus={app.insurance_status}
+        insuranceEvidencePath={app.insurance_evidence_path}
+        qualifications={app.qualifications}
+      />
 
       <section className="card-panel space-y-3">
         <h2 className="font-semibold">Business Logo</h2>
