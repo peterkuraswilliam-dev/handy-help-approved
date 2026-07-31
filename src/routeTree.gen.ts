@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContractorsIndexRouteImport } from './routes/contractors.index'
 import { Route as ContractorsIdRouteImport } from './routes/contractors.$id'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedApplicationRouteImport } from './routes/_authenticated/application'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -57,6 +58,11 @@ const ContractorsIdRoute = ContractorsIdRouteImport.update({
   id: '/contractors/$id',
   path: '/contractors/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/application': typeof AuthenticatedApplicationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/contractors/$id': typeof ContractorsIdRoute
   '/contractors/': typeof ContractorsIndexRoute
   '/admin/$id': typeof AuthenticatedAdminIdRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/community-rules': typeof CommunityRulesRoute
   '/application': typeof AuthenticatedApplicationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/contractors/$id': typeof ContractorsIdRoute
   '/contractors': typeof ContractorsIndexRoute
   '/admin/$id': typeof AuthenticatedAdminIdRoute
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/application': typeof AuthenticatedApplicationRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/contractors/$id': typeof ContractorsIdRoute
   '/contractors/': typeof ContractorsIndexRoute
   '/_authenticated/admin/$id': typeof AuthenticatedAdminIdRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/application'
     | '/dashboard'
+    | '/settings'
     | '/contractors/$id'
     | '/contractors/'
     | '/admin/$id'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/community-rules'
     | '/application'
     | '/dashboard'
+    | '/settings'
     | '/contractors/$id'
     | '/contractors'
     | '/admin/$id'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/application'
     | '/_authenticated/dashboard'
+    | '/_authenticated/settings'
     | '/contractors/$id'
     | '/contractors/'
     | '/_authenticated/admin/$id'
@@ -250,6 +262,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/contractors/$id'
       preLoaderRoute: typeof ContractorsIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -325,12 +344,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedApplicationRoute: typeof AuthenticatedApplicationRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedApplicationRoute: AuthenticatedApplicationRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
