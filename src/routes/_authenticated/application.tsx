@@ -70,7 +70,7 @@ function ApplicationForm() {
     setUid(u);
     const { data: existing } = await supabase
       .from("contractor_applications").select("*").eq("user_id", u).maybeSingle();
-    const e = existing as (typeof emptyApp & { id: string; status: string; logo_path: string | null }) | null;
+    const e = existing as (typeof emptyApp & { id: string; status: string; logo_path: string | null; working_hours: string | null }) | null;
     if (e) {
       setAppId(e.id);
       setStatus(e.status);
