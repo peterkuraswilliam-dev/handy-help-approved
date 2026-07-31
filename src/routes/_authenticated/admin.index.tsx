@@ -74,6 +74,16 @@ function documentSummary(
   return { required, optional };
 }
 
+// Insurance details are incomplete when no status was recorded, or the
+// contractor says they are insured but no evidence exists.
+function insuranceIncomplete(application: ApplicationRow, kinds: Set<string>): boolean {
+  if (!application.insurance_status?.trim()) return true;
+  if (!hasInsurance(application.insurance_status)) return false;
+  return !kinds.has("insurance") && !application.insurance_evidence_path;
+}
+
+
+
 
 type StatusFilter = "all" | AppStatus;
 type SortOption =
@@ -141,6 +151,8 @@ function AdminApplicationList() {
   const [galleryCounts, setGalleryCounts] = useState<Map<string, number>>(new Map());
   const [docError, setDocError] = useState(false);
   const [expandedDocs, setExpandedDocs] = useState<Set<string>>(new Set());
+  const [moreInfoAt, setMoreInfoAt] = useState<Map<string, number>>(new Map());
+
 
   const loadApplications = useCallback(async () => {
     setLoading(true);
@@ -154,6 +166,7 @@ function AdminApplicationList() {
       { data: areasData, error: areasError },
       { data: documentsData, error: documentsError },
       { data: galleryData, error: galleryError },
+      { data: historyData },
     ] = await Promise.all([
       db
         .from("contractor_applications")
@@ -165,7 +178,12 @@ function AdminApplicationList() {
       db.from("contractor_areas").select("application_id,area"),
       db.from("contractor_documents").select("application_id,kind"),
       db.from("contractor_gallery").select("application_id"),
+      db
+        .from("application_status_history")
+        .select("application_id,status,created_at")
+        .eq("status", "more_info_required"),
     ]);
+
 
     if (loadError) {
       setApplications([]);
@@ -200,7 +218,15 @@ function AdminApplicationList() {
     for (const g of (galleryData as { application_id: string }[]) ?? []) {
       nextGalleryCounts.set(g.application_id, (nextGalleryCounts.get(g.application_id) ?? 0) + 1);
     }
+    const nextMoreInfoAt = new Map<string, number>();
+    for (const h of (historyData as { application_id: string; created_at: string }[]) ?? []) {
+      const at = new Date(h.created_at).getTime();
+      const prev = nextMoreInfoAt.get(h.application_id) ?? 0;
+      if (at > prev) nextMoreInfoAt.set(h.application_id, at);
+    }
+    setMoreInfoAt(nextMoreInfoAt);
     setDocKinds(nextDocKinds);
+
     setGalleryCounts(nextGalleryCounts);
     setServiceCounts(nextServiceCounts);
 
@@ -244,6 +270,31 @@ function AdminApplicationList() {
       )
     : statusFilteredApplications;
 
+  // Calculated from existing application, progress and document data.
+  function needsAttention(application: ApplicationRow): boolean {
+    if (application.status === "submitted") return true;
+    const kinds = docKinds.get(application.id) ?? new Set<string>();
+    if (!auxError) {
+      const missing = missingFields(
+        application as unknown as Record<string, unknown>,
+        serviceCounts.get(application.id) ?? 0,
+        areaCounts.get(application.id) ?? 0,
+      );
+      if (missing.length > 0) return true;
+    }
+    if (!docError) {
+      const docs = documentSummary(application, kinds, galleryCounts.get(application.id) ?? 0);
+      if (docs.required.length > 0) return true;
+      if (insuranceIncomplete(application, kinds)) return true;
+    }
+    if (application.status === "more_info_required") {
+      const requestedAt = moreInfoAt.get(application.id);
+      const updated = application.updated_at ? new Date(application.updated_at).getTime() : 0;
+      if (requestedAt && updated > requestedAt) return true;
+    }
+    return false;
+  }
+
   const visibleApplications = [...filteredApplications].sort((a, b) => {
     const aUpdated = a.updated_at ? new Date(a.updated_at).getTime() : 0;
     const bUpdated = b.updated_at ? new Date(b.updated_at).getTime() : 0;
@@ -251,9 +302,14 @@ function AdminApplicationList() {
     const bSubmitted = b.created_at ? new Date(b.created_at).getTime() : 0;
 
     switch (sortOption) {
-      case "recently_updated":
+      case "recently_updated": {
+        // Default order: applications needing attention first, then most recent.
+        const priority = Number(needsAttention(b)) - Number(needsAttention(a));
+        if (priority !== 0) return priority;
         return bUpdated - aUpdated;
+      }
       case "oldest_updated":
+
         return (
           (a.updated_at ? aUpdated : Number.POSITIVE_INFINITY) -
           (b.updated_at ? bUpdated : Number.POSITIVE_INFINITY)
@@ -461,6 +517,8 @@ function AdminApplicationList() {
                 : docs.required.length === 1
                   ? docs.required[0]
                   : `${docs.required.length} documents or uploads missing`;
+            const attention = needsAttention(application);
+
 
 
             return (
@@ -473,14 +531,20 @@ function AdminApplicationList() {
                   <p className="truncate text-sm text-muted-foreground">
                     Contact: {contactName}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <span
-                      className={`mr-2 inline-flex rounded-full border px-2 py-0.5 font-semibold ${STATUS_BADGE_CLASS[application.status]}`}
+                      className={`inline-flex rounded-full border px-2 py-0.5 font-semibold ${STATUS_BADGE_CLASS[application.status]}`}
                     >
                       {STATUS_LABEL[application.status]}
                     </span>
-                    Last updated: {updatedDate}
-                  </p>
+                    {attention && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-[color:var(--color-gold)] bg-[color:var(--color-gold)] px-2 py-0.5 font-semibold text-[color:var(--color-primary-foreground)]">
+                        <CircleAlert className="h-3.5 w-3.5" /> Needs Attention
+                      </span>
+                    )}
+                    <span>Last updated: {updatedDate}</span>
+                  </div>
+
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs text-muted-foreground"><span>Application details</span><span>{completed}/10 completed</span></div>
                     <div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-[color:var(--color-gold)]" style={{ width: `${pct}%` }} /></div>
