@@ -15,15 +15,20 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const items: Item[] = [
-    { to: isAdmin ? "/admin" : "/dashboard", label: "Applications dashboard", icon: LayoutDashboard },
-    { to: "/settings", label: "Settings", icon: Settings },
-  ];
-  if (isAdmin) {
-    items.splice(1, 0, { to: "/admin/roles", label: "Role management", icon: Users });
-  } else {
-    items.splice(1, 0, { to: "/application", label: "View my application", icon: FileText });
-  }
+  const items: Item[] = isAdmin
+    ? [
+        { to: "/admin", label: "Applications dashboard", icon: LayoutDashboard },
+        { to: "/admin/roles", label: "Role management", icon: Users },
+        { to: "/dashboard", label: "My contractor dashboard", icon: LayoutDashboard },
+        { to: "/application", label: "View my application", icon: FileText },
+        { to: "/settings", label: "Settings", icon: Settings },
+      ]
+    : [
+        { to: "/dashboard", label: "Applications dashboard", icon: LayoutDashboard },
+        { to: "/application", label: "View my application", icon: FileText },
+        { to: "/settings", label: "Settings", icon: Settings },
+      ];
+
 
   return (
     <div className="relative">
