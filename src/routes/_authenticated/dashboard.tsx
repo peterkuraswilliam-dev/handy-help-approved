@@ -241,7 +241,14 @@ function Dashboard() {
         percent={percent}
       />
 
+      <InfoRequestBanner
+        applicationId={app.id}
+        refreshKey={requestsKey}
+        onGoToMessages={() => setTab("messages")}
+      />
+
       <TabNav tabs={TABS} active={activeTab} onSelect={setTab} />
+
 
       {activeTab === "overview" && (
         <div className="space-y-4">
