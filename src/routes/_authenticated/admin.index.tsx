@@ -166,6 +166,7 @@ function AdminApplicationList() {
       { data: areasData, error: areasError },
       { data: documentsData, error: documentsError },
       { data: galleryData, error: galleryError },
+      { data: historyData },
     ] = await Promise.all([
       db
         .from("contractor_applications")
@@ -177,7 +178,12 @@ function AdminApplicationList() {
       db.from("contractor_areas").select("application_id,area"),
       db.from("contractor_documents").select("application_id,kind"),
       db.from("contractor_gallery").select("application_id"),
+      db
+        .from("application_status_history")
+        .select("application_id,status,created_at")
+        .eq("status", "more_info_required"),
     ]);
+
 
     if (loadError) {
       setApplications([]);
