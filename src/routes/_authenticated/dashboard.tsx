@@ -28,6 +28,8 @@ import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { InfoRequestList } from "@/components/application/InfoRequestList";
 import { RespondToRequest } from "@/components/application/RespondToRequest";
+import { InfoRequestBanner } from "@/components/application/InfoRequestBanner";
+
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
