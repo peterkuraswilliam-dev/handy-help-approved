@@ -20,9 +20,9 @@ import {
   type AppStatus,
 } from "@/lib/application-helpers";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
-import { ReviewChecklist } from "@/components/admin/ReviewChecklist";
+import { GuidedReview } from "@/components/admin/GuidedReview";
 import { AdminNotes } from "@/components/admin/AdminNotes";
-import { RequestMoreInfo } from "@/components/admin/RequestMoreInfo";
+import { RequestMoreInfo, type InfoPrefill } from "@/components/admin/RequestMoreInfo";
 import { DecisionActions } from "@/components/admin/DecisionActions";
 import { InfoRequestList } from "@/components/application/InfoRequestList";
 
@@ -148,6 +148,7 @@ function ApplicationDetail() {
   const [failed, setFailed] = useState(false);
   const [requestsKey, setRequestsKey] = useState(0);
   const [notFound, setNotFound] = useState(false);
+  const [infoPrefill, setInfoPrefill] = useState<InfoPrefill | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -418,16 +419,37 @@ function ApplicationDetail() {
               void load();
             }}
           />
-          <ReviewChecklist applicationId={app.id} qualifications={app.qualifications} />
+          <GuidedReview
+            applicationId={app.id}
+            app={app}
+            services={services}
+            areas={areas}
+            logoPath={app.logo_path}
+            logoUrl={logoUrl}
+            gallery={gallery}
+            mediaLoading={mediaLoading}
+            onPrefillRequest={(sections, documents, message) => {
+              setInfoPrefill({ sections, documents, message, nonce: Date.now() });
+              document.getElementById("request-more-info")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            onAddNote={() =>
+              document.getElementById("admin-notes")?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+          />
+          <div id="request-more-info" className="scroll-mt-24">
           <RequestMoreInfo
             applicationId={app.id}
+            prefill={infoPrefill}
             onRequested={() => {
               setRequestsKey((k) => k + 1);
               void load();
             }}
           />
+          </div>
           <InfoRequestList applicationId={app.id} role="admin" refreshKey={requestsKey} />
-          <AdminNotes applicationId={app.id} />
+          <div id="admin-notes" className="scroll-mt-24">
+            <AdminNotes applicationId={app.id} />
+          </div>
         </div>
       )}
 
