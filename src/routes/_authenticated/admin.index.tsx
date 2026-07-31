@@ -361,14 +361,58 @@ function AdminApplicationList() {
         <div className="cinematic-admin-orb cinematic-admin-orb-two" aria-hidden="true" />
       </header>
 
+      {loading && (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-5" aria-hidden="true">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} className="card-panel min-h-[5.5rem] animate-pulse p-4">
+              <div className="h-3 w-2/3 rounded bg-secondary/70" />
+              <div className="mt-3 h-7 w-10 rounded bg-secondary/70" />
+            </div>
+          ))}
+        </div>
+      )}
+
       {!loading && !error && applications.length > 0 && (
         <>
-          <div className="cinematic-summary grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <SummaryCard label="Total" value={applications.length} />
-            <SummaryCard label="Submitted" value={statusCounts.submitted} />
-            <SummaryCard label="Under review" value={statusCounts.under_review} />
-            <SummaryCard label="Approved" value={statusCounts.approved} />
+          <div className="cinematic-summary grid grid-cols-2 gap-3 sm:grid-cols-5">
+            <SummaryCard
+              label="Total"
+              value={applications.length}
+              icon={LayoutGrid}
+              selected={selectedStatus === "all"}
+              onSelect={() => setSelectedStatus("all")}
+            />
+            <SummaryCard
+              label="Submitted"
+              value={statusCounts.submitted}
+              icon={Send}
+              selected={selectedStatus === "submitted"}
+              onSelect={() => setSelectedStatus("submitted")}
+            />
+            <SummaryCard
+              label="Under review"
+              value={statusCounts.under_review}
+              icon={Eye}
+              selected={selectedStatus === "under_review"}
+              onSelect={() => setSelectedStatus("under_review")}
+            />
+            <SummaryCard
+              label="More info"
+              value={statusCounts.more_info_required}
+              icon={MessageCircleQuestion}
+              selected={selectedStatus === "more_info_required"}
+              onSelect={() => setSelectedStatus("more_info_required")}
+            />
+            <SummaryCard
+              label="Approved"
+              value={statusCounts.approved}
+              icon={BadgeCheck}
+              approved
+              selected={selectedStatus === "approved"}
+              onSelect={() => setSelectedStatus("approved")}
+            />
           </div>
+
           <div
             className="flex flex-wrap gap-2"
             role="group"
