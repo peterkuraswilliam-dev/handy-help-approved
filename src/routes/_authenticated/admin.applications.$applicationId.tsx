@@ -144,6 +144,7 @@ function ApplicationDetail() {
   const [docCounts, setDocCounts] = useState({ insurance: 0, qualification: 0 });
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  const [requestsKey, setRequestsKey] = useState(0);
   const [notFound, setNotFound] = useState(false);
 
   const load = useCallback(async () => {
