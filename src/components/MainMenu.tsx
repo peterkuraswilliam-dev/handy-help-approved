@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { FileText, LayoutDashboard, Menu, Settings, Users, X } from "lucide-react";
+import { LayoutDashboard, Menu, Settings, Users, X } from "lucide-react";
 
 type Item = { to: string; label: string; icon: typeof Menu };
 
