@@ -139,7 +139,24 @@ export function RespondToRequest({ applicationId, missingInfo, missingDocs, onRe
         </p>
       </div>
 
+      <div className="space-y-3">
+        {open.map((r) => (
+          <div key={r.id} className="rounded-lg border border-orange-500/40 bg-orange-500/10 p-3">
+            <p className="text-xs text-orange-300">
+              Message from the review team — {new Date(r.requested_at).toLocaleString()}
+            </p>
+            <p className="mt-1 whitespace-pre-wrap break-words text-sm">{r.message}</p>
+            {r.due_date && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Please respond by {new Date(r.due_date).toLocaleDateString()}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+
       {(requestedSections.length > 0 || requestedDocuments.length > 0) && (
+
         <div className="grid gap-3 sm:grid-cols-2">
           {requestedSections.length > 0 && (
             <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-sm">
