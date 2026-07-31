@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.guard_application_decision_fields() FROM PUBLIC, anon, authenticated;
