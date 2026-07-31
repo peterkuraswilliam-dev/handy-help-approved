@@ -64,8 +64,9 @@ function documentSummary(
   if (galleryCount === 0) required.push("No work photos uploaded");
 
   if (application.qualifications?.trim() && !kinds.has("qualification")) {
-    optional.push("Qualification document missing");
+    required.push("Qualification document missing");
   }
+
   if (!kinds.has("logo") && !application.logo_path) {
     optional.push("Business logo missing");
   }
