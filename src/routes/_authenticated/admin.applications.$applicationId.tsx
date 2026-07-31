@@ -99,7 +99,7 @@ const TABS: TabDef[] = [
 
 function BackLink() {
   return (
-    <Link to="/admin" className="btn-ghost -ml-2 text-sm">
+    <Link to="/admin" className="btn-ghost -ml-2 inline-flex w-fit items-center gap-1.5 text-sm">
       <ArrowLeft className="h-4 w-4" /> Back to Applications
     </Link>
   );
