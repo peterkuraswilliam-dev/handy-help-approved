@@ -19,7 +19,11 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
     { to: isAdmin ? "/admin" : "/dashboard", label: "Applications dashboard", icon: LayoutDashboard },
     { to: "/settings", label: "Settings", icon: Settings },
   ];
-  if (isAdmin) items.splice(1, 0, { to: "/admin/roles", label: "Role management", icon: Users });
+  if (isAdmin) {
+    items.splice(1, 0, { to: "/admin/roles", label: "Role management", icon: Users });
+  } else {
+    items.splice(1, 0, { to: "/application", label: "View my application", icon: FileText });
+  }
 
   return (
     <div className="relative">
