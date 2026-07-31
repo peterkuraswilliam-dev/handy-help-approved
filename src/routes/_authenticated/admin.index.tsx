@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Sparkles, CircleAlert, CircleCheck, ChevronDown } from "lucide-react";
+import { ArrowLeft, Sparkles, CircleAlert, CircleCheck, ChevronDown, FileWarning } from "lucide-react";
 import { db } from "@/lib/db";
 import { STATUS_LABEL, missingFields, type AppStatus } from "@/lib/application-helpers";
 
