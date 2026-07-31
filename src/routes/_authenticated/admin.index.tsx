@@ -531,14 +531,20 @@ function AdminApplicationList() {
                   <p className="truncate text-sm text-muted-foreground">
                     Contact: {contactName}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <span
-                      className={`mr-2 inline-flex rounded-full border px-2 py-0.5 font-semibold ${STATUS_BADGE_CLASS[application.status]}`}
+                      className={`inline-flex rounded-full border px-2 py-0.5 font-semibold ${STATUS_BADGE_CLASS[application.status]}`}
                     >
                       {STATUS_LABEL[application.status]}
                     </span>
-                    Last updated: {updatedDate}
-                  </p>
+                    {attention && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-[color:var(--color-gold)] bg-[color:var(--color-gold)] px-2 py-0.5 font-semibold text-[color:var(--color-primary-foreground)]">
+                        <CircleAlert className="h-3.5 w-3.5" /> Needs Attention
+                      </span>
+                    )}
+                    <span>Last updated: {updatedDate}</span>
+                  </div>
+
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs text-muted-foreground"><span>Application details</span><span>{completed}/10 completed</span></div>
                     <div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-[color:var(--color-gold)]" style={{ width: `${pct}%` }} /></div>
