@@ -690,8 +690,8 @@ function AdminApplicationList() {
 
                 </div>
                 <Link
-                  to="/admin/applications/$applicationId"
-                  params={{ applicationId: application.id }}
+                  to="/admin/$id"
+                  params={{ id: application.id }}
                   className="btn-gold whitespace-nowrap sm:self-center"
                 >
                   Open Application
