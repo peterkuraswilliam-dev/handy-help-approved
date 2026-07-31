@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, Sparkles, CircleAlert, CircleCheck, ChevronDown } from "lucide-react";
 import { db } from "@/lib/db";
-import { STATUS_LABEL, type AppStatus } from "@/lib/application-helpers";
+import { STATUS_LABEL, completionPercent, missingFields, type AppStatus } from "@/lib/application-helpers";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
@@ -93,17 +93,30 @@ function AdminApplicationList() {
   const [sortOption, setSortOption] = useState<SortOption>("recently_updated");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [serviceCounts, setServiceCounts] = useState<Map<string, number>>(new Map());
+  const [areaCounts, setAreaCounts] = useState<Map<string, number>>(new Map());
+  const [expandedWarnings, setExpandedWarnings] = useState<Set<string>>(new Set());
+  const [auxError, setAuxError] = useState(false);
 
   const loadApplications = useCallback(async () => {
     setLoading(true);
     setError(false);
+    setAuxError(false);
 
-    const { data, error: loadError } = await db
-      .from("contractor_applications")
-      .select(
-        "id,business_name,contact_name,email,phone,main_area,description,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
-      )
-      .order("updated_at", { ascending: false });
+    const [
+      { data, error: loadError },
+      { data: servicesData, error: servicesError },
+      { data: areasData, error: areasError },
+    ] = await Promise.all([
+      db
+        .from("contractor_applications")
+        .select(
+          "id,business_name,contact_name,email,phone,main_area,description,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
+        )
+        .order("updated_at", { ascending: false }),
+      db.from("contractor_services").select("application_id,service"),
+      db.from("contractor_areas").select("application_id,area"),
+    ]);
 
     if (loadError) {
       setApplications([]);
@@ -111,12 +124,36 @@ function AdminApplicationList() {
     } else {
       setApplications((data as ApplicationRow[]) ?? []);
     }
+
+    if (servicesError || areasError) {
+      setAuxError(true);
+    }
+
+    const nextServiceCounts = new Map<string, number>();
+    const nextAreaCounts = new Map<string, number>();
+    for (const s of (servicesData as { application_id: string }[]) ?? []) {
+      nextServiceCounts.set(s.application_id, (nextServiceCounts.get(s.application_id) ?? 0) + 1);
+    }
+    for (const a of (areasData as { application_id: string }[]) ?? []) {
+      nextAreaCounts.set(a.application_id, (nextAreaCounts.get(a.application_id) ?? 0) + 1);
+    }
+    setServiceCounts(nextServiceCounts);
+    setAreaCounts(nextAreaCounts);
     setLoading(false);
   }, []);
 
   useEffect(() => {
     void loadApplications();
   }, [loadApplications]);
+
+  function toggleWarning(id: string) {
+    setExpandedWarnings((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   const statusFilteredApplications =
     selectedStatus === "all"
@@ -282,6 +319,7 @@ function AdminApplicationList() {
           <p className="text-sm text-[color:var(--color-destructive,#ef4444)]">
             Applications could not be loaded. Please try again.
           </p>
+          <p className="text-xs text-muted-foreground">Required information status unavailable.</p>
           <button className="btn-outline" onClick={() => void loadApplications()}>
             Retry
           </button>
@@ -329,18 +367,12 @@ function AdminApplicationList() {
             const updatedDate = application.updated_at
               ? new Date(application.updated_at).toLocaleString()
               : "Not available";
-            const missing = [
-              !application.business_name && "business name",
-              !application.contact_name && "contact name",
-              !application.email && "email",
-              !application.phone && "phone",
-              !application.main_area && "main area",
-              !application.description && "description",
-              !application.insurance_status && "insurance",
-              !application.agreed_rules && "rules agreement",
-              !application.confirmed_accurate && "accuracy confirmation",
-            ].filter(Boolean) as string[];
-            const completed = 9 - missing.length;
+            const services = serviceCounts.get(application.id) ?? 0;
+            const areas = areaCounts.get(application.id) ?? 0;
+            const pct = completionPercent(application as unknown as Record<string, unknown>, services, areas, 0);
+            const missing = missingFields(application as unknown as Record<string, unknown>, services, areas);
+            const completed = 10 - missing.length;
+            const expanded = expandedWarnings.has(application.id);
 
             return (
               <li
@@ -361,10 +393,36 @@ function AdminApplicationList() {
                     Last updated: {updatedDate}
                   </p>
                   <div className="space-y-1">
-                    <div className="flex justify-between text-xs text-muted-foreground"><span>Application details</span><span>{completed}/9 completed</span></div>
-                    <div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-[color:var(--color-gold)]" style={{ width: `${(completed / 9) * 100}%` }} /></div>
+                    <div className="flex justify-between text-xs text-muted-foreground"><span>Application details</span><span>{completed}/10 completed</span></div>
+                    <div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-[color:var(--color-gold)]" style={{ width: `${pct}%` }} /></div>
                   </div>
-                  {missing.length > 0 && <p className="text-xs text-[color:var(--color-gold)]">Missing: {missing.join(", ")}</p>}
+                  <div className="space-y-1">
+                    {auxError ? (
+                      <p className="text-xs text-muted-foreground">Required information status unavailable</p>
+                    ) : missing.length > 0 ? (
+                      <button
+                        type="button"
+                        onClick={() => toggleWarning(application.id)}
+                        className="flex w-full items-center justify-between gap-2 rounded-md border border-orange-500/30 bg-orange-500/10 px-2.5 py-2 text-left text-xs font-semibold text-orange-400 transition-colors hover:bg-orange-500/20"
+                        aria-expanded={expanded}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <CircleAlert className="h-3.5 w-3.5" />
+                          {missing.length} required field{missing.length === 1 ? "" : "s"} missing
+                        </span>
+                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
+                      </button>
+                    ) : (
+                      <p className="flex items-center gap-1.5 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-2 text-xs font-semibold text-green-400">
+                        <CircleCheck className="h-3.5 w-3.5" /> Required information complete
+                      </p>
+                    )}
+                    {expanded && !auxError && missing.length > 0 && (
+                      <ul className="list-disc space-y-1 pl-6 text-xs text-orange-300">
+                        {missing.map((field) => <li key={field}>{field}</li>)}
+                      </ul>
+                    )}
+                  </div>
                 </div>
                 <Link
                   to="/admin/applications/$applicationId"
