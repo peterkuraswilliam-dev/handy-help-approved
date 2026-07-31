@@ -160,6 +160,32 @@ function AdminApplicationList() {
     setAuxError(false);
     setDocError(false);
 
+    let results;
+    try {
+      results = await Promise.all([
+        db
+          .from("contractor_applications")
+          .select(
+            "id,business_name,contact_name,email,phone,main_area,description,insurance_status,insurance_evidence_path,logo_path,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
+          )
+          .order("updated_at", { ascending: false }),
+        db.from("contractor_services").select("application_id,service"),
+        db.from("contractor_areas").select("application_id,area"),
+        db.from("contractor_documents").select("application_id,kind"),
+        db.from("contractor_gallery").select("application_id"),
+        db
+          .from("application_status_history")
+          .select("application_id,status,created_at")
+          .eq("status", "more_info_required"),
+      ]);
+    } catch {
+      // Network failure — surface the retryable error state, never stale totals.
+      setApplications([]);
+      setError(true);
+      setLoading(false);
+      return;
+    }
+
     const [
       { data, error: loadError },
       { data: servicesData, error: servicesError },
@@ -167,22 +193,9 @@ function AdminApplicationList() {
       { data: documentsData, error: documentsError },
       { data: galleryData, error: galleryError },
       { data: historyData },
-    ] = await Promise.all([
-      db
-        .from("contractor_applications")
-        .select(
-          "id,business_name,contact_name,email,phone,main_area,description,insurance_status,insurance_evidence_path,logo_path,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
-        )
-        .order("updated_at", { ascending: false }),
-      db.from("contractor_services").select("application_id,service"),
-      db.from("contractor_areas").select("application_id,area"),
-      db.from("contractor_documents").select("application_id,kind"),
-      db.from("contractor_gallery").select("application_id"),
-      db
-        .from("application_status_history")
-        .select("application_id,status,created_at")
-        .eq("status", "more_info_required"),
-    ]);
+    ] = results;
+
+
 
 
     if (loadError) {
@@ -482,33 +495,44 @@ function AdminApplicationList() {
       )}
 
       {loading && (
-        <section
-          className="card-panel py-12 text-center text-sm text-muted-foreground"
-          aria-live="polite"
-        >
-          Loading applications…
-        </section>
+        <div className="space-y-3" aria-live="polite" aria-busy="true">
+          <span className="sr-only">Loading contractor applications…</span>
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="card-panel animate-pulse space-y-3 p-4" aria-hidden="true">
+              <div className="h-4 w-1/2 rounded bg-secondary/70" />
+              <div className="h-3 w-1/3 rounded bg-secondary/70" />
+              <div className="flex gap-2">
+                <div className="h-5 w-20 rounded-full bg-secondary/70" />
+                <div className="h-5 w-28 rounded-full bg-secondary/70" />
+              </div>
+              <div className="h-2 w-full rounded bg-secondary/70" />
+              <div className="h-9 w-full rounded bg-secondary/70" />
+            </div>
+          ))}
+        </div>
       )}
 
       {!loading && error && (
         <section className="card-panel space-y-3 py-10 text-center" role="alert">
-          <p className="text-sm text-[color:var(--color-destructive,#ef4444)]">
-            Applications could not be loaded. Please try again.
+          <h2 className="text-lg font-semibold">Applications could not be loaded</h2>
+          <p className="text-sm text-muted-foreground">
+            Please check your connection and try again.
           </p>
-          <p className="text-xs text-muted-foreground">Required information status unavailable.</p>
-          <button className="btn-outline" onClick={() => void loadApplications()}>
+          <button className="btn-outline min-h-11" onClick={() => void loadApplications()}>
             Retry
           </button>
         </section>
       )}
 
       {!loading && !error && applications.length === 0 && (
-        <section className="card-panel py-12 text-center">
+        <section className="card-panel space-y-2 py-12 text-center">
+          <h2 className="text-lg font-semibold">No contractor applications yet</h2>
           <p className="mx-auto max-w-md text-sm text-muted-foreground">
-            No contractor applications have been submitted yet.
+            New contractor applications will appear here once they have been started.
           </p>
         </section>
       )}
+
 
       {!loading &&
         !error &&
@@ -522,8 +546,9 @@ function AdminApplicationList() {
             </p>
             <button
               type="button"
-              className="btn-outline"
+              className="btn-outline min-h-11"
               onClick={() =>
+
                 normalizedSearch ? setSearchTerm("") : setSelectedStatus("all")
               }
             >
