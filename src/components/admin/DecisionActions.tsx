@@ -175,10 +175,12 @@ export function DecisionActions({
             {missingInfo.length}
           </span>
         </div>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-start justify-between gap-2">
           <span className="text-muted-foreground">Missing documents</span>
-          <span className={missingDocs.length ? "font-medium text-orange-400" : "font-medium text-emerald-400"}>
-            {missingDocs.length}
+          <span className={missingDocs.length ? "font-medium text-orange-400" : "font-medium text-emerald-400 text-right"}>
+            {missingDocs.length === 0
+              ? "0"
+              : missingDocs.join(", ")}
           </span>
         </div>
         <div className="flex items-center justify-between gap-2">
