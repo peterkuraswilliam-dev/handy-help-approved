@@ -66,8 +66,25 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
             ref={panelRef}
             className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-lg border border-border/60 bg-[color:var(--color-background)] shadow-xl"
           >
+            {isAdmin && (
+              <div className="border-b border-border/60 px-4 py-3">
+                <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Shield className="h-3.5 w-3.5" />
+                  {adminView ? "Admin menu" : "Contractor menu"}
+                </p>
+                <button
+                  type="button"
+                  onClick={switchMode}
+                  className="btn-outline mt-2 inline-flex w-full items-center justify-center gap-2 text-xs"
+                >
+                  <Repeat className="h-3.5 w-3.5" />
+                  Switch to {adminView ? "contractor" : "admin"} menu
+                </button>
+              </div>
+            )}
             <nav className="flex flex-col py-1">
               {items.map(({ to, label, icon: Icon }) => (
+
                 <Link
                   key={to}
                   to={to}
