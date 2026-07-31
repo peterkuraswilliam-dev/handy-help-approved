@@ -27,6 +27,7 @@ import {
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { InfoRequestList } from "@/components/application/InfoRequestList";
+import { RespondToRequest } from "@/components/application/RespondToRequest";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
@@ -96,6 +97,7 @@ function Dashboard() {
   const [docs, setDocs] = useState<{ id: string; kind: string; path: string }[]>([]);
   const [history, setHistory] = useState<HistoryRow[]>([]);
   const [busy, setBusy] = useState(false);
+  const [requestsKey, setRequestsKey] = useState(0);
 
   useEffect(() => {
     void load();
@@ -246,6 +248,18 @@ function Dashboard() {
             <InsuranceCard status={app.insurance_status} />
           </div>
 
+          {app.status === "more_info_required" && (
+            <RespondToRequest
+              applicationId={app.id}
+              missingInfo={missingInfo}
+              missingDocs={missingDocs}
+              onResubmitted={() => {
+                setRequestsKey((k) => k + 1);
+                void load();
+              }}
+            />
+          )}
+
           <section className="card-panel space-y-2">
             <h2 className="font-semibold">What happens next</h2>
             <p className="text-sm text-muted-foreground">{nextSteps[app.status]}</p>
@@ -367,7 +381,20 @@ function Dashboard() {
       )}
 
       {activeTab === "messages" && (
-        <InfoRequestList applicationId={app.id} role="contractor" />
+        <div className="space-y-4">
+          {app.status === "more_info_required" && (
+            <RespondToRequest
+              applicationId={app.id}
+              missingInfo={missingInfo}
+              missingDocs={missingDocs}
+              onResubmitted={() => {
+                setRequestsKey((k) => k + 1);
+                void load();
+              }}
+            />
+          )}
+          <InfoRequestList applicationId={app.id} role="contractor" refreshKey={requestsKey} />
+        </div>
       )}
 
       {activeTab === "activity" && (

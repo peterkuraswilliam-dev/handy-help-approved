@@ -28,7 +28,7 @@ export function InfoRequestList({
       const { data, error } = await db
         .from("application_info_requests")
         .select(
-          "id,application_id,message,requested_sections,requested_documents,requested_by,requested_at,due_date,status,completed_at",
+          "id,application_id,message,requested_sections,requested_documents,requested_by,requested_at,due_date,status,completed_at,response_message,responded_at",
         )
         .eq("application_id", applicationId)
         .order("requested_at", { ascending: false });
@@ -90,7 +90,11 @@ export function InfoRequestList({
               <div className="flex flex-wrap items-center gap-2">
                 <MessageSquareWarning className="h-4 w-4 text-orange-400" />
                 <span className="text-sm font-medium text-orange-300">
-                  {r.status === "completed" ? "Request completed" : "More information required"}
+                  {r.status === "open"
+                    ? "More information required"
+                    : r.status === "responded"
+                      ? "Responded"
+                      : "Request completed"}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   {new Date(r.requested_at).toLocaleString()}
@@ -117,6 +121,17 @@ export function InfoRequestList({
                       <li key={d}>{labelFor(INFO_DOCUMENTS, d)}</li>
                     ))}
                   </ul>
+                </div>
+              )}
+              {(r.response_message || r.responded_at) && (
+                <div className="rounded-md border border-emerald-500/40 bg-emerald-500/10 p-2 text-sm">
+                  <p className="text-xs text-emerald-300">
+                    {role === "admin" ? "Contractor response" : "Your response"}
+                    {r.responded_at ? ` — ${new Date(r.responded_at).toLocaleString()}` : ""}
+                  </p>
+                  {r.response_message && (
+                    <p className="whitespace-pre-wrap break-words">{r.response_message}</p>
+                  )}
                 </div>
               )}
               {r.due_date && (
