@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Sparkles, CircleAlert, CircleCheck, ChevronDown } from "lucide-react";
+import { ArrowLeft, Sparkles, CircleAlert, CircleCheck, ChevronDown, FileWarning } from "lucide-react";
 import { db } from "@/lib/db";
 import { STATUS_LABEL, missingFields, type AppStatus } from "@/lib/application-helpers";
 
@@ -26,6 +26,8 @@ type ApplicationRow = {
   main_area: string | null;
   description: string | null;
   insurance_status: string | null;
+  insurance_evidence_path: string | null;
+  logo_path: string | null;
   qualifications: string | null;
   references_text: string | null;
   agreed_rules: boolean;
@@ -34,6 +36,44 @@ type ApplicationRow = {
   created_at: string | null;
   updated_at: string | null;
 };
+
+type DocumentSummary = {
+  required: string[];
+  optional: string[];
+};
+
+function hasInsurance(value: string | null): boolean {
+  const v = (value ?? "").trim().toLocaleLowerCase();
+  if (!v) return false;
+  return !["no", "none", "not held", "no insurance", "false"].includes(v);
+}
+
+function documentSummary(
+  application: ApplicationRow,
+  kinds: Set<string>,
+  galleryCount: number,
+): DocumentSummary {
+  const required: string[] = [];
+  const optional: string[] = [];
+
+  if (hasInsurance(application.insurance_status)) {
+    if (!kinds.has("insurance") && !application.insurance_evidence_path) {
+      required.push("Insurance document missing");
+    }
+  }
+  if (galleryCount === 0) required.push("No work photos uploaded");
+
+  if (application.qualifications?.trim() && !kinds.has("qualification")) {
+    required.push("Qualification document missing");
+  }
+
+  if (!kinds.has("logo") && !application.logo_path) {
+    optional.push("Business logo missing");
+  }
+
+  return { required, optional };
+}
+
 
 type StatusFilter = "all" | AppStatus;
 type SortOption =
@@ -97,25 +137,34 @@ function AdminApplicationList() {
   const [areaCounts, setAreaCounts] = useState<Map<string, number>>(new Map());
   const [expandedWarnings, setExpandedWarnings] = useState<Set<string>>(new Set());
   const [auxError, setAuxError] = useState(false);
+  const [docKinds, setDocKinds] = useState<Map<string, Set<string>>>(new Map());
+  const [galleryCounts, setGalleryCounts] = useState<Map<string, number>>(new Map());
+  const [docError, setDocError] = useState(false);
+  const [expandedDocs, setExpandedDocs] = useState<Set<string>>(new Set());
 
   const loadApplications = useCallback(async () => {
     setLoading(true);
     setError(false);
     setAuxError(false);
+    setDocError(false);
 
     const [
       { data, error: loadError },
       { data: servicesData, error: servicesError },
       { data: areasData, error: areasError },
+      { data: documentsData, error: documentsError },
+      { data: galleryData, error: galleryError },
     ] = await Promise.all([
       db
         .from("contractor_applications")
         .select(
-          "id,business_name,contact_name,email,phone,main_area,description,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
+          "id,business_name,contact_name,email,phone,main_area,description,insurance_status,insurance_evidence_path,logo_path,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
         )
         .order("updated_at", { ascending: false }),
       db.from("contractor_services").select("application_id,service"),
       db.from("contractor_areas").select("application_id,area"),
+      db.from("contractor_documents").select("application_id,kind"),
+      db.from("contractor_gallery").select("application_id"),
     ]);
 
     if (loadError) {
@@ -128,6 +177,9 @@ function AdminApplicationList() {
     if (servicesError || areasError) {
       setAuxError(true);
     }
+    if (documentsError || galleryError) {
+      setDocError(true);
+    }
 
     const nextServiceCounts = new Map<string, number>();
     const nextAreaCounts = new Map<string, number>();
@@ -137,7 +189,21 @@ function AdminApplicationList() {
     for (const a of (areasData as { application_id: string }[]) ?? []) {
       nextAreaCounts.set(a.application_id, (nextAreaCounts.get(a.application_id) ?? 0) + 1);
     }
+
+    const nextDocKinds = new Map<string, Set<string>>();
+    for (const d of (documentsData as { application_id: string; kind: string }[]) ?? []) {
+      const set = nextDocKinds.get(d.application_id) ?? new Set<string>();
+      set.add(d.kind);
+      nextDocKinds.set(d.application_id, set);
+    }
+    const nextGalleryCounts = new Map<string, number>();
+    for (const g of (galleryData as { application_id: string }[]) ?? []) {
+      nextGalleryCounts.set(g.application_id, (nextGalleryCounts.get(g.application_id) ?? 0) + 1);
+    }
+    setDocKinds(nextDocKinds);
+    setGalleryCounts(nextGalleryCounts);
     setServiceCounts(nextServiceCounts);
+
     setAreaCounts(nextAreaCounts);
     setLoading(false);
   }, []);
@@ -154,6 +220,16 @@ function AdminApplicationList() {
       return next;
     });
   }
+
+  function toggleDocs(id: string) {
+    setExpandedDocs((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
 
   const statusFilteredApplications =
     selectedStatus === "all"
@@ -373,6 +449,19 @@ function AdminApplicationList() {
             const completed = 10 - missing.length;
             const pct = Math.round((completed / 10) * 100);
             const expanded = expandedWarnings.has(application.id);
+            const docs = documentSummary(
+              application,
+              docKinds.get(application.id) ?? new Set<string>(),
+              galleryCounts.get(application.id) ?? 0,
+            );
+            const docsExpanded = expandedDocs.has(application.id);
+            const docLabel =
+              docs.required.length === 0
+                ? "Documents complete"
+                : docs.required.length === 1
+                  ? docs.required[0]
+                  : `${docs.required.length} documents or uploads missing`;
+
 
             return (
               <li
@@ -423,6 +512,49 @@ function AdminApplicationList() {
                       </ul>
                     )}
                   </div>
+                  <div className="space-y-1">
+                    {docError ? (
+                      <p className="text-xs text-muted-foreground">Document status unavailable</p>
+                    ) : docs.required.length > 0 ? (
+                      <button
+                        type="button"
+                        onClick={() => toggleDocs(application.id)}
+                        className="flex w-full items-center justify-between gap-2 rounded-md border border-orange-500/30 bg-orange-500/10 px-2.5 py-2 text-left text-xs font-semibold text-orange-400 transition-colors hover:bg-orange-500/20"
+                        aria-expanded={docsExpanded}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <FileWarning className="h-3.5 w-3.5" />
+                          {docLabel}
+                        </span>
+                        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${docsExpanded ? "rotate-180" : ""}`} />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => toggleDocs(application.id)}
+                        className="flex w-full items-center justify-between gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-2 text-left text-xs font-semibold text-green-400"
+                        aria-expanded={docsExpanded}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <CircleCheck className="h-3.5 w-3.5" /> Documents complete
+                        </span>
+                        {docs.optional.length > 0 && (
+                          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${docsExpanded ? "rotate-180" : ""}`} />
+                        )}
+                      </button>
+                    )}
+                    {docsExpanded && !docError && (
+                      <ul className="space-y-1 pl-1 text-xs">
+                        {docs.required.map((item) => (
+                          <li key={item} className="text-orange-300">• {item}</li>
+                        ))}
+                        {docs.optional.map((item) => (
+                          <li key={item} className="text-muted-foreground">• {item} (optional)</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
                 </div>
                 <Link
                   to="/admin/applications/$applicationId"
