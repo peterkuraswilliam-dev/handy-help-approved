@@ -636,6 +636,44 @@ function AdminApplicationList() {
   );
 }
 
-function SummaryCard({ label, value }: { label: string; value: number }) {
-  return <div className="card-panel p-4"><p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p><p className="mt-1 text-3xl font-bold text-[color:var(--color-gold)]">{value}</p></div>;
+function SummaryCard({
+  label,
+  value,
+  icon: Icon,
+  selected,
+  onSelect,
+  approved,
+}: {
+  label: string;
+  value: number;
+  icon: LucideIcon;
+  selected: boolean;
+  onSelect: () => void;
+  approved?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={`card-panel flex min-h-[5.5rem] w-full flex-col items-start gap-1 p-4 text-left transition-colors last:col-span-2 sm:last:col-span-1 ${
+        selected
+          ? "border-[color:var(--color-gold)] ring-1 ring-[color:var(--color-gold)]"
+          : "hover:border-[color:var(--color-gold)]"
+      }`}
+    >
+      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <Icon
+          className={`h-4 w-4 ${approved ? "text-emerald-400" : "text-[color:var(--color-gold)]"}`}
+        />
+        {label}
+      </span>
+      <span
+        className={`text-3xl font-bold ${approved ? "text-emerald-400" : "text-[color:var(--color-gold)]"}`}
+      >
+        {value}
+      </span>
+    </button>
+  );
 }
+
