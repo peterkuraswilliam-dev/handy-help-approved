@@ -190,25 +190,38 @@ function ApplicationDetail() {
   const [app, setApp] = useState<ApplicationRow | null>(null);
   const [services, setServices] = useState<string[]>([]);
   const [areas, setAreas] = useState<string[]>([]);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [gallery, setGallery] = useState<GalleryImage[]>([]);
+  const [mediaLoading, setMediaLoading] = useState(true);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setMediaLoading(true);
     setFailed(false);
     setNotFound(false);
+    setLogoUrl(null);
+    setGallery([]);
+    setViewerIndex(null);
     try {
-      const [appRes, svcRes, areaRes] = await Promise.all([
+      const [appRes, svcRes, areaRes, galRes] = await Promise.all([
         db
           .from("contractor_applications")
           .select(
-            "id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,updated_at",
+            "id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,updated_at,logo_path",
           )
           .eq("id", applicationId)
           .maybeSingle(),
         db.from("contractor_services").select("service").eq("application_id", applicationId),
         db.from("contractor_areas").select("area").eq("application_id", applicationId),
+        db
+          .from("contractor_gallery")
+          .select("id,path,created_at")
+          .eq("application_id", applicationId)
+          .order("created_at", { ascending: true }),
       ]);
 
       if (appRes.error || svcRes.error || areaRes.error) {
@@ -219,15 +232,32 @@ function ApplicationDetail() {
         setNotFound(true);
         return;
       }
-      setApp(appRes.data as ApplicationRow);
+      const row = appRes.data as ApplicationRow;
+      setApp(row);
       setServices(((svcRes.data as { service: string }[]) ?? []).map((s) => s.service));
       setAreas(((areaRes.data as { area: string }[]) ?? []).map((a) => a.area));
+      setLoading(false);
+
+      const galRows = (galRes.data as { id: string; path: string }[]) ?? [];
+      const [logo, urls] = await Promise.all([
+        row.logo_path ? getSignedUrl(row.logo_path).catch(() => null) : Promise.resolve(null),
+        Promise.all(
+          galRows.map(async (g) => ({
+            id: g.id,
+            url: await getSignedUrl(g.path).catch(() => null),
+          })),
+        ),
+      ]);
+      setLogoUrl(logo);
+      setGallery(urls);
     } catch {
       setFailed(true);
     } finally {
       setLoading(false);
+      setMediaLoading(false);
     }
   }, [applicationId]);
+
 
   useEffect(() => {
     void load();
