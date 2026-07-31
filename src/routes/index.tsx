@@ -27,7 +27,7 @@ function Home() {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link to="/become-approved" className="btn-gold">Apply Now</Link>
-          <Link to="/auth" className="btn-outline">Contractor Sign In</Link>
+          <Link to="/auth" search={{ mode: "signin" }} className="btn-outline">Contractor Sign In</Link>
         </div>
       </section>
 

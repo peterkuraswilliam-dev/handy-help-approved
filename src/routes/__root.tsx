@@ -119,7 +119,7 @@ function Header() {
             </>
           ) : (
             <>
-              <Link to="/auth" className="btn-ghost hidden sm:inline-flex">Sign in</Link>
+              <Link to="/auth" search={{ mode: "signin" }} className="btn-ghost hidden sm:inline-flex">Sign in</Link>
               <Link to="/become-approved" className="btn-gold">Apply</Link>
             </>
           )}
