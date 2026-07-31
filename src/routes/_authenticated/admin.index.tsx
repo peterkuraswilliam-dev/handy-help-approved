@@ -533,8 +533,9 @@ function AdminApplicationList() {
             </p>
             <button
               type="button"
-              className="btn-outline"
+              className="btn-outline min-h-11"
               onClick={() =>
+
                 normalizedSearch ? setSearchTerm("") : setSelectedStatus("all")
               }
             >
