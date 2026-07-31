@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { FileText, LayoutDashboard, Menu, Settings, Users, X } from "lucide-react";
+import { LayoutDashboard, Menu, Settings, Users, X } from "lucide-react";
 
 type Item = { to: string; label: string; icon: typeof Menu };
 
@@ -19,15 +19,13 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
     ? [
         { to: "/admin", label: "Applications dashboard", icon: LayoutDashboard },
         { to: "/admin/roles", label: "Role management", icon: Users },
-        { to: "/dashboard", label: "My contractor dashboard", icon: LayoutDashboard },
-        { to: "/application", label: "View my application", icon: FileText },
         { to: "/settings", label: "Settings", icon: Settings },
       ]
     : [
-        { to: "/dashboard", label: "Applications dashboard", icon: LayoutDashboard },
-        { to: "/application", label: "View my application", icon: FileText },
+        { to: "/dashboard", label: "My dashboard", icon: LayoutDashboard },
         { to: "/settings", label: "Settings", icon: Settings },
       ];
+
 
 
   return (
