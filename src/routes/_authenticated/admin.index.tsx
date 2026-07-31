@@ -160,6 +160,32 @@ function AdminApplicationList() {
     setAuxError(false);
     setDocError(false);
 
+    let results;
+    try {
+      results = await Promise.all([
+        db
+          .from("contractor_applications")
+          .select(
+            "id,business_name,contact_name,email,phone,main_area,description,insurance_status,insurance_evidence_path,logo_path,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
+          )
+          .order("updated_at", { ascending: false }),
+        db.from("contractor_services").select("application_id,service"),
+        db.from("contractor_areas").select("application_id,area"),
+        db.from("contractor_documents").select("application_id,kind"),
+        db.from("contractor_gallery").select("application_id"),
+        db
+          .from("application_status_history")
+          .select("application_id,status,created_at")
+          .eq("status", "more_info_required"),
+      ]);
+    } catch {
+      // Network failure — surface the retryable error state, never stale totals.
+      setApplications([]);
+      setError(true);
+      setLoading(false);
+      return;
+    }
+
     const [
       { data, error: loadError },
       { data: servicesData, error: servicesError },
@@ -167,22 +193,9 @@ function AdminApplicationList() {
       { data: documentsData, error: documentsError },
       { data: galleryData, error: galleryError },
       { data: historyData },
-    ] = await Promise.all([
-      db
-        .from("contractor_applications")
-        .select(
-          "id,business_name,contact_name,email,phone,main_area,description,insurance_status,insurance_evidence_path,logo_path,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
-        )
-        .order("updated_at", { ascending: false }),
-      db.from("contractor_services").select("application_id,service"),
-      db.from("contractor_areas").select("application_id,area"),
-      db.from("contractor_documents").select("application_id,kind"),
-      db.from("contractor_gallery").select("application_id"),
-      db
-        .from("application_status_history")
-        .select("application_id,status,created_at")
-        .eq("status", "more_info_required"),
-    ]);
+    ] = results;
+
+
 
 
     if (loadError) {
