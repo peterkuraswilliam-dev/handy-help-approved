@@ -23,6 +23,7 @@ import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { ReviewChecklist } from "@/components/admin/ReviewChecklist";
 import { AdminNotes } from "@/components/admin/AdminNotes";
 import { RequestMoreInfo } from "@/components/admin/RequestMoreInfo";
+import { DecisionActions } from "@/components/admin/DecisionActions";
 import { InfoRequestList } from "@/components/application/InfoRequestList";
 
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
@@ -88,6 +89,7 @@ type ApplicationRow = {
   updated_at: string;
   logo_path: string | null;
   insurance_evidence_path: string | null;
+  approved_at: string | null;
 };
 
 type HistoryRow = { id: string; status: AppStatus; reason: string | null; created_at: string };
@@ -156,7 +158,7 @@ function ApplicationDetail() {
         db
           .from("contractor_applications")
           .select(
-            "id,user_id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at,logo_path,insurance_evidence_path",
+            "id,user_id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at,logo_path,insurance_evidence_path,approved_at",
           )
           .eq("id", applicationId)
           .maybeSingle(),
