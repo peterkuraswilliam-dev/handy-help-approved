@@ -61,6 +61,8 @@ export type Database = {
           requested_by: string
           requested_documents: string[]
           requested_sections: string[]
+          responded_at: string | null
+          response_message: string | null
           status: string
           updated_at: string
         }
@@ -75,6 +77,8 @@ export type Database = {
           requested_by: string
           requested_documents?: string[]
           requested_sections?: string[]
+          responded_at?: string | null
+          response_message?: string | null
           status?: string
           updated_at?: string
         }
@@ -89,6 +93,8 @@ export type Database = {
           requested_by?: string
           requested_documents?: string[]
           requested_sections?: string[]
+          responded_at?: string | null
+          response_message?: string | null
           status?: string
           updated_at?: string
         }
