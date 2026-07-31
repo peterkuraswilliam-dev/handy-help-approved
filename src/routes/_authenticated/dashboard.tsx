@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
+import { InfoRequestList } from "@/components/application/InfoRequestList";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
@@ -366,7 +367,7 @@ function Dashboard() {
       )}
 
       {activeTab === "messages" && (
-        <EmptyState title="Messages and admin requests will appear here." />
+        <InfoRequestList applicationId={app.id} role="contractor" />
       )}
 
       {activeTab === "activity" && (

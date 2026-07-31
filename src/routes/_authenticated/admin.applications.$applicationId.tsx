@@ -22,6 +22,8 @@ import {
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { ReviewChecklist } from "@/components/admin/ReviewChecklist";
 import { AdminNotes } from "@/components/admin/AdminNotes";
+import { RequestMoreInfo } from "@/components/admin/RequestMoreInfo";
+import { InfoRequestList } from "@/components/application/InfoRequestList";
 
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
@@ -142,6 +144,7 @@ function ApplicationDetail() {
   const [docCounts, setDocCounts] = useState({ insurance: 0, qualification: 0 });
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  const [requestsKey, setRequestsKey] = useState(0);
   const [notFound, setNotFound] = useState(false);
 
   const load = useCallback(async () => {
@@ -400,6 +403,14 @@ function ApplicationDetail() {
       {activeTab === "review" && (
         <div className="space-y-4">
           <ReviewChecklist applicationId={app.id} qualifications={app.qualifications} />
+          <RequestMoreInfo
+            applicationId={app.id}
+            onRequested={() => {
+              setRequestsKey((k) => k + 1);
+              void load();
+            }}
+          />
+          <InfoRequestList applicationId={app.id} role="admin" refreshKey={requestsKey} />
           <AdminNotes applicationId={app.id} />
         </div>
       )}
