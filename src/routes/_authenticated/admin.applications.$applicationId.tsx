@@ -49,9 +49,8 @@ export const Route = createFileRoute("/_authenticated/admin/applications/$applic
       },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>) => ({
-    tab: typeof search.tab === "string" ? search.tab : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { tab?: string } =>
+    typeof search.tab === "string" ? { tab: search.tab } : {},
   beforeLoad: async () => {
     const { data: userData } = await supabase.auth.getUser();
     const uid = userData.user?.id;
