@@ -22,6 +22,8 @@ import {
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { ReviewChecklist } from "@/components/admin/ReviewChecklist";
 import { AdminNotes } from "@/components/admin/AdminNotes";
+import { RequestMoreInfo } from "@/components/admin/RequestMoreInfo";
+import { InfoRequestList } from "@/components/application/InfoRequestList";
 
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
