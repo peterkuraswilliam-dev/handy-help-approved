@@ -28,6 +28,8 @@ export type InfoRequestRow = {
   due_date: string | null;
   status: string;
   completed_at: string | null;
+  response_message?: string | null;
+  responded_at?: string | null;
 };
 
 export function labelFor(list: { key: string; label: string }[], key: string) {
