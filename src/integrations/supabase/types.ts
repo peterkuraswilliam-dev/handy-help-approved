@@ -21,6 +21,7 @@ export type Database = {
           created_at: string
           id: string
           note: string
+          updated_at: string
         }
         Insert: {
           admin_id: string
@@ -28,6 +29,7 @@ export type Database = {
           created_at?: string
           id?: string
           note: string
+          updated_at?: string
         }
         Update: {
           admin_id?: string
@@ -35,6 +37,7 @@ export type Database = {
           created_at?: string
           id?: string
           note?: string
+          updated_at?: string
         }
         Relationships: [
           {
