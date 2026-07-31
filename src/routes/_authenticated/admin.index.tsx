@@ -517,6 +517,8 @@ function AdminApplicationList() {
                 : docs.required.length === 1
                   ? docs.required[0]
                   : `${docs.required.length} documents or uploads missing`;
+            const attention = needsAttention(application);
+
 
 
             return (
