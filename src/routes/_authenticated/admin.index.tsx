@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Sparkles, CircleAlert, CircleCheck, ChevronDown, FileWarning } from "lucide-react";
+import { ArrowLeft, Sparkles, CircleAlert, CircleCheck, ChevronDown, FileWarning, LayoutGrid, Send, Eye, MessageCircleQuestion, BadgeCheck, type LucideIcon } from "lucide-react";
 import { db } from "@/lib/db";
 import { STATUS_LABEL, missingFields, type AppStatus } from "@/lib/application-helpers";
 
@@ -361,14 +361,58 @@ function AdminApplicationList() {
         <div className="cinematic-admin-orb cinematic-admin-orb-two" aria-hidden="true" />
       </header>
 
+      {loading && (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-5" aria-hidden="true">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} className="card-panel min-h-[5.5rem] animate-pulse p-4">
+              <div className="h-3 w-2/3 rounded bg-secondary/70" />
+              <div className="mt-3 h-7 w-10 rounded bg-secondary/70" />
+            </div>
+          ))}
+        </div>
+      )}
+
       {!loading && !error && applications.length > 0 && (
         <>
-          <div className="cinematic-summary grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <SummaryCard label="Total" value={applications.length} />
-            <SummaryCard label="Submitted" value={statusCounts.submitted} />
-            <SummaryCard label="Under review" value={statusCounts.under_review} />
-            <SummaryCard label="Approved" value={statusCounts.approved} />
+          <div className="cinematic-summary grid grid-cols-2 gap-3 sm:grid-cols-5">
+            <SummaryCard
+              label="Total"
+              value={applications.length}
+              icon={LayoutGrid}
+              selected={selectedStatus === "all"}
+              onSelect={() => setSelectedStatus("all")}
+            />
+            <SummaryCard
+              label="Submitted"
+              value={statusCounts.submitted}
+              icon={Send}
+              selected={selectedStatus === "submitted"}
+              onSelect={() => setSelectedStatus("submitted")}
+            />
+            <SummaryCard
+              label="Under review"
+              value={statusCounts.under_review}
+              icon={Eye}
+              selected={selectedStatus === "under_review"}
+              onSelect={() => setSelectedStatus("under_review")}
+            />
+            <SummaryCard
+              label="More info"
+              value={statusCounts.more_info_required}
+              icon={MessageCircleQuestion}
+              selected={selectedStatus === "more_info_required"}
+              onSelect={() => setSelectedStatus("more_info_required")}
+            />
+            <SummaryCard
+              label="Approved"
+              value={statusCounts.approved}
+              icon={BadgeCheck}
+              approved
+              selected={selectedStatus === "approved"}
+              onSelect={() => setSelectedStatus("approved")}
+            />
           </div>
+
           <div
             className="flex flex-wrap gap-2"
             role="group"
@@ -636,6 +680,44 @@ function AdminApplicationList() {
   );
 }
 
-function SummaryCard({ label, value }: { label: string; value: number }) {
-  return <div className="card-panel p-4"><p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p><p className="mt-1 text-3xl font-bold text-[color:var(--color-gold)]">{value}</p></div>;
+function SummaryCard({
+  label,
+  value,
+  icon: Icon,
+  selected,
+  onSelect,
+  approved,
+}: {
+  label: string;
+  value: number;
+  icon: LucideIcon;
+  selected: boolean;
+  onSelect: () => void;
+  approved?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={`card-panel flex min-h-[5.5rem] w-full flex-col items-start gap-1 p-4 text-left transition-colors last:col-span-2 sm:last:col-span-1 ${
+        selected
+          ? "border-[color:var(--color-gold)] ring-1 ring-[color:var(--color-gold)]"
+          : "hover:border-[color:var(--color-gold)]"
+      }`}
+    >
+      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <Icon
+          className={`h-4 w-4 ${approved ? "text-emerald-400" : "text-[color:var(--color-gold)]"}`}
+        />
+        {label}
+      </span>
+      <span
+        className={`text-3xl font-bold ${approved ? "text-emerald-400" : "text-[color:var(--color-gold)]"}`}
+      >
+        {value}
+      </span>
+    </button>
+  );
 }
+
