@@ -395,10 +395,7 @@ function ApplicationDetail() {
       )}
 
       {activeTab === "review" && (
-        <EmptyState
-          title="Review tools coming next"
-          hint="Notes, review checklist and decisions will appear here in a later stage."
-        />
+        <ReviewChecklist applicationId={app.id} qualifications={app.qualifications} />
       )}
 
       {activeTab === "activity" && (
