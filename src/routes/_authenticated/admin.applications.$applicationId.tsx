@@ -20,6 +20,7 @@ import {
   type AppStatus,
 } from "@/lib/application-helpers";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
+import { ReviewChecklist } from "@/components/admin/ReviewChecklist";
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
