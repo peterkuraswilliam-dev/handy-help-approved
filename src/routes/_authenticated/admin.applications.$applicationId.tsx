@@ -1,9 +1,9 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ImageOff, RefreshCw, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
-import { STATUS_LABEL, type AppStatus } from "@/lib/application-helpers";
+import { STATUS_LABEL, getSignedUrl, type AppStatus } from "@/lib/application-helpers";
 
 export const Route = createFileRoute(
   "/_authenticated/admin/applications/$applicationId",
