@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, MessageSquareWarning, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
 import { INFO_DOCUMENTS, INFO_SECTIONS } from "@/components/application/info-requests";
 
+export type InfoPrefill = { sections: string[]; documents: string[]; message: string; nonce: number };
+
 export function RequestMoreInfo({
   applicationId,
   onRequested,
+  prefill,
 }: {
   applicationId: string;
   onRequested?: () => void;
+  prefill?: InfoPrefill | null;
 }) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -20,6 +24,15 @@ export function RequestMoreInfo({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (!prefill) return;
+    setOpen(true);
+    setDone(false);
+    setSections((prev) => [...new Set([...prev, ...prefill.sections])]);
+    setDocuments((prev) => [...new Set([...prev, ...prefill.documents])]);
+    if (prefill.message) setMessage((prev) => (prev.trim().length > 0 ? prev : prefill.message));
+  }, [prefill]);
 
   const toggle = (list: string[], set: (v: string[]) => void, key: string) =>
     set(list.includes(key) ? list.filter((k) => k !== key) : [...list, key]);
