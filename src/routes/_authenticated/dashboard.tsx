@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
+import { InfoRequestList } from "@/components/application/InfoRequestList";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
