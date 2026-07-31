@@ -192,7 +192,10 @@ export type Database = {
           company_registration_number: string | null
           confirmed_accurate: boolean
           contact_name: string | null
+          contractor_decision_message: string | null
           created_at: string
+          decided_at: string | null
+          decided_by: string | null
           decision_reason: string | null
           description: string | null
           email: string | null
@@ -205,6 +208,7 @@ export type Database = {
           phone: string | null
           qualifications: string | null
           references_text: string | null
+          rejected_at: string | null
           status: Database["public"]["Enums"]["application_status"]
           updated_at: string
           user_id: string
@@ -218,7 +222,10 @@ export type Database = {
           company_registration_number?: string | null
           confirmed_accurate?: boolean
           contact_name?: string | null
+          contractor_decision_message?: string | null
           created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
           decision_reason?: string | null
           description?: string | null
           email?: string | null
@@ -231,6 +238,7 @@ export type Database = {
           phone?: string | null
           qualifications?: string | null
           references_text?: string | null
+          rejected_at?: string | null
           status?: Database["public"]["Enums"]["application_status"]
           updated_at?: string
           user_id: string
@@ -244,7 +252,10 @@ export type Database = {
           company_registration_number?: string | null
           confirmed_accurate?: boolean
           contact_name?: string | null
+          contractor_decision_message?: string | null
           created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
           decision_reason?: string | null
           description?: string | null
           email?: string | null
@@ -257,6 +268,7 @@ export type Database = {
           phone?: string | null
           qualifications?: string | null
           references_text?: string | null
+          rejected_at?: string | null
           status?: Database["public"]["Enums"]["application_status"]
           updated_at?: string
           user_id?: string
