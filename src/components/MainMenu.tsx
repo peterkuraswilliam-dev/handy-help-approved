@@ -1,12 +1,20 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { LayoutDashboard, Menu, Settings, Users, X } from "lucide-react";
+import { LayoutDashboard, Menu, Repeat, Settings, Shield, Users, X } from "lucide-react";
 
 type Item = { to: string; label: string; icon: typeof Menu };
 
+const MODE_KEY = "hh-menu-mode";
+
 export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"admin" | "contractor">("admin");
   const panelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? window.localStorage.getItem(MODE_KEY) : null;
+    if (saved === "contractor" || saved === "admin") setMode(saved);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -15,7 +23,9 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const items: Item[] = isAdmin
+  const adminView = isAdmin && mode === "admin";
+
+  const items: Item[] = adminView
     ? [
         { to: "/admin", label: "Applications dashboard", icon: LayoutDashboard },
         { to: "/admin/roles", label: "Role management", icon: Users },
@@ -25,6 +35,14 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
         { to: "/dashboard", label: "My dashboard", icon: LayoutDashboard },
         { to: "/settings", label: "Settings", icon: Settings },
       ];
+
+  const switchMode = () => {
+    const next = mode === "admin" ? "contractor" : "admin";
+    setMode(next);
+    if (typeof window !== "undefined") window.localStorage.setItem(MODE_KEY, next);
+  };
+
+
 
 
 
