@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ArrowLeft,
-  BadgeCheck,
   Award,
   CheckCircle2,
   ChevronLeft,
