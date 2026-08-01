@@ -33,6 +33,7 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
       ]
     : [
         { to: "/dashboard", label: "My dashboard", icon: LayoutDashboard },
+        { to: "/contractors", label: "Approved contractors", icon: BadgeCheck },
         { to: "/settings", label: "Settings", icon: Settings },
       ];
 
