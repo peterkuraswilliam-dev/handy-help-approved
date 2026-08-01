@@ -192,6 +192,12 @@ export function DecisionActions({
           </span>
         </div>
         <div className="flex items-center justify-between gap-2">
+          <span className="text-muted-foreground">Items marked Needs Information</span>
+          <span className={checks?.needsInfo ? "font-medium text-orange-400" : "font-medium text-emerald-400"}>
+            {checks ? checks.needsInfo : "…"}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-2">
           <span className="text-muted-foreground">Missing information</span>
           <span className={missingInfo.length ? "font-medium text-orange-400" : "font-medium text-emerald-400"}>
             {missingInfo.length}
@@ -206,22 +212,33 @@ export function DecisionActions({
           </span>
         </div>
         <div className="flex items-center justify-between gap-2">
+          <span className="text-muted-foreground">Open information requests</span>
+          <span className={openRequests ? "font-medium text-orange-400" : "font-medium text-emerald-400"}>
+            {openRequests === null ? "…" : openRequests}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-2">
           <span className="text-muted-foreground">Insurance</span>
-          <span className={insuranceProvided(insuranceStatus) ? "font-medium text-emerald-400" : "font-medium text-orange-400"}>
+          <span className={insuranceOk ? "font-medium text-emerald-400" : "font-medium text-orange-400"}>
             {insuranceStatus?.trim() || "Not provided"}
           </span>
         </div>
       </div>
 
-      {blocked && (
-        <p className="flex items-start gap-2 rounded-lg border border-orange-500/40 bg-orange-500/10 p-2 text-sm text-orange-300">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>
-            Approval is blocked while required information or documents are missing. Request more information from the
-            contractor first.
-          </span>
-        </p>
+      {!decided && blockers.length > 0 && (
+        <div className="space-y-1 rounded-lg border border-orange-500/40 bg-orange-500/10 p-3 text-sm text-orange-300">
+          <p className="flex items-start gap-2 font-medium">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>Approval is blocked until these are resolved:</span>
+          </p>
+          <ul className="list-disc space-y-0.5 pl-9">
+            {blockers.map((b) => (
+              <li key={b}>{b}</li>
+            ))}
+          </ul>
+        </div>
       )}
+
 
       {mode === "none" && (
         <div className="flex flex-wrap gap-2">
