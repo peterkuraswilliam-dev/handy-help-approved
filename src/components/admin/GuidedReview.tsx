@@ -164,10 +164,16 @@ export function GuidedReview({
   const done = counted.filter((c) => ["checked", "not_applicable"].includes(stateOf(c.key))).length;
   const percent = total === 0 ? 0 : Math.round((done / total) * 100);
   const overall = overallStatus(counted.map((c) => stateOf(c.key)));
-  const nextIncomplete =
-    counted.find((c) => stateOf(c.key) === "not_reviewed") ??
-    counted.find((c) => stateOf(c.key) === "needs_info") ??
-    null;
+  // After a contractor resubmits, pick up from the first item flagged Needs Information.
+  const resumeAfterResponse = app.status === "submitted";
+  const nextIncomplete = resumeAfterResponse
+    ? (counted.find((c) => stateOf(c.key) === "needs_info") ??
+      counted.find((c) => stateOf(c.key) === "not_reviewed") ??
+      null)
+    : (counted.find((c) => stateOf(c.key) === "not_reviewed") ??
+      counted.find((c) => stateOf(c.key) === "needs_info") ??
+      null);
+
 
   const focusSection = useCallback((section: SectionId) => {
     window.requestAnimationFrame(() => {
