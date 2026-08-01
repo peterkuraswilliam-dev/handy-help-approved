@@ -38,7 +38,8 @@ export function DecisionActions({
   approvedAt,
   onDecided,
 }: Props) {
-  const [checks, setChecks] = useState<{ done: number; total: number } | null>(null);
+  const [checks, setChecks] = useState<{ done: number; total: number; needsInfo: number } | null>(null);
+  const [openRequests, setOpenRequests] = useState<number | null>(null);
   const [mode, setMode] = useState<"none" | "approve" | "reject">("none");
   const [internalNote, setInternalNote] = useState("");
   const [contractorMessage, setContractorMessage] = useState("");
@@ -51,21 +52,42 @@ export function DecisionActions({
   const totalChecks = qualsRelevant ? 15 : 13;
 
   const loadChecks = useCallback(async () => {
-    const { data } = await db
-      .from("application_review_checks")
-      .select("check_key,completed")
-      .eq("application_id", applicationId);
-    const rows = (data as { check_key: string; completed: boolean }[]) ?? [];
-    const done = rows.filter((r) => r.completed).length;
-    setChecks({ done: Math.min(done, totalChecks), total: totalChecks });
+    const [{ data: checkData }, { data: reqData }] = await Promise.all([
+      db
+        .from("application_review_checks")
+        .select("check_key,completed,review_state")
+        .eq("application_id", applicationId),
+      db
+        .from("application_info_requests")
+        .select("id,status")
+        .eq("application_id", applicationId),
+    ]);
+    const rows = (checkData as { check_key: string; completed: boolean; review_state: string | null }[]) ?? [];
+    const done = rows.filter((r) => r.completed || r.review_state === "checked" || r.review_state === "not_applicable")
+      .length;
+    const needsInfo = rows.filter((r) => r.review_state === "needs_info").length;
+    setChecks({ done: Math.min(done, totalChecks), total: totalChecks, needsInfo });
+    const reqs = (reqData as { id: string; status: string }[]) ?? [];
+    setOpenRequests(reqs.filter((r) => r.status !== "closed" && r.status !== "completed").length);
   }, [applicationId, totalChecks]);
 
   useEffect(() => {
     void loadChecks();
   }, [loadChecks]);
 
-  const blocked = missingInfo.length > 0 || missingDocs.length > 0;
+  const insuranceOk = insuranceProvided(insuranceStatus);
+  const blockers: string[] = [];
+  if (missingInfo.length > 0) blockers.push(`${missingInfo.length} required detail(s) still missing`);
+  if (missingDocs.length > 0) blockers.push(`Missing documents: ${missingDocs.join(", ")}`);
+  if (checks && checks.done < checks.total)
+    blockers.push(`Review checklist incomplete (${checks.done} of ${checks.total})`);
+  if (checks && checks.needsInfo > 0) blockers.push(`${checks.needsInfo} checklist item(s) marked Needs Information`);
+  if (openRequests && openRequests > 0) blockers.push(`${openRequests} information request(s) still open`);
+  if (!insuranceOk) blockers.push("Insurance is not confirmed as valid");
+  const loadingGate = checks === null || openRequests === null;
+  const blocked = loadingGate || blockers.length > 0;
   const decided = status === "approved" || status === "rejected";
+
 
   const reset = () => {
     setMode("none");
