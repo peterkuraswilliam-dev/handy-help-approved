@@ -149,6 +149,8 @@ export function DecisionActions({
       }
 
       reset();
+      void loadChecks();
+
       onDecided?.();
     } catch {
       setError("The decision could not be saved. Please try again.");
