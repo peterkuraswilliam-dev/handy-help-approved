@@ -96,7 +96,7 @@ function Directory() {
                 className="directory-card group block h-full overflow-hidden"
               >
                 <div className="directory-cover relative">
-                  {r.coverUrl ? (
+                  {r.coverUrl && index !== 0 ? (
                     <img
                       src={r.coverUrl}
                       alt={`Work by ${r.businessName ?? "approved contractor"}`}
