@@ -288,6 +288,54 @@
   font-size: 0.7rem;
   color: var(--color-muted-foreground);
 }
+/* ---- Tasteful fallback cover / logo ---- */
+.fallback-cover {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 30% 30%, color-mix(in oklch, var(--color-gold) 35%, transparent) 0%, transparent 40%),
+    radial-gradient(circle at 78% 78%, color-mix(in oklch, var(--color-gold) 18%, transparent) 0%, transparent 45%),
+    linear-gradient(145deg, color-mix(in oklch, var(--color-secondary) 60%, transparent), color-mix(in oklch, var(--color-card) 70%, black));
+  border-bottom: 1px solid color-mix(in oklch, var(--color-gold) 20%, transparent);
+}
+.fallback-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.45;
+  background-image:
+    radial-gradient(circle at 50% 50%, color-mix(in oklch, var(--color-gold) 22%, transparent) 1px, transparent 1px),
+    radial-gradient(circle at 20% 20%, color-mix(in oklch, var(--color-gold) 15%, transparent) 1px, transparent 1px);
+  background-size: 2.5rem 2.5rem, 4.5rem 4.5rem;
+  background-position: 0 0, 1.25rem 1.25rem;
+}
+.fallback-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to top, oklch(0.14 0.04 260 / 0.55) 0%, transparent 60%);
+}
+.fallback-cover-hero::before { background-size: 3rem 3rem, 5.5rem 5.5rem; opacity: 0.35; }
+.fallback-cover-inner { filter: drop-shadow(0 10px 18px oklch(0.08 0.03 260 / 0.45)); }
+.fallback-cover-icon-ring {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 9999px;
+  border: 1.5px solid color-mix(in oklch, var(--color-gold) 55%, transparent);
+  background: color-mix(in oklch, var(--color-card) 80%, transparent);
+  box-shadow: 0 0 28px color-mix(in oklch, var(--color-gold) 28%, transparent), 0 12px 28px oklch(0.08 0.03 260 / 0.35);
+}
+.fallback-cover-initials { text-shadow: 0 2px 8px oklch(0.08 0.03 260 / 0.5); letter-spacing: 0.12em; }
+.fallback-cover-logo {
+  background: linear-gradient(135deg, color-mix(in oklch, var(--color-card) 80%, black), color-mix(in oklch, var(--color-secondary) 60%, transparent));
+  border: 1px solid color-mix(in oklch, var(--color-gold) 25%, transparent);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .directory-card, .directory-cover img { transition: none; }
 }
+
