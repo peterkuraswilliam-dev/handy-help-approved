@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContractorsIndexRouteImport } from './routes/contractors.index'
 import { Route as ContractorsIdRouteImport } from './routes/contractors.$id'
+import { Route as ContractorsContractorSlugRouteImport } from './routes/contractors.$contractorSlug'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedApplicationRouteImport } from './routes/_authenticated/application'
@@ -59,6 +60,12 @@ const ContractorsIdRoute = ContractorsIdRouteImport.update({
   path: '/contractors/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContractorsContractorSlugRoute =
+  ContractorsContractorSlugRouteImport.update({
+    id: '/contractors/$contractorSlug',
+    path: '/contractors/$contractorSlug',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -111,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/application': typeof AuthenticatedApplicationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/contractors/$contractorSlug': typeof ContractorsContractorSlugRoute
   '/contractors/$id': typeof ContractorsIdRoute
   '/contractors/': typeof ContractorsIndexRoute
   '/admin/$id': typeof AuthenticatedAdminIdRoute
@@ -126,6 +134,7 @@ export interface FileRoutesByTo {
   '/application': typeof AuthenticatedApplicationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/contractors/$contractorSlug': typeof ContractorsContractorSlugRoute
   '/contractors/$id': typeof ContractorsIdRoute
   '/contractors': typeof ContractorsIndexRoute
   '/admin/$id': typeof AuthenticatedAdminIdRoute
@@ -144,6 +153,7 @@ export interface FileRoutesById {
   '/_authenticated/application': typeof AuthenticatedApplicationRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/contractors/$contractorSlug': typeof ContractorsContractorSlugRoute
   '/contractors/$id': typeof ContractorsIdRoute
   '/contractors/': typeof ContractorsIndexRoute
   '/_authenticated/admin/$id': typeof AuthenticatedAdminIdRoute
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/application'
     | '/dashboard'
     | '/settings'
+    | '/contractors/$contractorSlug'
     | '/contractors/$id'
     | '/contractors/'
     | '/admin/$id'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/application'
     | '/dashboard'
     | '/settings'
+    | '/contractors/$contractorSlug'
     | '/contractors/$id'
     | '/contractors'
     | '/admin/$id'
@@ -194,6 +206,7 @@ export interface FileRouteTypes {
     | '/_authenticated/application'
     | '/_authenticated/dashboard'
     | '/_authenticated/settings'
+    | '/contractors/$contractorSlug'
     | '/contractors/$id'
     | '/contractors/'
     | '/_authenticated/admin/$id'
@@ -208,6 +221,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BecomeApprovedRoute: typeof BecomeApprovedRoute
   CommunityRulesRoute: typeof CommunityRulesRoute
+  ContractorsContractorSlugRoute: typeof ContractorsContractorSlugRoute
   ContractorsIdRoute: typeof ContractorsIdRoute
   ContractorsIndexRoute: typeof ContractorsIndexRoute
 }
@@ -261,6 +275,13 @@ declare module '@tanstack/react-router' {
       path: '/contractors/$id'
       fullPath: '/contractors/$id'
       preLoaderRoute: typeof ContractorsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contractors/$contractorSlug': {
+      id: '/contractors/$contractorSlug'
+      path: '/contractors/$contractorSlug'
+      fullPath: '/contractors/$contractorSlug'
+      preLoaderRoute: typeof ContractorsContractorSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/settings': {
@@ -363,6 +384,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BecomeApprovedRoute: BecomeApprovedRoute,
   CommunityRulesRoute: CommunityRulesRoute,
+  ContractorsContractorSlugRoute: ContractorsContractorSlugRoute,
   ContractorsIdRoute: ContractorsIdRoute,
   ContractorsIndexRoute: ContractorsIndexRoute,
 }
