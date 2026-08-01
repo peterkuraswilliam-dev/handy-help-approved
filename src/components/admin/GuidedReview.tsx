@@ -52,7 +52,9 @@ export type GuidedReviewApp = {
   references_text: string | null;
   agreed_rules: boolean | null;
   confirmed_accurate: boolean | null;
+  status?: string | null;
 };
+
 
 const NOT_PROVIDED = "Not provided";
 
