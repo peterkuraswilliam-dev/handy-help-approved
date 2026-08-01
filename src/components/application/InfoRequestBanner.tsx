@@ -33,7 +33,8 @@ export function InfoRequestBanner({
         )
         .eq("application_id", applicationId)
         .eq("status", "open")
-        .order("requested_at", { ascending: false });
+        .order("requested_at", { ascending: false })
+        .limit(1);
       if (!cancelled) setRows((data as InfoRequestRow[]) ?? []);
     })();
     return () => {
