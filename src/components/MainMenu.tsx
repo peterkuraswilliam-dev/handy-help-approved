@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { LayoutDashboard, Menu, Repeat, Settings, Shield, Users, X } from "lucide-react";
+import { BadgeCheck, LayoutDashboard, Menu, Repeat, Settings, Shield, Users, X } from "lucide-react";
 
 type Item = { to: string; label: string; icon: typeof Menu };
 
@@ -33,6 +33,7 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
       ]
     : [
         { to: "/dashboard", label: "My dashboard", icon: LayoutDashboard },
+        { to: "/contractors", label: "Approved contractors", icon: BadgeCheck },
         { to: "/settings", label: "Settings", icon: Settings },
       ];
 
