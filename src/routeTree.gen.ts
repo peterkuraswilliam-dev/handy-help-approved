@@ -15,7 +15,6 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContractorsIndexRouteImport } from './routes/contractors.index'
-import { Route as ContractorsIdRouteImport } from './routes/contractors.$id'
 import { Route as ContractorsContractorSlugRouteImport } from './routes/contractors.$contractorSlug'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -53,11 +52,6 @@ const IndexRoute = IndexRouteImport.update({
 const ContractorsIndexRoute = ContractorsIndexRouteImport.update({
   id: '/contractors/',
   path: '/contractors/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContractorsIdRoute = ContractorsIdRouteImport.update({
-  id: '/contractors/$id',
-  path: '/contractors/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContractorsContractorSlugRoute =
@@ -119,7 +113,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/contractors/$contractorSlug': typeof ContractorsContractorSlugRoute
-  '/contractors/$id': typeof ContractorsIdRoute
   '/contractors/': typeof ContractorsIndexRoute
   '/admin/$id': typeof AuthenticatedAdminIdRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
@@ -135,7 +128,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/contractors/$contractorSlug': typeof ContractorsContractorSlugRoute
-  '/contractors/$id': typeof ContractorsIdRoute
   '/contractors': typeof ContractorsIndexRoute
   '/admin/$id': typeof AuthenticatedAdminIdRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
@@ -154,7 +146,6 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/contractors/$contractorSlug': typeof ContractorsContractorSlugRoute
-  '/contractors/$id': typeof ContractorsIdRoute
   '/contractors/': typeof ContractorsIndexRoute
   '/_authenticated/admin/$id': typeof AuthenticatedAdminIdRoute
   '/_authenticated/admin/roles': typeof AuthenticatedAdminRolesRoute
@@ -173,7 +164,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/settings'
     | '/contractors/$contractorSlug'
-    | '/contractors/$id'
     | '/contractors/'
     | '/admin/$id'
     | '/admin/roles'
@@ -189,7 +179,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/settings'
     | '/contractors/$contractorSlug'
-    | '/contractors/$id'
     | '/contractors'
     | '/admin/$id'
     | '/admin/roles'
@@ -207,7 +196,6 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/settings'
     | '/contractors/$contractorSlug'
-    | '/contractors/$id'
     | '/contractors/'
     | '/_authenticated/admin/$id'
     | '/_authenticated/admin/roles'
@@ -222,7 +210,6 @@ export interface RootRouteChildren {
   BecomeApprovedRoute: typeof BecomeApprovedRoute
   CommunityRulesRoute: typeof CommunityRulesRoute
   ContractorsContractorSlugRoute: typeof ContractorsContractorSlugRoute
-  ContractorsIdRoute: typeof ContractorsIdRoute
   ContractorsIndexRoute: typeof ContractorsIndexRoute
 }
 
@@ -268,13 +255,6 @@ declare module '@tanstack/react-router' {
       path: '/contractors'
       fullPath: '/contractors/'
       preLoaderRoute: typeof ContractorsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contractors/$id': {
-      id: '/contractors/$id'
-      path: '/contractors/$id'
-      fullPath: '/contractors/$id'
-      preLoaderRoute: typeof ContractorsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contractors/$contractorSlug': {
@@ -385,7 +365,6 @@ const rootRouteChildren: RootRouteChildren = {
   BecomeApprovedRoute: BecomeApprovedRoute,
   CommunityRulesRoute: CommunityRulesRoute,
   ContractorsContractorSlugRoute: ContractorsContractorSlugRoute,
-  ContractorsIdRoute: ContractorsIdRoute,
   ContractorsIndexRoute: ContractorsIndexRoute,
 }
 export const routeTree = rootRouteImport
