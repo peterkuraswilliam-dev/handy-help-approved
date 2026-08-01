@@ -3,6 +3,8 @@ import { Loader2, MessageSquareWarning, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
 import { INFO_DOCUMENTS, INFO_SECTIONS } from "@/components/application/info-requests";
+import { createRequestItems } from "@/components/application/request-items";
+
 import { REVIEW_CHECKS } from "@/components/admin/guided-review-model";
 
 export type InfoPrefill = { sections: string[]; documents: string[]; message: string; nonce: number };
