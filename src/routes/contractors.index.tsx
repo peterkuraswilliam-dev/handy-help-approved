@@ -88,7 +88,7 @@ function Directory() {
         </div>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2">
-          {filtered.map((r) => (
+          {filtered.map((r, index) => (
             <li key={r.slug}>
               <Link
                 to="/contractors/$contractorSlug"
