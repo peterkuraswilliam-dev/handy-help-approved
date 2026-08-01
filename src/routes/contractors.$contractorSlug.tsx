@@ -101,15 +101,15 @@ function ProfilePage() {
         {false ? (
           <>
             <img
-              src={featured?.url}
-              alt={`Featured work by ${profile.businessName ?? "this contractor"}`}
+              src={featured?.url ?? undefined}
+              alt={`Featured work by ${profile?.businessName ?? "this contractor"}`}
               className="absolute inset-0 h-full w-full object-cover opacity-40"
             />
             <div className="profile-hero-veil absolute inset-0" />
           </>
         ) : (
           <div className="absolute inset-0">
-            <ContractorFallbackCover name={profile.businessName} size="hero" />
+            <ContractorFallbackCover name={profile?.businessName} size="hero" />
           </div>
         )}
         <div className="relative grid gap-6 p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
