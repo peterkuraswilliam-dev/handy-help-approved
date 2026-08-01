@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { listPublicProfiles } from "@/lib/public-profile.functions";
-import { ArrowRight, Building2, CheckCircle2, MapPin, Search, ShieldCheck } from "lucide-react";
+import { ContractorFallbackCover } from "@/components/ContractorFallbackCover";
+import { ArrowRight, CheckCircle2, MapPin, Search, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/contractors/")({
   head: () => ({
