@@ -104,15 +104,58 @@ export const listPublicProfiles = createServerFn({ method: "GET" }).handler(asyn
   const supabase = publicClient();
   const { data } = await supabase
     .from("contractor_profiles")
-    .select("slug,business_name,main_area,public_description,approval_date,services")
+    .select(
+      "application_id,slug,business_name,main_area,public_description,approval_date,services,areas,logo_path,featured_photo_id",
+    )
     .eq("status", "active")
     .order("approval_date", { ascending: false });
-  return (data ?? []).map((r) => ({
-    slug: r.slug,
-    businessName: r.business_name,
-    mainArea: r.main_area,
-    description: r.public_description,
-    approvalDate: r.approval_date,
-    services: r.services ?? [],
-  }));
+
+  const profiles = data ?? [];
+  if (profiles.length === 0) return [];
+
+  const { data: galleryRows } = await supabase
+    .from("contractor_gallery")
+    .select("id,application_id,path,created_at")
+    .in("application_id", profiles.map((p) => p.application_id))
+    .eq("is_public", true)
+    .order("created_at", { ascending: true });
+
+  const gallery = galleryRows ?? [];
+
+  const coverPathFor = (appId: string, featuredId: string | null) => {
+    const rows = gallery.filter((g) => g.application_id === appId);
+    const featured = featuredId ? rows.find((g) => g.id === featuredId) : undefined;
+    return (featured ?? rows[0])?.path ?? null;
+  };
+
+  const paths = new Set<string>();
+  for (const p of profiles) {
+    if (p.logo_path) paths.add(p.logo_path);
+    const cover = coverPathFor(p.application_id, p.featured_photo_id);
+    if (cover) paths.add(cover);
+  }
+
+  let byPath = new Map<string, string | null>();
+  if (paths.size > 0) {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: signed } = await supabaseAdmin.storage
+      .from("contractor-files")
+      .createSignedUrls([...paths], 60 * 60);
+    byPath = new Map((signed ?? []).map((s) => [s.path ?? "", s.signedUrl ?? null]));
+  }
+
+  return profiles.map((r) => {
+    const cover = coverPathFor(r.application_id, r.featured_photo_id);
+    return {
+      slug: r.slug,
+      businessName: r.business_name,
+      mainArea: r.main_area,
+      description: r.public_description,
+      approvalDate: r.approval_date,
+      services: r.services ?? [],
+      areas: r.areas ?? [],
+      logoUrl: r.logo_path ? (byPath.get(r.logo_path) ?? null) : null,
+      coverUrl: cover ? (byPath.get(cover) ?? null) : null,
+    };
+  });
 });
