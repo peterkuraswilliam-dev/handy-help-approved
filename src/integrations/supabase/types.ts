@@ -435,18 +435,21 @@ export type Database = {
           application_id: string
           created_at: string
           id: string
+          is_public: boolean
           path: string
         }
         Insert: {
           application_id: string
           created_at?: string
           id?: string
+          is_public?: boolean
           path: string
         }
         Update: {
           application_id?: string
           created_at?: string
           id?: string
+          is_public?: boolean
           path?: string
         }
         Relationships: [
@@ -455,6 +458,99 @@ export type Database = {
             columns: ["application_id"]
             isOneToOne: false
             referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contractor_profiles: {
+        Row: {
+          application_id: string
+          approval_date: string | null
+          areas: string[]
+          business_name: string | null
+          created_at: string
+          email: string | null
+          email_public: boolean
+          facebook: string | null
+          featured_photo_id: string | null
+          id: string
+          insurance_status: string | null
+          logo_path: string | null
+          main_area: string | null
+          phone: string | null
+          phone_public: boolean
+          public_description: string | null
+          qualifications: string | null
+          services: string[]
+          slug: string
+          status: string
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          application_id: string
+          approval_date?: string | null
+          areas?: string[]
+          business_name?: string | null
+          created_at?: string
+          email?: string | null
+          email_public?: boolean
+          facebook?: string | null
+          featured_photo_id?: string | null
+          id?: string
+          insurance_status?: string | null
+          logo_path?: string | null
+          main_area?: string | null
+          phone?: string | null
+          phone_public?: boolean
+          public_description?: string | null
+          qualifications?: string | null
+          services?: string[]
+          slug: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          application_id?: string
+          approval_date?: string | null
+          areas?: string[]
+          business_name?: string | null
+          created_at?: string
+          email?: string | null
+          email_public?: boolean
+          facebook?: string | null
+          featured_photo_id?: string | null
+          id?: string
+          insurance_status?: string | null
+          logo_path?: string | null
+          main_area?: string | null
+          phone?: string | null
+          phone_public?: boolean
+          public_description?: string | null
+          qualifications?: string | null
+          services?: string[]
+          slug?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_profiles_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: true
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_profiles_featured_photo_id_fkey"
+            columns: ["featured_photo_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_gallery"
             referencedColumns: ["id"]
           },
         ]
@@ -532,6 +628,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_contractor_profile: {
+        Args: { _application_id: string }
+        Returns: string
+      }
+      generate_contractor_slug: { Args: { _name: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { db } from "@/lib/db";
+import { listPublicProfiles } from "@/lib/public-profile.functions";
 import { CheckCircle2, Search } from "lucide-react";
 
 export const Route = createFileRoute("/contractors/")({
@@ -18,11 +18,12 @@ export const Route = createFileRoute("/contractors/")({
 });
 
 type Row = {
-  id: string;
-  business_name: string | null;
-  main_area: string | null;
+  slug: string;
+  businessName: string | null;
+  mainArea: string | null;
   description: string | null;
-  approved_at: string | null;
+  approvalDate: string | null;
+  services: string[];
 };
 
 function Directory() {
@@ -32,11 +33,7 @@ function Directory() {
 
   useEffect(() => {
     void (async () => {
-      const { data } = await db
-        .from("contractor_applications")
-        .select("id,business_name,main_area,description,approved_at")
-        .eq("status", "approved")
-        .order("approved_at", { ascending: false });
+      const data = await listPublicProfiles();
       setRows((data as Row[]) ?? []);
       setLoading(false);
     })();
@@ -44,7 +41,7 @@ function Directory() {
 
   const filtered = rows.filter((r) => {
     if (!q.trim()) return true;
-    const hay = `${r.business_name ?? ""} ${r.main_area ?? ""} ${r.description ?? ""}`.toLowerCase();
+    const hay = `${r.businessName ?? ""} ${r.mainArea ?? ""} ${r.description ?? ""} ${r.services.join(" ")}`.toLowerCase();
     return hay.includes(q.toLowerCase());
   });
 
@@ -76,17 +73,17 @@ function Directory() {
       ) : (
         <ul className="grid sm:grid-cols-2 gap-3">
           {filtered.map((r) => (
-            <li key={r.id}>
+            <li key={r.slug}>
               <Link
-                to="/contractors/$id"
-                params={{ id: r.id }}
+                to="/contractors/$contractorSlug"
+                params={{ contractorSlug: r.slug }}
                 className="card-panel block hover:border-[color:var(--color-gold)] transition-colors h-full"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <h2 className="font-semibold">{r.business_name ?? "Approved contractor"}</h2>
+                  <h2 className="font-semibold">{r.businessName ?? "Approved contractor"}</h2>
                   <span className="badge-approved shrink-0"><CheckCircle2 className="h-3.5 w-3.5" /> Approved</span>
                 </div>
-                {r.main_area && <p className="text-xs text-muted-foreground mt-1">{r.main_area}</p>}
+                {r.mainArea && <p className="text-xs text-muted-foreground mt-1">{r.mainArea}</p>}
                 {r.description && <p className="text-sm mt-2 line-clamp-3 text-muted-foreground">{r.description}</p>}
               </Link>
             </li>

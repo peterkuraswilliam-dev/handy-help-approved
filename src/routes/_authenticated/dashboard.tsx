@@ -29,11 +29,11 @@ import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { InfoRequestList } from "@/components/application/InfoRequestList";
 import { RespondToRequest } from "@/components/application/RespondToRequest";
 import { InfoRequestBanner } from "@/components/application/InfoRequestBanner";
+import { ApprovedProfilePanel } from "@/components/application/ApprovedProfilePanel";
 
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
-  EmptyState,
   InsuranceCard,
   MissingDocsCard,
   MissingInfoCard,
@@ -350,9 +350,9 @@ function Dashboard() {
                 </button>
               )}
               {approved && (
-                <Link to="/contractors/$id" params={{ id: app.id }} className="btn-gold">
-                  <ShieldCheck className="h-4 w-4" /> View public profile
-                </Link>
+                <button type="button" onClick={() => setTab("profile")} className="btn-gold">
+                  <ShieldCheck className="h-4 w-4" /> Manage public profile
+                </button>
               )}
             </div>
           </section>
@@ -445,40 +445,10 @@ function Dashboard() {
         <ActivityTimeline applicationId={app.id} role="contractor" createdAt={app.created_at} />
       )}
 
-      {activeTab === "profile" &&
-        (approved ? (
-          <section className="card-panel space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-xl font-semibold">{app.business_name}</h2>
-              <span className="badge-approved">
-                <CheckCircle2 className="h-3.5 w-3.5" /> Approved
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground">{app.description}</p>
-            {services.length > 0 && (
-              <p className="text-sm">
-                <span className="text-muted-foreground">Services: </span>
-                {services.map((s) => s.service).join(", ")}
-              </p>
-            )}
-            {areas.length > 0 && (
-              <p className="text-sm">
-                <span className="text-muted-foreground">Areas: </span>
-                {areas.map((a) => a.area).join(", ")}
-              </p>
-            )}
-            <Link to="/contractors/$id" params={{ id: app.id }} className="btn-gold w-fit">
-              <ShieldCheck className="h-4 w-4" /> View public profile
-            </Link>
-            <p className="border-t border-border pt-3 text-xs text-muted-foreground">
-              Approval confirms that the contractor has supplied the requested information and agreed to
-              follow our community standards. Customers should still carry out their own checks before
-              agreeing to any work.
-            </p>
-          </section>
-        ) : (
-          <EmptyState title="Your approved contractor profile will become available after approval." />
-        ))}
+      {activeTab === "profile" && (
+        <ApprovedProfilePanel applicationId={app.id} approved={approved} gallery={gallery} />
+      )}
+
 
       <p className="text-center text-xs text-muted-foreground">
         Current status: {STATUS_LABEL[app.status]}

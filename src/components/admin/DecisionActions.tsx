@@ -139,6 +139,15 @@ export function DecisionActions({
       });
       if (histErr) throw new Error(histErr.message);
 
+      if (decision === "approved") {
+        const { error: profileErr } = await db.rpc("activate_contractor_profile", {
+          _application_id: applicationId,
+        });
+        if (profileErr) throw new Error(profileErr.message);
+      }
+
+
+
       const note = internalNote.trim();
       if (note) {
         await db.from("admin_notes").insert({

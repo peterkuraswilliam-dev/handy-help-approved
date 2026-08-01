@@ -24,6 +24,7 @@ import { GuidedReview } from "@/components/admin/GuidedReview";
 import { AdminNotes } from "@/components/admin/AdminNotes";
 import { RequestMoreInfo, type InfoPrefill } from "@/components/admin/RequestMoreInfo";
 import { DecisionActions } from "@/components/admin/DecisionActions";
+import { ProfileControls } from "@/components/admin/ProfileControls";
 import { InfoRequestList } from "@/components/application/InfoRequestList";
 import { ContractorResponse } from "@/components/admin/ContractorResponse";
 
@@ -406,6 +407,7 @@ function ApplicationDetail() {
 
       {activeTab === "review" && (
         <div className="space-y-4">
+          <ProfileControls applicationId={app.id} />
           <ContractorResponse applicationId={app.id} />
           <GuidedReview
             applicationId={app.id}
