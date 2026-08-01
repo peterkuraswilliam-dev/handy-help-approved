@@ -102,6 +102,7 @@ export function GuidedReview({
   mediaLoading,
   onPrefillRequest,
   onAddNote,
+  decisionSlot,
 }: {
   applicationId: string;
   app: GuidedReviewApp;
@@ -113,7 +114,9 @@ export function GuidedReview({
   mediaLoading: boolean;
   onPrefillRequest: (sections: string[], documents: string[], message: string) => void;
   onAddNote: () => void;
+  decisionSlot?: ReactNode;
 }) {
+
   const qualsRelevant = !!(app.qualifications && app.qualifications.trim().length > 0);
   const checks = REVIEW_CHECKS;
 
