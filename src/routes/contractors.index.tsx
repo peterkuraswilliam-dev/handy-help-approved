@@ -88,7 +88,7 @@ function Directory() {
         </div>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2">
-          {filtered.map((r, index) => (
+          {filtered.map((r) => (
             <li key={r.slug}>
               <Link
                 to="/contractors/$contractorSlug"
@@ -96,7 +96,7 @@ function Directory() {
                 className="directory-card group block h-full overflow-hidden"
               >
                 <div className="directory-cover relative">
-                  {r.coverUrl && index !== 0 ? (
+                  {r.coverUrl ? (
                     <img
                       src={r.coverUrl}
                       alt={`Work by ${r.businessName ?? "approved contractor"}`}
