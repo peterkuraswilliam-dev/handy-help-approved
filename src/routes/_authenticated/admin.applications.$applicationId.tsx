@@ -25,6 +25,7 @@ import { AdminNotes } from "@/components/admin/AdminNotes";
 import { RequestMoreInfo, type InfoPrefill } from "@/components/admin/RequestMoreInfo";
 import { DecisionActions } from "@/components/admin/DecisionActions";
 import { ProfileControls } from "@/components/admin/ProfileControls";
+import { SuspendRestore } from "@/components/admin/SuspendRestore";
 import { InfoRequestList } from "@/components/application/InfoRequestList";
 import { ContractorResponse } from "@/components/admin/ContractorResponse";
 
@@ -407,7 +408,8 @@ function ApplicationDetail() {
 
       {activeTab === "review" && (
         <div className="space-y-4">
-          <ProfileControls applicationId={app.id} />
+          <SuspendRestore applicationId={app.id} status={app.status} onChanged={() => void load()} />
+          <ProfileControls applicationId={app.id} key={app.status} />
           <ContractorResponse applicationId={app.id} />
           <GuidedReview
             applicationId={app.id}

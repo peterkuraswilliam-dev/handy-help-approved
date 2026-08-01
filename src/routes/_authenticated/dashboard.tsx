@@ -30,6 +30,7 @@ import { InfoRequestList } from "@/components/application/InfoRequestList";
 import { RespondToRequest } from "@/components/application/RespondToRequest";
 import { InfoRequestBanner } from "@/components/application/InfoRequestBanner";
 import { ApprovedProfilePanel } from "@/components/application/ApprovedProfilePanel";
+import { SuspendedNotice } from "@/components/application/SuspendedNotice";
 
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
@@ -193,6 +194,7 @@ function Dashboard() {
   const submittedAt = [...history].reverse().find((h) => h.status === "submitted")?.created_at ?? null;
   const heading = app.business_name?.trim() || app.contact_name?.trim() || "My application";
   const approved = app.status === "approved";
+  const suspended = app.status === "suspended";
   const canEdit = ["draft", "submitted", "more_info_required"].includes(app.status);
   const canResubmit =
     (app.status === "draft" || app.status === "more_info_required") && missingInfo.length === 0;
@@ -204,7 +206,7 @@ function Dashboard() {
     { id: "documents", label: "Documents", icon: FileText },
     { id: "messages", label: "Messages", icon: MessageSquare },
     { id: "activity", label: "Activity", icon: History },
-    { id: "profile", label: "Approved Profile", icon: CheckCircle2, disabled: !approved },
+    { id: "profile", label: "Approved Profile", icon: CheckCircle2, disabled: !approved && !suspended },
   ];
 
   const activeTab = TABS.some((t) => t.id === tab && !t.disabled) ? (tab as string) : "overview";
@@ -285,6 +287,10 @@ function Dashboard() {
               <p className="text-sm">Your public profile is live and shows the Approved Contractor badge.</p>
               {app.contractor_decision_message && <p className="text-sm">{app.contractor_decision_message}</p>}
             </section>
+          )}
+
+          {suspended && (
+            <SuspendedNotice applicationId={app.id} contractorMessage={app.contractor_decision_message} />
           )}
 
           {app.status === "rejected" && (
@@ -446,7 +452,11 @@ function Dashboard() {
       )}
 
       {activeTab === "profile" && (
-        <ApprovedProfilePanel applicationId={app.id} approved={approved} gallery={gallery} />
+        suspended ? (
+          <SuspendedNotice applicationId={app.id} contractorMessage={app.contractor_decision_message} />
+        ) : (
+          <ApprovedProfilePanel applicationId={app.id} approved={approved} gallery={gallery} />
+        )
       )}
 
 
