@@ -114,9 +114,7 @@ function Directory() {
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                      <Building2 className="h-8 w-8 opacity-40" />
-                    </div>
+                    <ContractorFallbackCover name={r.businessName} />
                   )}
                   <span className="directory-cover-veil absolute inset-0" aria-hidden />
                   <span className="badge-approved absolute right-3 top-3">
@@ -129,7 +127,7 @@ function Directory() {
                     {r.logoUrl ? (
                       <img src={r.logoUrl} alt={`${r.businessName ?? "Contractor"} logo`} loading="lazy" className="h-full w-full object-contain p-1.5" />
                     ) : (
-                      <span className="text-sm font-bold text-[color:var(--color-gold)]">{initials(r.businessName)}</span>
+                      <ContractorFallbackCover name={r.businessName} size="logo" />
                     )}
                   </div>
                 </div>
