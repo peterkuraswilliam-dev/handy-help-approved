@@ -581,6 +581,63 @@ export type Database = {
           },
         ]
       }
+      contractor_status_events: {
+        Row: {
+          action: string
+          admin_id: string
+          application_id: string
+          created_at: string
+          id: string
+          new_status: string
+          previous_status: string | null
+          profile_id: string | null
+          public_message: string | null
+          reason: string
+          updated_at: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          application_id: string
+          created_at?: string
+          id?: string
+          new_status: string
+          previous_status?: string | null
+          profile_id?: string | null
+          public_message?: string | null
+          reason: string
+          updated_at?: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          application_id?: string
+          created_at?: string
+          id?: string
+          new_status?: string
+          previous_status?: string | null
+          profile_id?: string | null
+          public_message?: string | null
+          reason?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_status_events_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_status_events_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -639,6 +696,24 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      restore_contractor: {
+        Args: {
+          _admin_note?: string
+          _application_id: string
+          _contractor_message?: string
+          _reason: string
+        }
+        Returns: string
+      }
+      suspend_contractor: {
+        Args: {
+          _admin_note?: string
+          _application_id: string
+          _contractor_message: string
+          _reason: string
+        }
+        Returns: string
       }
     }
     Enums: {
