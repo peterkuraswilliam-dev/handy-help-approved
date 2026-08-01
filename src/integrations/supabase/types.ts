@@ -49,6 +49,54 @@ export type Database = {
           },
         ]
       }
+      application_info_request_items: {
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          item_key: string
+          item_type: string
+          request_id: string
+          snapshot: Json
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          item_key: string
+          item_type: string
+          request_id: string
+          snapshot?: Json
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          item_key?: string
+          item_type?: string
+          request_id?: string
+          snapshot?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_info_request_items_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_info_request_items_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "application_info_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       application_info_requests: {
         Row: {
           application_id: string
@@ -64,6 +112,7 @@ export type Database = {
           requested_sections: string[]
           responded_at: string | null
           response_message: string | null
+          resubmitted_at: string | null
           status: string
           updated_at: string
         }
@@ -81,6 +130,7 @@ export type Database = {
           requested_sections?: string[]
           responded_at?: string | null
           response_message?: string | null
+          resubmitted_at?: string | null
           status?: string
           updated_at?: string
         }
@@ -98,6 +148,7 @@ export type Database = {
           requested_sections?: string[]
           responded_at?: string | null
           response_message?: string | null
+          resubmitted_at?: string | null
           status?: string
           updated_at?: string
         }
@@ -323,25 +374,37 @@ export type Database = {
           application_id: string
           created_at: string
           id: string
+          info_request_id: string | null
+          is_active: boolean
           kind: Database["public"]["Enums"]["document_kind"]
           original_name: string | null
           path: string
+          replaced_at: string | null
+          replaced_by_document_id: string | null
         }
         Insert: {
           application_id: string
           created_at?: string
           id?: string
+          info_request_id?: string | null
+          is_active?: boolean
           kind: Database["public"]["Enums"]["document_kind"]
           original_name?: string | null
           path: string
+          replaced_at?: string | null
+          replaced_by_document_id?: string | null
         }
         Update: {
           application_id?: string
           created_at?: string
           id?: string
+          info_request_id?: string | null
+          is_active?: boolean
           kind?: Database["public"]["Enums"]["document_kind"]
           original_name?: string | null
           path?: string
+          replaced_at?: string | null
+          replaced_by_document_id?: string | null
         }
         Relationships: [
           {
@@ -349,6 +412,20 @@ export type Database = {
             columns: ["application_id"]
             isOneToOne: false
             referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_documents_info_request_id_fkey"
+            columns: ["info_request_id"]
+            isOneToOne: false
+            referencedRelation: "application_info_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_documents_replaced_by_document_id_fkey"
+            columns: ["replaced_by_document_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_documents"
             referencedColumns: ["id"]
           },
         ]
