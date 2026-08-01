@@ -34,7 +34,6 @@ import { ApprovedProfilePanel } from "@/components/application/ApprovedProfilePa
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
-  EmptyState,
   InsuranceCard,
   MissingDocsCard,
   MissingInfoCard,
