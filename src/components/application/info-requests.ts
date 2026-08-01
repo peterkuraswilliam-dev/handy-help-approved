@@ -32,6 +32,7 @@ export type InfoRequestRow = {
   closed_at?: string | null;
   response_message?: string | null;
   responded_at?: string | null;
+  resubmitted_at?: string | null;
 };
 
 export function labelFor(list: { key: string; label: string }[], key: string) {
