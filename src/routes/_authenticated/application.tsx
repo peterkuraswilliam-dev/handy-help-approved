@@ -88,7 +88,7 @@ function ApplicationForm() {
       const [{ data: s }, { data: ar }, { data: d }, { data: g }] = await Promise.all([
         db.from("contractor_services").select("id,service").eq("application_id", e.id),
         db.from("contractor_areas").select("id,area").eq("application_id", e.id),
-        db.from("contractor_documents").select("id,kind,path,original_name").eq("application_id", e.id),
+        db.from("contractor_documents").select("id,kind,path,original_name").eq("application_id", e.id).eq("is_active", true),
         db.from("contractor_gallery").select("id,path").eq("application_id", e.id),
       ]);
       setServices((s as { id: string; service: string }[]) ?? []);
