@@ -61,16 +61,28 @@ export function RequestMoreInfo({
       const uid = userData.user?.id;
       if (!uid) throw new Error("no user");
 
-      const { error: reqErr } = await db.from("application_info_requests").insert({
-        application_id: applicationId,
-        message: text,
-        requested_sections: sections,
-        requested_documents: documents,
-        requested_by: uid,
-        due_date: dueDate || null,
-        status: "open",
-      });
+      const { data: inserted, error: reqErr } = await db
+        .from("application_info_requests")
+        .insert({
+          application_id: applicationId,
+          message: text,
+          requested_sections: sections,
+          requested_documents: documents,
+          requested_by: uid,
+          due_date: dueDate || null,
+          status: "open",
+        })
+        .select("id")
+        .single();
       if (reqErr) throw new Error(reqErr.message);
+
+      await createRequestItems({
+        requestId: (inserted as { id: string }).id,
+        applicationId,
+        sections,
+        documents,
+      });
+
 
       const { error: statusErr } = await db
         .from("contractor_applications")
