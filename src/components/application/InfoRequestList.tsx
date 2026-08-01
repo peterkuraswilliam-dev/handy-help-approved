@@ -140,6 +140,20 @@ export function InfoRequestList({
                   {new Date(r.due_date).toLocaleDateString()}
                 </p>
               )}
+              {role === "admin" && r.status !== "closed" && (
+                <button
+                  className="btn-outline"
+                  onClick={async () => {
+                    await db
+                      .from("application_info_requests")
+                      .update({ status: "closed", closed_at: new Date().toISOString() })
+                      .eq("id", r.id);
+                    void load();
+                  }}
+                >
+                  Close request
+                </button>
+              )}
             </li>
           ))}
         </ul>
