@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   AlertTriangle,
   Ban,
@@ -102,6 +102,7 @@ export function GuidedReview({
   mediaLoading,
   onPrefillRequest,
   onAddNote,
+  decisionSlot,
 }: {
   applicationId: string;
   app: GuidedReviewApp;
@@ -113,7 +114,9 @@ export function GuidedReview({
   mediaLoading: boolean;
   onPrefillRequest: (sections: string[], documents: string[], message: string) => void;
   onAddNote: () => void;
+  decisionSlot?: ReactNode;
 }) {
+
   const qualsRelevant = !!(app.qualifications && app.qualifications.trim().length > 0);
   const checks = REVIEW_CHECKS;
 
@@ -540,6 +543,9 @@ export function GuidedReview({
           </button>
         </div>
       </div>
+
+      {decisionSlot}
+
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-4">
