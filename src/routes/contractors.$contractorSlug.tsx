@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { getPublicProfile, type PublicPhoto, type PublicProfile } from "@/lib/public-profile.functions";
+import { ContractorFallbackCover } from "@/components/ContractorFallbackCover";
 
 export const Route = createFileRoute("/contractors/$contractorSlug")({
   loader: async ({ params }) => getPublicProfile({ data: { slug: params.contractorSlug } }),
