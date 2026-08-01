@@ -406,20 +406,6 @@ function ApplicationDetail() {
 
       {activeTab === "review" && (
         <div className="space-y-4">
-          <DecisionActions
-            applicationId={app.id}
-            status={app.status}
-            percent={percent}
-            missingInfo={missingInfo}
-            missingDocs={missingDocs}
-            insuranceStatus={app.insurance_status}
-            qualifications={app.qualifications}
-            approvedAt={app.approved_at}
-            onDecided={() => {
-              setRequestsKey((k) => k + 1);
-              void load();
-            }}
-          />
           <ContractorResponse applicationId={app.id} />
           <GuidedReview
             applicationId={app.id}
@@ -437,7 +423,24 @@ function ApplicationDetail() {
             onAddNote={() =>
               document.getElementById("admin-notes")?.scrollIntoView({ behavior: "smooth", block: "start" })
             }
+            decisionSlot={
+              <DecisionActions
+                applicationId={app.id}
+                status={app.status}
+                percent={percent}
+                missingInfo={missingInfo}
+                missingDocs={missingDocs}
+                insuranceStatus={app.insurance_status}
+                qualifications={app.qualifications}
+                approvedAt={app.approved_at}
+                onDecided={() => {
+                  setRequestsKey((k) => k + 1);
+                  void load();
+                }}
+              />
+            }
           />
+
           <div id="request-more-info" className="scroll-mt-24">
           <RequestMoreInfo
             applicationId={app.id}
