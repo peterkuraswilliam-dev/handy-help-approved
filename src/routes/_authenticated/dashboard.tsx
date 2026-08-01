@@ -29,6 +29,7 @@ import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { InfoRequestList } from "@/components/application/InfoRequestList";
 import { RespondToRequest } from "@/components/application/RespondToRequest";
 import { InfoRequestBanner } from "@/components/application/InfoRequestBanner";
+import { ApprovedProfilePanel } from "@/components/application/ApprovedProfilePanel";
 
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
@@ -350,9 +351,9 @@ function Dashboard() {
                 </button>
               )}
               {approved && (
-                <Link to="/contractors/$id" params={{ id: app.id }} className="btn-gold">
-                  <ShieldCheck className="h-4 w-4" /> View public profile
-                </Link>
+                <button type="button" onClick={() => setTab("profile")} className="btn-gold">
+                  <ShieldCheck className="h-4 w-4" /> Manage public profile
+                </button>
               )}
             </div>
           </section>
