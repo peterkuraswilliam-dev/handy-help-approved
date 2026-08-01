@@ -30,17 +30,6 @@ type Row = {
   coverUrl: string | null;
 };
 
-function initials(name: string | null) {
-  if (!name) return "HH";
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
-function Directory() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
