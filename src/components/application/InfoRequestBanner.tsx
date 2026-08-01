@@ -56,7 +56,7 @@ export function InfoRequestBanner({
         <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-orange-400" />
         <div className="min-w-0">
           <h2 className="text-base font-semibold text-orange-200">
-            We need more information from you
+            More information is required before your application review can continue.
           </h2>
           <p className="text-xs text-muted-foreground">
             Requested {new Date(rows[0]!.requested_at).toLocaleString()}
