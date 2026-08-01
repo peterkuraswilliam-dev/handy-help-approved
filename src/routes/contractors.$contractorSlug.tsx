@@ -99,7 +99,7 @@ function ProfilePage() {
 
       {/* Cinematic hero */}
       <header className="profile-hero relative overflow-hidden rounded-2xl border border-border">
-        {featured?.url && (
+        {featured?.url ? (
           <>
             <img
               src={featured.url}
@@ -108,6 +108,10 @@ function ProfilePage() {
             />
             <div className="profile-hero-veil absolute inset-0" />
           </>
+        ) : (
+          <div className="absolute inset-0">
+            <ContractorFallbackCover name={profile.businessName} size="hero" />
+          </div>
         )}
         <div className="relative grid gap-6 p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div className="min-w-0 space-y-4">
@@ -119,8 +123,8 @@ function ProfilePage() {
                   className="h-16 w-16 shrink-0 rounded-full border border-white/15 bg-background/70 object-contain p-2 sm:h-20 sm:w-20"
                 />
               ) : (
-                <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-white/15 bg-background/70 sm:h-20 sm:w-20">
-                  <BadgeCheck className="h-7 w-7 text-[color:var(--color-gold)]" />
+                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-full border border-white/15 bg-background/70 sm:h-20 sm:w-20">
+                  <ContractorFallbackCover name={profile.businessName} size="logo" />
                 </div>
               )}
               <div className="min-w-0">
