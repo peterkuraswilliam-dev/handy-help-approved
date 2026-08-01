@@ -98,10 +98,10 @@ function ProfilePage() {
 
       {/* Cinematic hero */}
       <header className="profile-hero relative overflow-hidden rounded-2xl border border-border">
-        {featured?.url ? (
+        {false ? (
           <>
             <img
-              src={featured.url}
+              src={featured?.url}
               alt={`Featured work by ${profile.businessName ?? "this contractor"}`}
               className="absolute inset-0 h-full w-full object-cover opacity-40"
             />
