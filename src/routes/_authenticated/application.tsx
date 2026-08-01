@@ -88,7 +88,7 @@ function ApplicationForm() {
       const [{ data: s }, { data: ar }, { data: d }, { data: g }] = await Promise.all([
         db.from("contractor_services").select("id,service").eq("application_id", e.id),
         db.from("contractor_areas").select("id,area").eq("application_id", e.id),
-        db.from("contractor_documents").select("id,kind,path,original_name").eq("application_id", e.id),
+        db.from("contractor_documents").select("id,kind,path,original_name").eq("application_id", e.id).eq("is_active", true),
         db.from("contractor_gallery").select("id,path").eq("application_id", e.id),
       ]);
       setServices((s as { id: string; service: string }[]) ?? []);
@@ -211,9 +211,32 @@ function ApplicationForm() {
         const { data } = await db.from("contractor_documents")
           .insert({ application_id: id, kind, path, original_name: file.name })
           .select("id,kind,path,original_name").single();
-        setDocs((d) => [...d, data as Doc]);
+        const created = data as Doc;
+        // Keep the previous document for history: mark it replaced rather than deleting it.
+        const previous = docs.filter((d) => d.kind === kind).map((d) => d.id);
+        if (previous.length > 0) {
+          const { data: openReq } = await db
+            .from("application_info_requests")
+            .select("id")
+            .eq("application_id", id)
+            .eq("status", "open")
+            .order("requested_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          await db
+            .from("contractor_documents")
+            .update({
+              is_active: false,
+              replaced_at: new Date().toISOString(),
+              replaced_by_document_id: created.id,
+              info_request_id: (openReq as { id: string } | null)?.id ?? null,
+            })
+            .in("id", previous);
+        }
+        setDocs((d) => [...d.filter((x) => x.kind !== kind), created]);
         toast.success("Document uploaded");
       }
+
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");
     }

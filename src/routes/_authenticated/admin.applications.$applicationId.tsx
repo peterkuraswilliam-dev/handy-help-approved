@@ -25,6 +25,7 @@ import { AdminNotes } from "@/components/admin/AdminNotes";
 import { RequestMoreInfo, type InfoPrefill } from "@/components/admin/RequestMoreInfo";
 import { DecisionActions } from "@/components/admin/DecisionActions";
 import { InfoRequestList } from "@/components/application/InfoRequestList";
+import { ContractorResponse } from "@/components/admin/ContractorResponse";
 
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
@@ -419,6 +420,7 @@ function ApplicationDetail() {
               void load();
             }}
           />
+          <ContractorResponse applicationId={app.id} />
           <GuidedReview
             applicationId={app.id}
             app={app}

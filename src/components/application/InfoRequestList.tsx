@@ -28,7 +28,7 @@ export function InfoRequestList({
       const { data, error } = await db
         .from("application_info_requests")
         .select(
-          "id,application_id,message,requested_sections,requested_documents,requested_by,requested_at,due_date,status,completed_at,response_message,responded_at",
+          "id,application_id,message,requested_sections,requested_documents,requested_by,requested_at,due_date,status,completed_at,response_message,responded_at,resubmitted_at",
         )
         .eq("application_id", applicationId)
         .order("requested_at", { ascending: false });
@@ -128,6 +128,9 @@ export function InfoRequestList({
                   <p className="text-xs text-emerald-300">
                     {role === "admin" ? "Contractor response" : "Your response"}
                     {r.responded_at ? ` — ${new Date(r.responded_at).toLocaleString()}` : ""}
+                    {r.resubmitted_at
+                      ? ` · Resubmitted ${new Date(r.resubmitted_at).toLocaleString()}`
+                      : ""}
                   </p>
                   {r.response_message && (
                     <p className="whitespace-pre-wrap break-words">{r.response_message}</p>
