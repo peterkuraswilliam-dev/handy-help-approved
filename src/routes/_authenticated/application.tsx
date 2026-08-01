@@ -211,9 +211,32 @@ function ApplicationForm() {
         const { data } = await db.from("contractor_documents")
           .insert({ application_id: id, kind, path, original_name: file.name })
           .select("id,kind,path,original_name").single();
-        setDocs((d) => [...d, data as Doc]);
+        const created = data as Doc;
+        // Keep the previous document for history: mark it replaced rather than deleting it.
+        const previous = docs.filter((d) => d.kind === kind).map((d) => d.id);
+        if (previous.length > 0) {
+          const { data: openReq } = await db
+            .from("application_info_requests")
+            .select("id")
+            .eq("application_id", id)
+            .eq("status", "open")
+            .order("requested_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          await db
+            .from("contractor_documents")
+            .update({
+              is_active: false,
+              replaced_at: new Date().toISOString(),
+              replaced_by_document_id: created.id,
+              info_request_id: (openReq as { id: string } | null)?.id ?? null,
+            })
+            .in("id", previous);
+        }
+        setDocs((d) => [...d.filter((x) => x.kind !== kind), created]);
         toast.success("Document uploaded");
       }
+
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");
     }
