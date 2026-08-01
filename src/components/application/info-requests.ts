@@ -4,6 +4,7 @@ export const INFO_SECTIONS: { key: string; label: string }[] = [
   { key: "services", label: "Services" },
   { key: "areas", label: "Areas covered" },
   { key: "business_description", label: "Business description" },
+  { key: "website_facebook", label: "Website or Facebook page" },
   { key: "work_photos", label: "Work photos" },
   { key: "insurance_information", label: "Insurance information" },
   { key: "qualifications", label: "Qualifications" },
@@ -28,6 +29,7 @@ export type InfoRequestRow = {
   due_date: string | null;
   status: string;
   completed_at: string | null;
+  closed_at?: string | null;
   response_message?: string | null;
   responded_at?: string | null;
 };

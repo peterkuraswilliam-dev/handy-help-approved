@@ -52,6 +52,7 @@ export type Database = {
       application_info_requests: {
         Row: {
           application_id: string
+          closed_at: string | null
           completed_at: string | null
           created_at: string
           due_date: string | null
@@ -68,6 +69,7 @@ export type Database = {
         }
         Insert: {
           application_id: string
+          closed_at?: string | null
           completed_at?: string | null
           created_at?: string
           due_date?: string | null
@@ -84,6 +86,7 @@ export type Database = {
         }
         Update: {
           application_id?: string
+          closed_at?: string | null
           completed_at?: string | null
           created_at?: string
           due_date?: string | null

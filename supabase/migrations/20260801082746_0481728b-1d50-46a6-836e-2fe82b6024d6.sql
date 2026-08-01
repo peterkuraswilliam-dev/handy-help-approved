@@ -1,0 +1,1 @@
+ALTER TABLE public.application_info_requests ADD COLUMN IF NOT EXISTS closed_at timestamptz;

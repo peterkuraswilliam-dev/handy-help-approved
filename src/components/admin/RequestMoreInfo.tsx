@@ -3,6 +3,7 @@ import { Loader2, MessageSquareWarning, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
 import { INFO_DOCUMENTS, INFO_SECTIONS } from "@/components/application/info-requests";
+import { REVIEW_CHECKS } from "@/components/admin/guided-review-model";
 
 export type InfoPrefill = { sections: string[]; documents: string[]; message: string; nonce: number };
 
@@ -84,6 +85,40 @@ export function RequestMoreInfo({
         changed_by: uid,
       });
       if (histErr) throw new Error(histErr.message);
+
+      // Mark related review checklist items as Needs Information
+      const relatedKeys = REVIEW_CHECKS.filter(
+        (c) =>
+          (c.infoSection && sections.includes(c.infoSection)) ||
+          (c.infoDocument && documents.includes(c.infoDocument)),
+      ).map((c) => c.key);
+      if (relatedKeys.length > 0) {
+        const { data: existing } = await db
+          .from("application_review_checks")
+          .select("id,check_key")
+          .eq("application_id", applicationId)
+          .in("check_key", relatedKeys);
+        const existingKeys = new Set(((existing as { check_key: string }[]) ?? []).map((r) => r.check_key));
+        const stamp = { review_state: "needs_info", reviewed_by: uid, reviewed_at: new Date().toISOString() };
+        if (existingKeys.size > 0) {
+          await db
+            .from("application_review_checks")
+            .update(stamp)
+            .eq("application_id", applicationId)
+            .in("check_key", [...existingKeys]);
+        }
+        const missing = relatedKeys.filter((k) => !existingKeys.has(k));
+        if (missing.length > 0) {
+          await db.from("application_review_checks").insert(
+            missing.map((k) => ({
+              application_id: applicationId,
+              check_key: k,
+              completed: false,
+              ...stamp,
+            })),
+          );
+        }
+      }
 
       setDone(true);
       setOpen(false);

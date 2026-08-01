@@ -7,6 +7,7 @@ import {
   ChevronRight,
   ClipboardList,
   Loader2,
+  MessageSquareWarning,
   PlayCircle,
   RefreshCw,
   StickyNote,
@@ -401,6 +402,18 @@ export function GuidedReview({
           </button>
           <button className="btn-outline" onClick={onAddNote}>
             <StickyNote className="h-4 w-4" /> Add Private Note
+          </button>
+          <button
+            className="btn-outline"
+            onClick={() =>
+              onPrefillRequest(
+                check.infoSection ? [check.infoSection] : [],
+                check.infoDocument ? [check.infoDocument] : [],
+                issueDraft.trim(),
+              )
+            }
+          >
+            <MessageSquareWarning className="h-4 w-4" /> Request More Information
           </button>
         </div>
 
