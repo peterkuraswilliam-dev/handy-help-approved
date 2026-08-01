@@ -30,6 +30,7 @@ type Row = {
   coverUrl: string | null;
 };
 
+function Directory() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
