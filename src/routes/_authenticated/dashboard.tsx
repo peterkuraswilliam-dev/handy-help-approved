@@ -264,6 +264,7 @@ function Dashboard() {
               applicationId={app.id}
               missingInfo={missingInfo}
               missingDocs={missingDocs}
+              onOpenTab={setTab}
               onResubmitted={() => {
                 setRequestsKey((k) => k + 1);
                 void load();
@@ -429,6 +430,7 @@ function Dashboard() {
               applicationId={app.id}
               missingInfo={missingInfo}
               missingDocs={missingDocs}
+              onOpenTab={setTab}
               onResubmitted={() => {
                 setRequestsKey((k) => k + 1);
                 void load();
