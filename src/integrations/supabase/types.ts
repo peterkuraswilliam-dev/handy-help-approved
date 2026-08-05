@@ -501,6 +501,7 @@ export type Database = {
           facebook: string | null
           featured_photo_id: string | null
           id: string
+          insurance_expiry_date: string | null
           insurance_status: string | null
           logo_path: string | null
           main_area: string | null
@@ -526,6 +527,7 @@ export type Database = {
           facebook?: string | null
           featured_photo_id?: string | null
           id?: string
+          insurance_expiry_date?: string | null
           insurance_status?: string | null
           logo_path?: string | null
           main_area?: string | null
@@ -551,6 +553,7 @@ export type Database = {
           facebook?: string | null
           featured_photo_id?: string | null
           id?: string
+          insurance_expiry_date?: string | null
           insurance_status?: string | null
           logo_path?: string | null
           main_area?: string | null
