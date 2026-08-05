@@ -69,6 +69,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 type Application = {
   id: string;
+  user_id: string;
   status: AppStatus;
   business_name: string | null;
   contact_name: string | null;
