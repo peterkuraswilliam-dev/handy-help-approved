@@ -27,6 +27,8 @@ type ApplicationRow = {
   description: string | null;
   insurance_status: string | null;
   insurance_evidence_path: string | null;
+  insurance_expiry_date: string | null;
+  insurance_verification_state: string | null;
   logo_path: string | null;
   qualifications: string | null;
   references_text: string | null;
@@ -166,7 +168,7 @@ function AdminApplicationList() {
         db
           .from("contractor_applications")
           .select(
-            "id,business_name,contact_name,email,phone,main_area,description,insurance_status,insurance_evidence_path,logo_path,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
+            "id,business_name,contact_name,email,phone,main_area,description,insurance_status,insurance_evidence_path,insurance_expiry_date,insurance_verification_state,logo_path,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at",
           )
           .order("updated_at", { ascending: false }),
         db.from("contractor_services").select("application_id,service"),
@@ -270,13 +272,24 @@ function AdminApplicationList() {
   }
 
 
+  const insuranceOf = (application: ApplicationRow) =>
+    insuranceSummary({
+      status: application.insurance_status,
+      expiryDate: application.insurance_expiry_date,
+      verificationState: application.insurance_verification_state,
+    });
+
   const statusFilteredApplications =
     selectedStatus === "all"
       ? applications
       : applications.filter((application) => application.status === selectedStatus);
+  const insuranceFilteredApplications =
+    insuranceFilter === "all"
+      ? statusFilteredApplications
+      : statusFilteredApplications.filter((application) => insuranceOf(application).state === insuranceFilter);
   const normalizedSearch = searchTerm.trim().toLocaleLowerCase();
   const filteredApplications = normalizedSearch
-    ? statusFilteredApplications.filter((application) =>
+    ? insuranceFilteredApplications.filter((application) =>
         [application.business_name, application.contact_name, application.email].some((value) =>
           value?.toLocaleLowerCase().includes(normalizedSearch),
         ),
@@ -300,6 +313,8 @@ function AdminApplicationList() {
       if (docs.required.length > 0) return true;
       if (insuranceIncomplete(application, kinds)) return true;
     }
+    const ins = insuranceOf(application).state;
+    if (ins === "expired" || ins === "expiring_soon" || ins === "missing_expiry") return true;
     if (application.status === "more_info_required") {
       const requestedAt = moreInfoAt.get(application.id);
       const updated = application.updated_at ? new Date(application.updated_at).getTime() : 0;
@@ -473,6 +488,26 @@ function AdminApplicationList() {
               </button>
             )}
             <div className="flex w-full flex-col gap-1 sm:w-auto">
+              <label htmlFor="insurance-filter" className="text-xs font-medium text-muted-foreground sm:sr-only">
+                Filter by insurance
+              </label>
+              <select
+                id="insurance-filter"
+                aria-label="Filter by insurance"
+                value={insuranceFilter}
+                onChange={(event) => setInsuranceFilter(event.target.value as InsuranceFilter)}
+                className="min-h-11 w-full rounded-md border border-border bg-secondary/40 px-3 text-sm text-foreground sm:w-[14rem]"
+              >
+                <option value="all">All insurance</option>
+                <option value="valid">Insurance valid</option>
+                <option value="expiring_soon">Expiring soon</option>
+                <option value="expired">Expired</option>
+                <option value="awaiting_review">Awaiting review</option>
+                <option value="missing_expiry">Expiry missing</option>
+                <option value="not_provided">Not provided</option>
+              </select>
+            </div>
+            <div className="flex w-full flex-col gap-1 sm:w-auto">
               <label htmlFor="application-sort" className="text-xs font-medium text-muted-foreground sm:sr-only">
                 Sort applications
               </label>
@@ -611,6 +646,14 @@ function AdminApplicationList() {
                         <CircleAlert className="h-3.5 w-3.5" /> Needs Attention
                       </span>
                     )}
+                    <InsuranceBadge
+                      input={{
+                        status: application.insurance_status,
+                        expiryDate: application.insurance_expiry_date,
+                        verificationState: application.insurance_verification_state,
+                      }}
+                      compact
+                    />
                     <span>Last updated: {updatedDate}</span>
                   </div>
 
