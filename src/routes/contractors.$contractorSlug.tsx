@@ -84,7 +84,12 @@ function ProfilePage() {
   const approved = formatDate(profile.approvalDate);
   const featured =
     profile.photos.find((p) => p.id === profile.featuredPhotoId) ?? profile.photos[0] ?? null;
-  const insured = (profile.insuranceStatus ?? "").toLowerCase().includes("valid");
+  const insuranceView = insuranceSummary({
+    status: profile.insuranceStatus,
+    expiryDate: profile.insuranceExpiryDate,
+    verificationState: "verified",
+  });
+  const insured = publiclyDisplayable(insuranceView.state);
   const qualificationLines = (profile.qualifications ?? "")
     .split(/\r?\n|,(?![^()]*\))/)
     .map((q) => q.trim())
@@ -173,7 +178,7 @@ function ProfilePage() {
         <TrustItem
           icon={ShieldCheck}
           label="Insurance"
-          value={insured ? "Valid" : (profile.insuranceStatus ?? "Not stated")}
+          value={insured ? "Valid" : "Not confirmed"}
           tone={insured ? "success" : "neutral"}
         />
         <TrustItem
@@ -258,7 +263,9 @@ function ProfilePage() {
             <div>
               <p className="text-sm font-semibold">Public liability insurance</p>
               <p className="text-sm text-muted-foreground">
-                {insured ? "Confirmed and valid at the time of approval." : (profile.insuranceStatus ?? "Not stated")}
+                {insured
+                  ? "Confirmed by our team and in date at the time of viewing."
+                  : "Insurance cover is not currently confirmed. Please ask the contractor for up-to-date evidence."}
               </p>
             </div>
           </div>

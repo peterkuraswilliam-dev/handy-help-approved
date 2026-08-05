@@ -86,6 +86,10 @@ export function AdminInsurancePanel({
         })
         .eq("id", applicationId);
       if (err) throw err;
+      await db
+        .from("contractor_profiles")
+        .update({ insurance_expiry_date: expiryDate })
+        .eq("application_id", applicationId);
       const active = docs.find((d) => d.is_active) ?? docs[0];
       if (active) {
         await db.from("contractor_documents").update({ verification_state: state }).eq("id", active.id);
