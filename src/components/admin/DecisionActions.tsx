@@ -3,6 +3,7 @@ import { AlertTriangle, CheckCircle2, Loader2, ShieldCheck, XCircle } from "luci
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
 import { STATUS_LABEL, insuranceProvided, type AppStatus } from "@/lib/application-helpers";
+import { blocksApproval, insuranceSummary } from "@/lib/insurance";
 import { ProgressBar } from "@/components/application/shared";
 
 const REJECTION_REASONS = [
@@ -22,6 +23,8 @@ type Props = {
   missingInfo: string[];
   missingDocs: string[];
   insuranceStatus: string | null;
+  insuranceExpiryDate?: string | null;
+  insuranceVerificationState?: string | null;
   qualifications: string | null;
   approvedAt?: string | null;
   onDecided?: () => void;
@@ -34,6 +37,8 @@ export function DecisionActions({
   missingInfo,
   missingDocs,
   insuranceStatus,
+  insuranceExpiryDate = null,
+  insuranceVerificationState = null,
   qualifications,
   approvedAt,
   onDecided,
@@ -76,6 +81,11 @@ export function DecisionActions({
   }, [loadChecks]);
 
   const insuranceOk = insuranceProvided(insuranceStatus);
+  const insurance = insuranceSummary({
+    status: insuranceStatus,
+    expiryDate: insuranceExpiryDate,
+    verificationState: insuranceVerificationState,
+  });
   const blockers: string[] = [];
   if (missingInfo.length > 0) blockers.push(`${missingInfo.length} required detail(s) still missing`);
   if (missingDocs.length > 0) blockers.push(`Missing documents: ${missingDocs.join(", ")}`);
@@ -84,6 +94,9 @@ export function DecisionActions({
   if (checks && checks.needsInfo > 0) blockers.push(`${checks.needsInfo} checklist item(s) marked Needs Information`);
   if (openRequests && openRequests > 0) blockers.push(`${openRequests} information request(s) still open`);
   if (!insuranceOk) blockers.push("Insurance is not confirmed as valid");
+  else if (blocksApproval(insurance.state)) blockers.push(`${insurance.label} — ${insurance.detail}`);
+  else if (insurance.state === "awaiting_review")
+    blockers.push("Insurance has not been verified by an administrator yet");
   const loadingGate = checks === null || openRequests === null;
   const blocked = loadingGate || blockers.length > 0;
   const decided = status === "approved" || status === "rejected";
