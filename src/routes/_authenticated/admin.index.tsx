@@ -3,6 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 import { ArrowLeft, Sparkles, CircleAlert, CircleCheck, ChevronDown, FileWarning, LayoutGrid, Send, Eye, MessageCircleQuestion, BadgeCheck, type LucideIcon } from "lucide-react";
 import { db } from "@/lib/db";
 import { STATUS_LABEL, missingFields, type AppStatus } from "@/lib/application-helpers";
+import { insuranceSummary, type InsuranceState } from "@/lib/insurance";
+import { InsuranceBadge } from "@/components/insurance/InsuranceBadge";
+
+type InsuranceFilter = "all" | InsuranceState;
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
@@ -143,6 +147,7 @@ function AdminApplicationList() {
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("recently_updated");
+  const [insuranceFilter, setInsuranceFilter] = useState<InsuranceFilter>("all");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [serviceCounts, setServiceCounts] = useState<Map<string, number>>(new Map());
