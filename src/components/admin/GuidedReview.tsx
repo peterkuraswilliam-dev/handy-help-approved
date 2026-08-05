@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
+import { formatExpiry } from "@/lib/insurance";
+import { InsuranceBadge } from "@/components/insurance/InsuranceBadge";
 import { ProgressBar } from "@/components/application/shared";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { PhotosPanel } from "@/components/application/PhotosPanel";
@@ -47,6 +49,8 @@ export type GuidedReviewApp = {
   website: string | null;
   facebook: string | null;
   insurance_status: string | null;
+  insurance_expiry_date?: string | null;
+  insurance_verification_state?: string | null;
   insurance_evidence_path: string | null;
   qualifications: string | null;
   references_text: string | null;
@@ -334,6 +338,16 @@ export function GuidedReview({
         return (
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Public liability insurance status" value={app.insurance_status} />
+            <Field label="Insurance expiry date" value={formatExpiry(app.insurance_expiry_date)} />
+            <div className="sm:col-span-2">
+              <InsuranceBadge
+                input={{
+                  status: app.insurance_status,
+                  expiryDate: app.insurance_expiry_date ?? null,
+                  verificationState: app.insurance_verification_state ?? null,
+                }}
+              />
+            </div>
             <Field
               label="Insurance evidence uploaded"
               value={app.insurance_evidence_path ? "Yes" : "No"}
