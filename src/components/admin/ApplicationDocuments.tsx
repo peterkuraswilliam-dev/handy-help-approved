@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Download, Eye, FileText, RefreshCw, ShieldCheck, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
+import { formatExpiry } from "@/lib/insurance";
 
 type DocRow = {
   id: string;
@@ -159,11 +160,13 @@ export function ApplicationDocuments({
   applicationId,
   insuranceStatus,
   insuranceEvidencePath,
+  insuranceExpiryDate = null,
   qualifications,
 }: {
   applicationId: string;
   insuranceStatus: string | null;
   insuranceEvidencePath: string | null;
+  insuranceExpiryDate?: string | null;
   qualifications: string | null;
 }) {
   const [docs, setDocs] = useState<DocRow[]>([]);
@@ -266,7 +269,7 @@ export function ApplicationDocuments({
                     <>
                       <Row label="Document type" value="Insurance evidence" />
                       <Row label="Insurance status" value={insuranceStatus} />
-                      <Row label="Insurance expiry date" value={null} />
+                      <Row label="Insurance expiry date" value={formatExpiry(insuranceExpiryDate)} />
                     </>
                   }
                 />

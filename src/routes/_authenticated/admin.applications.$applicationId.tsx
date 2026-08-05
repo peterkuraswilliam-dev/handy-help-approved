@@ -19,6 +19,7 @@ import {
   missingFields,
   type AppStatus,
 } from "@/lib/application-helpers";
+import { AdminInsurancePanel } from "@/components/insurance/AdminInsurancePanel";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { GuidedReview } from "@/components/admin/GuidedReview";
 import { AdminNotes } from "@/components/admin/AdminNotes";
@@ -92,6 +93,11 @@ type ApplicationRow = {
   updated_at: string;
   logo_path: string | null;
   insurance_evidence_path: string | null;
+  insurance_provider: string | null;
+  insurance_policy_type: string | null;
+  insurance_expiry_date: string | null;
+  insurance_verification_state: string | null;
+  insurance_verified_at: string | null;
   approved_at: string | null;
 };
 
@@ -162,7 +168,7 @@ function ApplicationDetail() {
         db
           .from("contractor_applications")
           .select(
-            "id,user_id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at,logo_path,insurance_evidence_path,approved_at",
+            "id,user_id,business_name,contact_name,email,phone,main_area,description,website,facebook,insurance_status,qualifications,references_text,agreed_rules,confirmed_accurate,status,created_at,updated_at,logo_path,insurance_evidence_path,insurance_provider,insurance_policy_type,insurance_expiry_date,insurance_verification_state,insurance_verified_at,approved_at",
           )
           .eq("id", applicationId)
           .maybeSingle(),
@@ -398,12 +404,25 @@ function ApplicationDetail() {
       )}
 
       {activeTab === "documents" && (
+        <div className="space-y-4">
+        <AdminInsurancePanel
+          applicationId={app.id}
+          insuranceStatus={app.insurance_status}
+          provider={app.insurance_provider}
+          policyType={app.insurance_policy_type}
+          expiryDate={app.insurance_expiry_date}
+          verificationState={app.insurance_verification_state}
+          verifiedAt={app.insurance_verified_at}
+          onUpdated={() => void load()}
+        />
         <ApplicationDocuments
           applicationId={app.id}
           insuranceStatus={app.insurance_status}
           insuranceEvidencePath={app.insurance_evidence_path}
+          insuranceExpiryDate={app.insurance_expiry_date}
           qualifications={app.qualifications}
         />
+        </div>
       )}
 
       {activeTab === "review" && (
@@ -435,6 +454,8 @@ function ApplicationDetail() {
                 missingInfo={missingInfo}
                 missingDocs={missingDocs}
                 insuranceStatus={app.insurance_status}
+                insuranceExpiryDate={app.insurance_expiry_date}
+                insuranceVerificationState={app.insurance_verification_state}
                 qualifications={app.qualifications}
                 approvedAt={app.approved_at}
                 onDecided={() => {

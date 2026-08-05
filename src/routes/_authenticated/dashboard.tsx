@@ -24,6 +24,9 @@ import {
   ShieldCheck,
   Upload,
 } from "lucide-react";
+import { ContractorInsurancePanel } from "@/components/insurance/ContractorInsurancePanel";
+import { InsuranceBadge } from "@/components/insurance/InsuranceBadge";
+import { insuranceSummary } from "@/lib/insurance";
 import { ApplicationDocuments } from "@/components/admin/ApplicationDocuments";
 import { ActivityTimeline } from "@/components/application/ActivityTimeline";
 import { InfoRequestList } from "@/components/application/InfoRequestList";
@@ -35,7 +38,7 @@ import { SuspendedNotice } from "@/components/application/SuspendedNotice";
 import { PhotosPanel, SafeImage, useGallery } from "@/components/application/PhotosPanel";
 import {
   ApplicationHeader,
-  InsuranceCard,
+  MetricCard,
   MissingDocsCard,
   MissingInfoCard,
   ProgressCard,
@@ -66,6 +69,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 type Application = {
   id: string;
+  user_id: string;
   status: AppStatus;
   business_name: string | null;
   contact_name: string | null;
@@ -77,6 +81,10 @@ type Application = {
   facebook: string | null;
   insurance_status: string | null;
   insurance_evidence_path: string | null;
+  insurance_provider: string | null;
+  insurance_policy_type: string | null;
+  insurance_expiry_date: string | null;
+  insurance_verification_state: string | null;
   qualifications: string | null;
   agreed_rules: boolean;
   confirmed_accurate: boolean;
@@ -224,6 +232,13 @@ function Dashboard() {
 
   const latestUpdate = history[0] ?? null;
 
+  const insuranceInput = {
+    status: app.insurance_status,
+    expiryDate: app.insurance_expiry_date,
+    verificationState: app.insurance_verification_state,
+  };
+  const insuranceView = insuranceSummary(insuranceInput);
+
   return (
     <div className="mx-auto w-full max-w-3xl space-y-4 overflow-x-hidden">
       <ApplicationHeader
@@ -249,6 +264,29 @@ function Dashboard() {
         onGoToMessages={() => setTab("messages")}
       />
 
+      {(insuranceView.state === "expired" ||
+        insuranceView.state === "expiring_soon" ||
+        insuranceView.state === "missing_expiry") && (
+        <div
+          className={`rounded-xl border p-4 ${
+            insuranceView.state === "expired"
+              ? "border-destructive/50 bg-destructive/10"
+              : "border-[color:var(--color-gold)]/50 bg-[color:var(--color-gold)]/10"
+          }`}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-semibold">{insuranceView.label}</p>
+            <InsuranceBadge input={insuranceInput} compact />
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {insuranceView.detail} Please upload up-to-date insurance evidence.
+          </p>
+          <button className="btn-gold mt-3" onClick={() => setTab("documents")}>
+            Update insurance
+          </button>
+        </div>
+      )}
+
       <TabNav tabs={TABS} active={activeTab} onSelect={setTab} />
 
 
@@ -258,7 +296,18 @@ function Dashboard() {
             <ProgressCard percent={percent} />
             <MissingInfoCard items={missingInfo} />
             <MissingDocsCard items={missingDocs} />
-            <InsuranceCard status={app.insurance_status} />
+            <MetricCard
+              icon={ShieldCheck}
+              tone={
+                insuranceView.state === "valid"
+                  ? "success"
+                  : insuranceView.state === "expiring_soon" || insuranceView.state === "awaiting_review"
+                    ? "gold"
+                    : "warning"
+              }
+              value={insuranceView.shortLabel}
+              label={`Insurance — expiry ${insuranceView.expiryText}`}
+            />
           </div>
 
           {app.status === "more_info_required" && (
@@ -415,10 +464,21 @@ function Dashboard() {
 
       {activeTab === "documents" && (
         <div className="space-y-4">
+          <ContractorInsurancePanel
+            applicationId={app.id}
+            userId={app.user_id}
+            insuranceStatus={app.insurance_status}
+            provider={app.insurance_provider}
+            policyType={app.insurance_policy_type}
+            expiryDate={app.insurance_expiry_date}
+            verificationState={app.insurance_verification_state}
+            onSaved={() => void load()}
+          />
           <ApplicationDocuments
             applicationId={app.id}
             insuranceStatus={app.insurance_status}
             insuranceEvidencePath={app.insurance_evidence_path}
+            insuranceExpiryDate={app.insurance_expiry_date}
             qualifications={app.qualifications}
           />
           {canEdit && (

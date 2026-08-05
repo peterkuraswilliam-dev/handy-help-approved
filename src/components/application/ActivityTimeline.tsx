@@ -12,11 +12,13 @@ import {
   RefreshCw,
   Send,
   ShieldAlert,
+  ShieldCheck,
   X,
   XCircle,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { STATUS_LABEL, type AppStatus } from "@/lib/application-helpers";
+import { insuranceState, insuranceSummary } from "@/lib/insurance";
 
 type Tone = "neutral" | "gold" | "green" | "orange" | "red";
 
@@ -43,6 +45,12 @@ type HistoryRow = {
 };
 
 type DocRow = { id: string; kind: string; original_name: string | null; created_at: string };
+type InsuranceInfo = {
+  insurance_status: string | null;
+  insurance_expiry_date: string | null;
+  insurance_verification_state: string | null;
+  insurance_verified_at: string | null;
+};
 type PhotoRow = { id: string; created_at: string };
 
 const TONE_RING: Record<Tone, string> = {
@@ -139,8 +147,9 @@ function buildEvents(opts: {
   history: HistoryRow[];
   docs: DocRow[];
   photos: PhotoRow[];
+  insurance?: InsuranceInfo | null;
 }): TimelineEvent[] {
-  const { role, createdAt, ownerUserId, history, docs, photos } = opts;
+  const { role, createdAt, ownerUserId, history, docs, photos, insurance } = opts;
   const admin = role === "admin";
   const events: TimelineEvent[] = [];
 
@@ -195,10 +204,17 @@ function buildEvents(opts: {
 
   for (const d of docs) {
     const qualification = d.kind === "qualification";
+    const isInsurance = d.kind === "insurance";
     events.push({
       id: `doc-${d.id}`,
       at: d.created_at,
-      title: admin ? (qualification ? "Qualification added" : "Document uploaded") : "Document uploaded",
+      title: isInsurance
+        ? "Insurance document uploaded"
+        : admin
+          ? qualification
+            ? "Qualification added"
+            : "Document uploaded"
+          : "Document uploaded",
       description: admin
         ? `${d.original_name?.trim() || "A document"} was uploaded${qualification ? "" : ` (${d.kind})`}.`
         : "You uploaded a document.",
@@ -207,6 +223,55 @@ function buildEvents(opts: {
       icon: qualification ? Award : FileText,
       kind: "document",
     });
+  }
+
+  if (insurance) {
+    const state = insuranceState({
+      status: insurance.insurance_status,
+      expiryDate: insurance.insurance_expiry_date,
+      verificationState: insurance.insurance_verification_state,
+    });
+    const summary = insuranceSummary({
+      status: insurance.insurance_status,
+      expiryDate: insurance.insurance_expiry_date,
+      verificationState: insurance.insurance_verification_state,
+    });
+    if (insurance.insurance_verified_at) {
+      events.push({
+        id: `insurance-verified-${insurance.insurance_verified_at}`,
+        at: insurance.insurance_verified_at,
+        title:
+          insurance.insurance_verification_state === "rejected"
+            ? "Insurance evidence rejected"
+            : "Insurance verified",
+        description:
+          insurance.insurance_verification_state === "rejected"
+            ? admin
+              ? "The insurance evidence was rejected by an administrator."
+              : "We could not accept your insurance evidence. Please upload up-to-date cover."
+            : admin
+              ? "The insurance evidence was verified by an administrator."
+              : "We verified your public liability insurance.",
+        actor: admin ? "Admin" : null,
+        tone: insurance.insurance_verification_state === "rejected" ? "red" : "green",
+        icon: insurance.insurance_verification_state === "rejected" ? XCircle : ShieldCheck,
+        kind: "system",
+      });
+    }
+    if (state === "expired" || state === "expiring_soon") {
+      events.push({
+        id: `insurance-${state}`,
+        at: state === "expired" ? (insurance.insurance_expiry_date ?? new Date().toISOString()) : new Date().toISOString(),
+        title: summary.label,
+        description: admin
+          ? `${summary.detail} Expiry date: ${summary.expiryText}.`
+          : `${summary.detail} Please upload up-to-date insurance evidence.`,
+        actor: admin ? "System" : null,
+        tone: state === "expired" ? "red" : "orange",
+        icon: ShieldAlert,
+        kind: "system",
+      });
+    }
   }
 
   if (admin) {
@@ -319,6 +384,7 @@ export function ActivityTimeline({
   const [history, setHistory] = useState<HistoryRow[]>([]);
   const [docs, setDocs] = useState<DocRow[]>([]);
   const [photos, setPhotos] = useState<PhotoRow[]>([]);
+  const [insurance, setInsurance] = useState<InsuranceInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [filter, setFilter] = useState<"all" | "status" | "document" | "photo">("all");
@@ -328,7 +394,7 @@ export function ActivityTimeline({
     setLoading(true);
     setFailed(false);
     try {
-      const [hist, doc, gal] = await Promise.all([
+      const [hist, doc, gal, appRes] = await Promise.all([
         db
           .from("application_status_history")
           .select("id,status,reason,created_at,changed_by")
@@ -339,6 +405,11 @@ export function ActivityTimeline({
           .select("id,kind,original_name,created_at")
           .eq("application_id", applicationId),
         db.from("contractor_gallery").select("id,created_at").eq("application_id", applicationId),
+        db
+          .from("contractor_applications")
+          .select("insurance_status,insurance_expiry_date,insurance_verification_state,insurance_verified_at")
+          .eq("id", applicationId)
+          .maybeSingle(),
       ]);
       if (hist.error || doc.error || gal.error) {
         setFailed(true);
@@ -347,6 +418,7 @@ export function ActivityTimeline({
       setHistory((hist.data as HistoryRow[]) ?? []);
       setDocs((doc.data as DocRow[]) ?? []);
       setPhotos((gal.data as PhotoRow[]) ?? []);
+      setInsurance((appRes.data as InsuranceInfo | null) ?? null);
     } catch {
       setFailed(true);
     } finally {
@@ -359,8 +431,8 @@ export function ActivityTimeline({
   }, [load]);
 
   const events = useMemo(
-    () => buildEvents({ role, createdAt, ownerUserId, history, docs, photos }),
-    [role, createdAt, ownerUserId, history, docs, photos],
+    () => buildEvents({ role, createdAt, ownerUserId, history, docs, photos, insurance }),
+    [role, createdAt, ownerUserId, history, docs, photos, insurance],
   );
 
   const visible = filter === "all" ? events : events.filter((e) => e.kind === filter);

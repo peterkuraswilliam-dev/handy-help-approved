@@ -268,7 +268,13 @@ export type Database = {
           facebook: string | null
           id: string
           insurance_evidence_path: string | null
+          insurance_expiry_date: string | null
+          insurance_policy_type: string | null
+          insurance_provider: string | null
           insurance_status: string | null
+          insurance_verification_state: string
+          insurance_verified_at: string | null
+          insurance_verified_by: string | null
           logo_path: string | null
           main_area: string | null
           phone: string | null
@@ -298,7 +304,13 @@ export type Database = {
           facebook?: string | null
           id?: string
           insurance_evidence_path?: string | null
+          insurance_expiry_date?: string | null
+          insurance_policy_type?: string | null
+          insurance_provider?: string | null
           insurance_status?: string | null
+          insurance_verification_state?: string
+          insurance_verified_at?: string | null
+          insurance_verified_by?: string | null
           logo_path?: string | null
           main_area?: string | null
           phone?: string | null
@@ -328,7 +340,13 @@ export type Database = {
           facebook?: string | null
           id?: string
           insurance_evidence_path?: string | null
+          insurance_expiry_date?: string | null
+          insurance_policy_type?: string | null
+          insurance_provider?: string | null
           insurance_status?: string | null
+          insurance_verification_state?: string
+          insurance_verified_at?: string | null
+          insurance_verified_by?: string | null
           logo_path?: string | null
           main_area?: string | null
           phone?: string | null
@@ -381,6 +399,9 @@ export type Database = {
           path: string
           replaced_at: string | null
           replaced_by_document_id: string | null
+          verification_state: string
+          verified_at: string | null
+          verified_by: string | null
         }
         Insert: {
           application_id: string
@@ -393,6 +414,9 @@ export type Database = {
           path: string
           replaced_at?: string | null
           replaced_by_document_id?: string | null
+          verification_state?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Update: {
           application_id?: string
@@ -405,6 +429,9 @@ export type Database = {
           path?: string
           replaced_at?: string | null
           replaced_by_document_id?: string | null
+          verification_state?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Relationships: [
           {
@@ -474,6 +501,7 @@ export type Database = {
           facebook: string | null
           featured_photo_id: string | null
           id: string
+          insurance_expiry_date: string | null
           insurance_status: string | null
           logo_path: string | null
           main_area: string | null
@@ -499,6 +527,7 @@ export type Database = {
           facebook?: string | null
           featured_photo_id?: string | null
           id?: string
+          insurance_expiry_date?: string | null
           insurance_status?: string | null
           logo_path?: string | null
           main_area?: string | null
@@ -524,6 +553,7 @@ export type Database = {
           facebook?: string | null
           featured_photo_id?: string | null
           id?: string
+          insurance_expiry_date?: string | null
           insurance_status?: string | null
           logo_path?: string | null
           main_area?: string | null

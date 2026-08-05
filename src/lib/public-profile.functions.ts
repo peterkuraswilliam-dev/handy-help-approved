@@ -18,6 +18,7 @@ export type PublicProfile = {
   phone: string | null;
   email: string | null;
   insuranceStatus: string | null;
+  insuranceExpiryDate: string | null;
   qualifications: string | null;
   logoUrl: string | null;
   photos: PublicPhoto[];
@@ -45,7 +46,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     const { data: profile } = await supabase
       .from("contractor_profiles")
       .select(
-        "application_id,slug,business_name,main_area,approval_date,public_description,services,areas,website,facebook,phone,email,phone_public,email_public,insurance_status,qualifications,logo_path,featured_photo_id",
+        "application_id,slug,business_name,main_area,approval_date,public_description,services,areas,website,facebook,phone,email,phone_public,email_public,insurance_status,insurance_expiry_date,qualifications,logo_path,featured_photo_id",
       )
       .eq("slug", data.slug)
       .eq("status", "active")
@@ -93,6 +94,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
       phone: profile.phone_public ? profile.phone : null,
       email: profile.email_public ? profile.email : null,
       insuranceStatus: profile.insurance_status,
+      insuranceExpiryDate: profile.insurance_expiry_date ?? null,
       qualifications: profile.qualifications,
       logoUrl,
       photos,
