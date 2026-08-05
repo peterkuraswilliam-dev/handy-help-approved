@@ -361,6 +361,7 @@ export function GuidedReview({
             applicationId={applicationId}
             insuranceStatus={app.insurance_status}
             insuranceEvidencePath={app.insurance_evidence_path}
+            insuranceExpiryDate={app.insurance_expiry_date ?? null}
             qualifications={app.qualifications}
           />
         );

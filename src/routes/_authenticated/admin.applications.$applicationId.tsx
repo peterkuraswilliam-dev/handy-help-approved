@@ -419,6 +419,7 @@ function ApplicationDetail() {
           applicationId={app.id}
           insuranceStatus={app.insurance_status}
           insuranceEvidencePath={app.insurance_evidence_path}
+          insuranceExpiryDate={app.insurance_expiry_date}
           qualifications={app.qualifications}
         />
         </div>
