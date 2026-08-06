@@ -668,6 +668,62 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          action_url: string | null
+          application_id: string | null
+          audience: string
+          created_at: string
+          dedupe_key: string | null
+          id: string
+          is_read: boolean
+          message: string
+          notification_type: string
+          read_at: string | null
+          recipient_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          action_url?: string | null
+          application_id?: string | null
+          audience?: string
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          is_read?: boolean
+          message: string
+          notification_type: string
+          read_at?: string | null
+          recipient_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          action_url?: string | null
+          application_id?: string | null
+          audience?: string
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+          read_at?: string | null
+          recipient_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -719,6 +775,12 @@ export type Database = {
         Args: { _application_id: string }
         Returns: string
       }
+      app_display_name: {
+        Args: {
+          _app: Database["public"]["Tables"]["contractor_applications"]["Row"]
+        }
+        Returns: string
+      }
       generate_contractor_slug: { Args: { _name: string }; Returns: string }
       has_role: {
         Args: {
@@ -726,6 +788,30 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      notify_admins: {
+        Args: {
+          _action_url: string
+          _application: string
+          _dedupe?: string
+          _message: string
+          _title: string
+          _type: string
+        }
+        Returns: undefined
+      }
+      notify_user: {
+        Args: {
+          _action_url: string
+          _application: string
+          _audience: string
+          _dedupe?: string
+          _message: string
+          _recipient: string
+          _title: string
+          _type: string
+        }
+        Returns: undefined
       }
       restore_contractor: {
         Args: {
@@ -745,6 +831,7 @@ export type Database = {
         }
         Returns: string
       }
+      sync_insurance_notifications: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "contractor"
