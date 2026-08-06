@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { MainMenu } from "@/components/MainMenu";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 function NotFoundComponent() {
   return (
