@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { MainMenu } from "@/components/MainMenu";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 function NotFoundComponent() {
   return (
@@ -115,6 +116,7 @@ function Header() {
           <Link to="/contractors" className="btn-ghost hidden sm:inline-flex">Contractors</Link>
           {signedIn ? (
             <>
+              <NotificationBell />
               <MainMenu isAdmin={isAdmin} />
             </>
           ) : (

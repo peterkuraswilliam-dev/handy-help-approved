@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { BadgeCheck, LayoutDashboard, Menu, Repeat, Settings, Shield, Users, X } from "lucide-react";
+import { BadgeCheck, Bell, LayoutDashboard, Menu, Repeat, Settings, Shield, Users, X } from "lucide-react";
 
 type Item = { to: string; label: string; icon: typeof Menu };
 
@@ -28,11 +28,13 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
   const items: Item[] = adminView
     ? [
         { to: "/admin", label: "Applications dashboard", icon: LayoutDashboard },
+        { to: "/notifications", label: "Notifications", icon: Bell },
         { to: "/admin/roles", label: "Role management", icon: Users },
         { to: "/settings", label: "Settings", icon: Settings },
       ]
     : [
         { to: "/dashboard", label: "My dashboard", icon: LayoutDashboard },
+        { to: "/notifications", label: "Notifications", icon: Bell },
         { to: "/contractors", label: "Approved contractors", icon: BadgeCheck },
         { to: "/settings", label: "Settings", icon: Settings },
       ];
