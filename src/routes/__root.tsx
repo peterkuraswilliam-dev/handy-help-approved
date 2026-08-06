@@ -115,6 +115,7 @@ function Header() {
           <Link to="/contractors" className="btn-ghost hidden sm:inline-flex">Contractors</Link>
           {signedIn ? (
             <>
+              <NotificationBell />
               <MainMenu isAdmin={isAdmin} />
             </>
           ) : (
