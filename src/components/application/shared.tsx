@@ -226,7 +226,9 @@ export function ApplicationHeader({
             <p className="truncate text-sm text-muted-foreground">
               Contact: {contactName?.trim() || "Not provided"}
             </p>
-            <p className="break-all font-mono text-xs text-muted-foreground">{applicationId}</p>
+            <p className="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+              Ref HH-{applicationId.slice(0, 8)}
+            </p>
           </div>
         </div>
 
