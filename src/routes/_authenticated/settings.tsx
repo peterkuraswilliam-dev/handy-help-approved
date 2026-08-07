@@ -61,8 +61,10 @@ function SettingsPage() {
         <button
           className="btn-gold"
           onClick={async () => {
+            await queryClient.cancelQueries();
+            queryClient.clear();
             await supabase.auth.signOut();
-            void navigate({ to: "/" });
+            void navigate({ to: "/", replace: true });
           }}
         >
           Sign out
