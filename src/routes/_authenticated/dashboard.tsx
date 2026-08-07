@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { friendlyMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
@@ -166,7 +167,7 @@ function Dashboard() {
       });
       toast.success("Application submitted for review");
       await load();
-    } else toast.error(error.message);
+    } else toast.error(friendlyMessage(error));
     setBusy(false);
   }
 

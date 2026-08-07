@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { friendlyMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
@@ -113,7 +114,7 @@ function ApplicationForm() {
       .from("contractor_applications")
       .insert({ user_id: uid, status: "draft", ...form, working_hours: JSON.stringify(workingHours) })
       .select("id").single();
-    if (error) { toast.error(error.message); return null; }
+    if (error) { toast.error(friendlyMessage(error)); return null; }
     const id = (data as { id: string }).id;
     setAppId(id);
     return id;
@@ -129,7 +130,7 @@ function ApplicationForm() {
       if (error) throw error;
       toast.success("Saved");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to save");
+      toast.error(friendlyMessage(err, "Failed to save"));
     } finally { setSaving(false); }
   }
 
@@ -160,7 +161,7 @@ function ApplicationForm() {
       setStatus("submitted");
       toast.success("Application submitted for review");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to submit application");
+      toast.error(friendlyMessage(err, "Failed to submit application"));
     } finally { setSaving(false); }
   }
 
@@ -169,7 +170,7 @@ function ApplicationForm() {
     const id = await ensureApp(); if (!id) return;
     const { data, error } = await db.from("contractor_services")
       .insert({ application_id: id, service: newService.trim() }).select("id,service").single();
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyMessage(error));
     setServices((s) => [...s, data as { id: string; service: string }]);
     setNewService("");
   }
@@ -183,7 +184,7 @@ function ApplicationForm() {
     const id = await ensureApp(); if (!id) return;
     const { data, error } = await db.from("contractor_areas")
       .insert({ application_id: id, area: newArea.trim() }).select("id,area").single();
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyMessage(error));
     setAreas((a) => [...a, data as { id: string; area: string }]);
     setNewArea("");
   }
@@ -238,7 +239,7 @@ function ApplicationForm() {
       }
 
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
+      toast.error(friendlyMessage(err, "Upload failed"));
     }
   }
 

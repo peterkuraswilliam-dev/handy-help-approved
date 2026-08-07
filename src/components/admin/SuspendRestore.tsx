@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { friendlyMessage } from "@/lib/errors";
 import { Loader2, RotateCcw, ShieldAlert, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { db } from "@/lib/db";
@@ -83,7 +84,7 @@ export function SuspendRestore({
               _contractor_message: message.trim() || null,
               _admin_note: note.trim() || null,
             });
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(friendlyMessage(error));
       toast.success(
         action === "suspend" ? "Contractor suspended" : "Contractor restored — public profile is live again",
       );
@@ -91,7 +92,7 @@ export function SuspendRestore({
       await loadEvents();
       onChanged?.();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "The change could not be saved.");
+      toast.error(friendlyMessage(e, "The change could not be saved."));
       setConfirmed(false);
     } finally {
       setBusy(false);

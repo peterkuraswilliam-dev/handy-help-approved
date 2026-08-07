@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.app_display_name(public.contractor_applications) FROM PUBLIC, anon, authenticated;

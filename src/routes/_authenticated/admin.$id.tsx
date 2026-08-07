@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { friendlyMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
@@ -66,7 +67,7 @@ function Review() {
     const { error } = await db.from("admin_notes").insert({
       application_id: app.id, admin_id: u.user!.id, note: newNote.trim(),
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyMessage(error));
     setNewNote("");
     await load();
   }
@@ -77,7 +78,7 @@ function Review() {
     const patch: Record<string, unknown> = { status, decision_reason: reason || null };
     if (status === "approved") patch.approved_at = new Date().toISOString();
     const { error } = await db.from("contractor_applications").update(patch).eq("id", app.id);
-    if (error) { toast.error(error.message); setBusy(false); return; }
+    if (error) { toast.error(friendlyMessage(error)); setBusy(false); return; }
     const { data: u } = await supabase.auth.getUser();
     await db.from("application_status_history").insert({
       application_id: app.id, status, reason: reason || null, changed_by: u.user!.id,

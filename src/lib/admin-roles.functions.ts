@@ -4,8 +4,8 @@ import { z } from "zod";
 
 async function assertAdmin(supabase: any, userId: string) {
   const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
-  if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: admin only");
+  if (error) throw new Error("We could not complete that request.");
+  if (!data) throw new Error("You do not have permission to do this.");
 }
 
 export const listUsersWithRoles = createServerFn({ method: "GET" })
@@ -18,12 +18,12 @@ export const listUsersWithRoles = createServerFn({ method: "GET" })
       .from("profiles")
       .select("id, full_name, email, created_at")
       .order("created_at", { ascending: false });
-    if (pErr) throw new Error(pErr.message);
+    if (pErr) throw new Error("We could not load the user list.");
 
     const { data: roles, error: rErr } = await supabaseAdmin
       .from("user_roles")
       .select("user_id, role");
-    if (rErr) throw new Error(rErr.message);
+    if (rErr) throw new Error("We could not load the user list.");
 
     const roleMap = new Map<string, string[]>();
     for (const r of roles ?? []) {
@@ -56,14 +56,14 @@ export const setUserAdmin = createServerFn({ method: "POST" })
       const { error } = await supabaseAdmin
         .from("user_roles")
         .upsert({ user_id: data.userId, role: "admin" }, { onConflict: "user_id,role" });
-      if (error) throw new Error(error.message);
+      if (error) throw new Error("We could not complete that request.");
     } else {
       const { error } = await supabaseAdmin
         .from("user_roles")
         .delete()
         .eq("user_id", data.userId)
         .eq("role", "admin");
-      if (error) throw new Error(error.message);
+      if (error) throw new Error("We could not complete that request.");
     }
     return { ok: true };
   });

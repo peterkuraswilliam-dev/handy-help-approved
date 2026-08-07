@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { friendlyMessage } from "@/lib/errors";
 import { AlertTriangle, CheckCircle2, Loader2, ShieldCheck, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
@@ -142,7 +143,7 @@ export function DecisionActions({
         .from("contractor_applications")
         .update(update)
         .eq("id", applicationId);
-      if (updErr) throw new Error(updErr.message);
+      if (updErr) throw new Error(friendlyMessage(updErr));
 
       const { error: histErr } = await db.from("application_status_history").insert({
         application_id: applicationId,
@@ -150,13 +151,13 @@ export function DecisionActions({
         reason: message || (decision === "approved" ? "Application approved" : rejectReason),
         changed_by: uid,
       });
-      if (histErr) throw new Error(histErr.message);
+      if (histErr) throw new Error(friendlyMessage(histErr));
 
       if (decision === "approved") {
         const { error: profileErr } = await db.rpc("activate_contractor_profile", {
           _application_id: applicationId,
         });
-        if (profileErr) throw new Error(profileErr.message);
+        if (profileErr) throw new Error(friendlyMessage(profileErr));
       }
 
 

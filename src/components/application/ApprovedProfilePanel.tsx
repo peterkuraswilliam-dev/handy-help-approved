@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { friendlyMessage } from "@/lib/errors";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
@@ -120,7 +121,7 @@ export function ApprovedProfilePanel({
           featured_photo_id: featuredId,
         })
         .eq("id", profile.id);
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(friendlyMessage(error));
 
       await Promise.all(
         gallery.map((g) =>
@@ -130,7 +131,7 @@ export function ApprovedProfilePanel({
       toast.success("Public profile updated");
       await load();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not save your profile");
+      toast.error(friendlyMessage(e, "Could not save your profile"));
     } finally {
       setBusy(false);
     }

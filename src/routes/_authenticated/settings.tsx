@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/_authenticated/settings")({
 
 function SettingsPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [email, setEmail] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -60,8 +62,10 @@ function SettingsPage() {
         <button
           className="btn-gold"
           onClick={async () => {
+            await queryClient.cancelQueries();
+            queryClient.clear();
             await supabase.auth.signOut();
-            void navigate({ to: "/" });
+            void navigate({ to: "/", replace: true });
           }}
         >
           Sign out
