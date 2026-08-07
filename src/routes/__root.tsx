@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { friendlyMessage } from "@/lib/errors";
 import {
   Outlet,
   Link,
