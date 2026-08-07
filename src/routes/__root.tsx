@@ -35,7 +35,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
         <h1 className="text-2xl font-semibold">Something went wrong</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{friendlyMessage(error)}</p>
         <button className="btn-gold mt-6" onClick={() => { router.invalidate(); reset(); }}>Try again</button>
       </div>
     </div>
