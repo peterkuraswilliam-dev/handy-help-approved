@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { friendlyMessage } from "@/lib/errors";
 import { useCallback, useEffect, useState } from "react";
 import {
   AlertTriangle,
@@ -140,11 +141,11 @@ export function RespondToRequest({
         .update({ response_message: text.length > 0 ? text : null })
         .eq("application_id", applicationId)
         .eq("status", "open");
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(friendlyMessage(error));
       toast.success("Your changes were saved. You can resubmit when you're ready.");
       await load();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not save your response.");
+      toast.error(friendlyMessage(e, "Could not save your response."));
     } finally {
       setBusy(false);
     }
@@ -161,7 +162,7 @@ export function RespondToRequest({
         .from("contractor_applications")
         .update({ status: "submitted" })
         .eq("id", applicationId);
-      if (appErr) throw new Error(appErr.message);
+      if (appErr) throw new Error(friendlyMessage(appErr));
 
       const { error: reqErr } = await db
         .from("application_info_requests")
@@ -174,7 +175,7 @@ export function RespondToRequest({
         })
         .eq("application_id", applicationId)
         .eq("status", "open");
-      if (reqErr) throw new Error(reqErr.message);
+      if (reqErr) throw new Error(friendlyMessage(reqErr));
 
       await db.from("application_status_history").insert({
         application_id: applicationId,
@@ -188,7 +189,7 @@ export function RespondToRequest({
       await load();
       onResubmitted();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Resubmission failed. Please try again.");
+      toast.error(friendlyMessage(e, "Resubmission failed. Please try again."));
     } finally {
       setBusy(false);
     }

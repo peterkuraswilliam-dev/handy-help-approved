@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { friendlyMessage } from "@/lib/errors";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -55,7 +56,7 @@ function AuthPage() {
       }
       navigate({ to: "/dashboard" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Something went wrong");
+      toast.error(friendlyMessage(err, "Something went wrong"));
     } finally {
       setLoading(false);
     }
@@ -72,7 +73,7 @@ function AuthPage() {
       toast.success("Signed in with Google");
       navigate({ to: "/dashboard" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Google sign-in failed");
+      toast.error(friendlyMessage(err, "Google sign-in failed"));
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { friendlyMessage } from "@/lib/errors";
 import { CheckCircle2, Circle, FileCheck2, RefreshCw } from "lucide-react";
 import { db } from "@/lib/db";
 import { type InfoRequestRow } from "@/components/application/info-requests";
@@ -42,7 +43,7 @@ export function ContractorResponse({ applicationId }: { applicationId: string })
         .eq("application_id", applicationId)
         .not("responded_at", "is", null)
         .order("responded_at", { ascending: false });
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(friendlyMessage(error));
       const rows = (data as (InfoRequestRow & { resubmitted_at?: string | null })[]) ?? [];
       setRequests(rows);
       if (rows.length > 0) {

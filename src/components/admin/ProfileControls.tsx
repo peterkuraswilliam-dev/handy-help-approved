@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { friendlyMessage } from "@/lib/errors";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Eye, EyeOff, ExternalLink, Mail, Phone, ShieldCheck } from "lucide-react";
@@ -46,7 +47,7 @@ export function ProfileControls({ applicationId }: { applicationId: string }) {
   const setStatus = async (status: "active" | "hidden" | "suspended") => {
     setBusy(true);
     const { error } = await db.from("contractor_profiles").update({ status }).eq("id", profile.id);
-    if (error) toast.error(error.message);
+    if (error) toast.error(friendlyMessage(error));
     else {
       toast.success(
         status === "active" ? "Public profile reactivated" : status === "hidden" ? "Public profile hidden" : "Public profile suspended",

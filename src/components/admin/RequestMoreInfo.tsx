@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { friendlyMessage } from "@/lib/errors";
 import { Loader2, MessageSquareWarning, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
@@ -76,7 +77,7 @@ export function RequestMoreInfo({
         })
         .select("id")
         .single();
-      if (reqErr) throw new Error(reqErr.message);
+      if (reqErr) throw new Error(friendlyMessage(reqErr));
 
       await createRequestItems({
         requestId: (inserted as { id: string }).id,
@@ -90,7 +91,7 @@ export function RequestMoreInfo({
         .from("contractor_applications")
         .update({ status: "more_info_required" })
         .eq("id", applicationId);
-      if (statusErr) throw new Error(statusErr.message);
+      if (statusErr) throw new Error(friendlyMessage(statusErr));
 
       const { error: histErr } = await db.from("application_status_history").insert({
         application_id: applicationId,
@@ -98,7 +99,7 @@ export function RequestMoreInfo({
         reason: text,
         changed_by: uid,
       });
-      if (histErr) throw new Error(histErr.message);
+      if (histErr) throw new Error(friendlyMessage(histErr));
 
       // Mark related review checklist items as Needs Information
       const relatedKeys = REVIEW_CHECKS.filter(
