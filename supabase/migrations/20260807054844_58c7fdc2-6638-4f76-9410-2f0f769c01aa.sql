@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.guard_notification_fields() FROM PUBLIC, anon, authenticated;
