@@ -119,33 +119,39 @@ function Dashboard() {
 
   async function load() {
     setLoading(true);
-    const { data: user } = await supabase.auth.getUser();
-    const uid = user.user?.id;
-    if (!uid) return;
-    const { data: application } = await db
-      .from("contractor_applications")
-      .select("*")
-      .eq("user_id", uid)
-      .maybeSingle();
-    const a = application as Application | null;
-    setApp(a);
-    if (a) {
-      const [{ data: s }, { data: ar }, { data: d }, { data: h }] = await Promise.all([
-        db.from("contractor_services").select("id,service").eq("application_id", a.id),
-        db.from("contractor_areas").select("id,area").eq("application_id", a.id),
-        db.from("contractor_documents").select("id,kind,path").eq("application_id", a.id),
-        db
-          .from("application_status_history")
-          .select("id,status,reason,created_at")
-          .eq("application_id", a.id)
-          .order("created_at", { ascending: false }),
-      ]);
-      setServices((s as { id: string; service: string }[]) ?? []);
-      setAreas((ar as { id: string; area: string }[]) ?? []);
-      setDocs((d as { id: string; kind: string; path: string }[]) ?? []);
-      setHistory((h as HistoryRow[]) ?? []);
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      const uid = user.user?.id;
+      if (!uid) {
+        setApp(null);
+        return;
+      }
+      const { data: application } = await db
+        .from("contractor_applications")
+        .select("*")
+        .eq("user_id", uid)
+        .maybeSingle();
+      const a = application as Application | null;
+      setApp(a);
+      if (a) {
+        const [{ data: s }, { data: ar }, { data: d }, { data: h }] = await Promise.all([
+          db.from("contractor_services").select("id,service").eq("application_id", a.id),
+          db.from("contractor_areas").select("id,area").eq("application_id", a.id),
+          db.from("contractor_documents").select("id,kind,path").eq("application_id", a.id),
+          db
+            .from("application_status_history")
+            .select("id,status,reason,created_at")
+            .eq("application_id", a.id)
+            .order("created_at", { ascending: false }),
+        ]);
+        setServices((s as { id: string; service: string }[]) ?? []);
+        setAreas((ar as { id: string; area: string }[]) ?? []);
+        setDocs((d as { id: string; kind: string; path: string }[]) ?? []);
+        setHistory((h as HistoryRow[]) ?? []);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   const { logoUrl, gallery, loading: mediaLoading } = useGallery(app?.id ?? "", app?.logo_path ?? null);

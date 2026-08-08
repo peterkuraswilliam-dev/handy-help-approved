@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { friendlyMessage } from "@/lib/errors";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
 import { uploadFile } from "@/lib/application-helpers";
@@ -61,6 +61,7 @@ function ApplicationForm() {
   const [gallery, setGallery] = useState<{ id: string; path: string }[]>([]);
   const [workingHours, setWorkingHours] = useState<WorkingHours>(defaultWorkingHours);
   const [saving, setSaving] = useState(false);
+  const creating = useRef<Promise<string | null> | null>(null);
 
   useEffect(() => { void load(); }, []);
 
@@ -110,14 +111,36 @@ function ApplicationForm() {
   async function ensureApp(): Promise<string | null> {
     if (appId) return appId;
     if (!uid) return null;
-    const { data, error } = await supabase
-      .from("contractor_applications")
-      .insert({ user_id: uid, status: "draft", ...form, working_hours: JSON.stringify(workingHours) })
-      .select("id").single();
-    if (error) { toast.error(friendlyMessage(error)); return null; }
-    const id = (data as { id: string }).id;
-    setAppId(id);
-    return id;
+    if (creating.current) return creating.current;
+
+    const run = (async (): Promise<string | null> => {
+      // Re-check server-side in case an application already exists for this user.
+      const { data: existing } = await supabase
+        .from("contractor_applications")
+        .select("id")
+        .eq("user_id", uid)
+        .maybeSingle();
+      if (existing) {
+        const id = (existing as { id: string }).id;
+        setAppId(id);
+        return id;
+      }
+      const { data, error } = await supabase
+        .from("contractor_applications")
+        .insert({ user_id: uid, status: "draft", ...form, working_hours: JSON.stringify(workingHours) })
+        .select("id").single();
+      if (error) { toast.error(friendlyMessage(error)); return null; }
+      const id = (data as { id: string }).id;
+      setAppId(id);
+      return id;
+    })();
+
+    creating.current = run;
+    try {
+      return await run;
+    } finally {
+      creating.current = null;
+    }
   }
 
   async function save() {
@@ -151,6 +174,10 @@ function ApplicationForm() {
       toast.error(`Complete: ${missing.join(", ")}.`);
       return;
     }
+    if (status === "submitted" || status === "under_review") {
+      toast.info("Your application has already been submitted.");
+      return;
+    }
     setSaving(true);
     try {
       const id = await ensureApp();
@@ -158,6 +185,11 @@ function ApplicationForm() {
       const { error } = await db.from("contractor_applications")
         .update({ ...form, working_hours: JSON.stringify(workingHours), logo_path: logoPath, status: "submitted" }).eq("id", id);
       if (error) throw error;
+      await db.from("application_status_history").insert({
+        application_id: id,
+        status: "submitted",
+        changed_by: uid,
+      });
       setStatus("submitted");
       toast.success("Application submitted for review");
     } catch (err) {

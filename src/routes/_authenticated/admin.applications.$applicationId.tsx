@@ -429,7 +429,7 @@ function ApplicationDetail() {
         <div className="space-y-4">
           <SuspendRestore applicationId={app.id} status={app.status} onChanged={() => void load()} />
           <ProfileControls applicationId={app.id} key={app.status} />
-          <ContractorResponse applicationId={app.id} />
+          <ContractorResponse applicationId={app.id} key={`response-${requestsKey}`} />
           <GuidedReview
             applicationId={app.id}
             app={app}

@@ -64,6 +64,20 @@ export function RequestMoreInfo({
       const uid = userData.user?.id;
       if (!uid) throw new Error("no user");
 
+      // Prevent duplicate open requests for the same application.
+      const { data: openRequest } = await db
+        .from("application_info_requests")
+        .select("id")
+        .eq("application_id", applicationId)
+        .eq("status", "open")
+        .limit(1)
+        .maybeSingle();
+      if (openRequest) {
+        throw new Error(
+          "There is already an open information request for this application. Please close it before sending another.",
+        );
+      }
+
       const { data: inserted, error: reqErr } = await db
         .from("application_info_requests")
         .insert({
