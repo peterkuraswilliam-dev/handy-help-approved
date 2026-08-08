@@ -111,14 +111,36 @@ function ApplicationForm() {
   async function ensureApp(): Promise<string | null> {
     if (appId) return appId;
     if (!uid) return null;
-    const { data, error } = await supabase
-      .from("contractor_applications")
-      .insert({ user_id: uid, status: "draft", ...form, working_hours: JSON.stringify(workingHours) })
-      .select("id").single();
-    if (error) { toast.error(friendlyMessage(error)); return null; }
-    const id = (data as { id: string }).id;
-    setAppId(id);
-    return id;
+    if (creating.current) return creating.current;
+
+    const run = (async (): Promise<string | null> => {
+      // Re-check server-side in case an application already exists for this user.
+      const { data: existing } = await supabase
+        .from("contractor_applications")
+        .select("id")
+        .eq("user_id", uid)
+        .maybeSingle();
+      if (existing) {
+        const id = (existing as { id: string }).id;
+        setAppId(id);
+        return id;
+      }
+      const { data, error } = await supabase
+        .from("contractor_applications")
+        .insert({ user_id: uid, status: "draft", ...form, working_hours: JSON.stringify(workingHours) })
+        .select("id").single();
+      if (error) { toast.error(friendlyMessage(error)); return null; }
+      const id = (data as { id: string }).id;
+      setAppId(id);
+      return id;
+    })();
+
+    creating.current = run;
+    try {
+      return await run;
+    } finally {
+      creating.current = null;
+    }
   }
 
   async function save() {
