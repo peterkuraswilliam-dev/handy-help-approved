@@ -61,6 +61,7 @@ function ApplicationForm() {
   const [gallery, setGallery] = useState<{ id: string; path: string }[]>([]);
   const [workingHours, setWorkingHours] = useState<WorkingHours>(defaultWorkingHours);
   const [saving, setSaving] = useState(false);
+  const creating = useRef<Promise<string | null> | null>(null);
 
   useEffect(() => { void load(); }, []);
 
