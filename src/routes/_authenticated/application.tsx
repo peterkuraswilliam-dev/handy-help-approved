@@ -174,6 +174,10 @@ function ApplicationForm() {
       toast.error(`Complete: ${missing.join(", ")}.`);
       return;
     }
+    if (status === "submitted" || status === "under_review") {
+      toast.info("Your application has already been submitted.");
+      return;
+    }
     setSaving(true);
     try {
       const id = await ensureApp();
@@ -181,6 +185,11 @@ function ApplicationForm() {
       const { error } = await db.from("contractor_applications")
         .update({ ...form, working_hours: JSON.stringify(workingHours), logo_path: logoPath, status: "submitted" }).eq("id", id);
       if (error) throw error;
+      await db.from("application_status_history").insert({
+        application_id: id,
+        status: "submitted",
+        changed_by: uid,
+      });
       setStatus("submitted");
       toast.success("Application submitted for review");
     } catch (err) {
