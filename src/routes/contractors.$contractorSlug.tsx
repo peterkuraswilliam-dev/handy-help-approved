@@ -109,6 +109,8 @@ function ProfilePage() {
             <img
               src={featured.url}
               alt={`Featured work by ${profile.businessName ?? "this contractor"}`}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 h-full w-full object-cover opacity-40"
             />
             <div className="profile-hero-veil absolute inset-0" />
@@ -125,6 +127,8 @@ function ProfilePage() {
                 <img
                   src={profile.logoUrl}
                   alt={`${profile.businessName ?? "Contractor"} logo`}
+                  loading="lazy"
+                  decoding="async"
                   className="h-16 w-16 shrink-0 rounded-full border border-white/15 bg-background/70 object-contain p-2 sm:h-20 sm:w-20"
                 />
               ) : (
@@ -427,6 +431,8 @@ export function WorkGallery({
             <img
               src={ordered[0]?.url ?? ""}
               alt={`Work by ${name ?? "this contractor"} 1`}
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
             <span className="absolute right-3 top-3 rounded-full bg-background/80 px-2 py-1 text-xs">

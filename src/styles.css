@@ -339,3 +339,33 @@
   .directory-card, .directory-cover img { transition: none; }
 }
 
+
+/* ---- Launch polish: accessibility, tap targets, mobile safety ---- */
+html, body { overflow-x: hidden; }
+
+:where(a, button, [role="tab"], [role="button"], summary, input, textarea, select):focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+/* Comfortable tap targets on touch devices */
+@media (pointer: coarse) {
+  .btn-gold, .btn-outline, .btn-ghost, [role="tab"] { min-height: 2.75rem; }
+}
+
+/* Horizontal tab strips should not show a chunky scrollbar */
+.tab-scroll { scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+.tab-scroll::-webkit-scrollbar { height: 4px; }
+.tab-scroll::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 9999px; }
+
+
+/* Skeleton shimmer for loading states */
+.skeleton {
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--color-muted) 25%, color-mix(in oklch, var(--color-muted) 60%, white 8%) 50%, var(--color-muted) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
