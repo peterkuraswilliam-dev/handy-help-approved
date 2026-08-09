@@ -80,15 +80,23 @@ function AuthPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md mx-auto space-y-4">
+      <h1 className="sr-only">Contractor sign in</h1>
+      <p className="launch-note">
+        Free while the Handy Help Aberdeenshire application is being developed.
+      </p>
       <div className="card-panel">
         <div className="flex mb-4 rounded-md border border-border overflow-hidden">
           <button
-            className={`flex-1 py-2 text-sm font-medium ${tab === "signin" ? "bg-[color:var(--color-gold)] text-[color:var(--color-primary-foreground)]" : ""}`}
+            type="button"
+            aria-pressed={tab === "signin"}
+            className={`flex-1 min-h-11 py-2 text-sm font-medium ${tab === "signin" ? "bg-[color:var(--color-gold)] text-[color:var(--color-primary-foreground)]" : ""}`}
             onClick={() => setTab("signin")}
           >Sign in</button>
           <button
-            className={`flex-1 py-2 text-sm font-medium ${tab === "signup" ? "bg-[color:var(--color-gold)] text-[color:var(--color-primary-foreground)]" : ""}`}
+            type="button"
+            aria-pressed={tab === "signup"}
+            className={`flex-1 min-h-11 py-2 text-sm font-medium ${tab === "signup" ? "bg-[color:var(--color-gold)] text-[color:var(--color-primary-foreground)]" : ""}`}
             onClick={() => setTab("signup")}
           >Create account</button>
         </div>
@@ -97,7 +105,7 @@ function AuthPage() {
           type="button"
           onClick={googleSignIn}
           disabled={loading}
-          className="w-full mb-3 flex items-center justify-center gap-2 py-2 rounded-md border border-border bg-white text-black font-medium hover:bg-white/90 disabled:opacity-60"
+          className="w-full mb-3 flex min-h-11 items-center justify-center gap-2 py-2 rounded-md border border-border bg-white text-black font-medium hover:bg-white/90 disabled:opacity-60"
         >
           <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
             <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35.5 24 35.5c-6.4 0-11.5-5.1-11.5-11.5S17.6 12.5 24 12.5c2.9 0 5.6 1.1 7.6 2.9l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5 43.5 34.8 43.5 24c0-1.2-.1-2.4-.3-3.5z"/>
@@ -115,23 +123,57 @@ function AuthPage() {
         <form onSubmit={submit} className="space-y-3">
           {tab === "signup" && (
             <div>
-              <label>Contact name</label>
-              <input value={fullName} onChange={(e) => setFullName(e.target.value)} required maxLength={100} />
+              <label htmlFor="auth-name">Contact name</label>
+              <input
+                id="auth-name"
+                name="name"
+                autoComplete="name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+                maxLength={100}
+              />
             </div>
           )}
           <div>
-            <label>Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <label htmlFor="auth-email">Email</label>
+            <input
+              id="auth-email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
           <div>
-            <label>Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <label htmlFor="auth-password">Password</label>
+            <input
+              id="auth-password"
+              name="password"
+              type="password"
+              autoComplete={tab === "signup" ? "new-password" : "current-password"}
+              aria-describedby="auth-password-hint"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <p id="auth-password-hint" className="mt-1 text-xs text-muted-foreground">
+              At least 8 characters.
+            </p>
           </div>
           <button type="submit" className="btn-gold w-full" disabled={loading}>
             {loading ? "Please wait…" : tab === "signup" ? "Create contractor account" : "Sign in"}
           </button>
         </form>
       </div>
+      <p className="text-center text-xs text-muted-foreground">
+        By creating an account you agree to follow our{" "}
+        <a href="/community-rules" className="text-[color:var(--color-gold)] underline underline-offset-2">community rules</a>
+        . See our{" "}
+        <a href="/privacy" className="text-[color:var(--color-gold)] underline underline-offset-2">privacy information</a>.
+      </p>
     </div>
   );
 }
