@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as CommunityRulesRouteImport } from './routes/community-rules'
 import { Route as BecomeApprovedRouteImport } from './routes/become-approved'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -25,6 +26,11 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminRolesRouteImport } from './routes/_authenticated/admin.roles'
 import { Route as AuthenticatedAdminApplicationsApplicationIdRouteImport } from './routes/_authenticated/admin.applications.$applicationId'
 
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CommunityRulesRoute = CommunityRulesRouteImport.update({
   id: '/community-rules',
   path: '/community-rules',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/become-approved': typeof BecomeApprovedRoute
   '/community-rules': typeof CommunityRulesRoute
+  '/privacy': typeof PrivacyRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/application': typeof AuthenticatedApplicationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/become-approved': typeof BecomeApprovedRoute
   '/community-rules': typeof CommunityRulesRoute
+  '/privacy': typeof PrivacyRoute
   '/application': typeof AuthenticatedApplicationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/become-approved': typeof BecomeApprovedRoute
   '/community-rules': typeof CommunityRulesRoute
+  '/privacy': typeof PrivacyRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/application': typeof AuthenticatedApplicationRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/become-approved'
     | '/community-rules'
+    | '/privacy'
     | '/admin'
     | '/application'
     | '/dashboard'
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/become-approved'
     | '/community-rules'
+    | '/privacy'
     | '/application'
     | '/dashboard'
     | '/notifications'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/become-approved'
     | '/community-rules'
+    | '/privacy'
     | '/_authenticated/admin'
     | '/_authenticated/application'
     | '/_authenticated/dashboard'
@@ -210,12 +222,20 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BecomeApprovedRoute: typeof BecomeApprovedRoute
   CommunityRulesRoute: typeof CommunityRulesRoute
+  PrivacyRoute: typeof PrivacyRoute
   ContractorsContractorSlugRoute: typeof ContractorsContractorSlugRoute
   ContractorsIndexRoute: typeof ContractorsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/community-rules': {
       id: '/community-rules'
       path: '/community-rules'
@@ -365,19 +385,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BecomeApprovedRoute: BecomeApprovedRoute,
   CommunityRulesRoute: CommunityRulesRoute,
+  PrivacyRoute: PrivacyRoute,
   ContractorsContractorSlugRoute: ContractorsContractorSlugRoute,
   ContractorsIndexRoute: ContractorsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

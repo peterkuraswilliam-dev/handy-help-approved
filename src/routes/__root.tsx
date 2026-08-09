@@ -144,13 +144,19 @@ function Banner() {
 function Footer() {
   return (
     <footer className="border-t border-border/60 mt-16">
-      <div className="mx-auto max-w-5xl px-4 py-6 text-xs text-muted-foreground flex flex-wrap gap-3 justify-between">
-        <span>© {new Date().getFullYear()} Handy Help Aberdeenshire</span>
-        <div className="flex gap-4">
-          <Link to="/contractors" className="hover:text-[color:var(--color-gold)]">Contractors</Link>
-          <Link to="/community-rules" className="hover:text-[color:var(--color-gold)]">Community rules</Link>
+      <div className="mx-auto max-w-5xl px-4 py-6 space-y-4 text-xs text-muted-foreground">
+        <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2">
+          <Link to="/contractors" className="hover:text-[color:var(--color-gold)]">Approved contractors</Link>
           <Link to="/become-approved" className="hover:text-[color:var(--color-gold)]">Become approved</Link>
-        </div>
+          <Link to="/community-rules" className="hover:text-[color:var(--color-gold)]">Community rules</Link>
+          <Link to="/privacy" className="hover:text-[color:var(--color-gold)]">Privacy information</Link>
+        </nav>
+        <p className="max-w-2xl leading-relaxed">
+          Approval confirms that the contractor has supplied the requested information and agreed to
+          follow our community standards. Customers should still carry out their own checks before
+          agreeing to any work.
+        </p>
+        <p>© {new Date().getFullYear()} Handy Help Aberdeenshire</p>
       </div>
     </footer>
   );
