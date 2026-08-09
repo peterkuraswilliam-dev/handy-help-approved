@@ -158,9 +158,31 @@ export function TabNav({
       ?.scrollIntoView({ block: "nearest", inline: "center" });
   }, [active]);
 
+  const enabled = tabs.filter((t) => !t.disabled);
+
+  function onKeyDown(e: React.KeyboardEvent) {
+    const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+    if (!keys.includes(e.key)) return;
+    e.preventDefault();
+    const i = enabled.findIndex((t) => t.id === active);
+    const next =
+      e.key === "Home"
+        ? 0
+        : e.key === "End"
+          ? enabled.length - 1
+          : (i + (e.key === "ArrowRight" ? 1 : -1) + enabled.length) % enabled.length;
+    const target = enabled[next];
+    if (target) onSelect(target.id);
+  }
+
   return (
-    <div ref={ref} className="-mx-1 overflow-x-auto px-1 pb-1">
-      <div role="tablist" aria-label="Application sections" className="flex w-max gap-1 border-b border-border">
+    <div ref={ref} className="tab-scroll -mx-1 overflow-x-auto px-1 pb-1">
+      <div
+        role="tablist"
+        aria-label="Application sections"
+        onKeyDown={onKeyDown}
+        className="flex w-max gap-1 border-b border-border"
+      >
         {tabs.map((t) => {
           const isActive = t.id === active;
           const Icon = t.icon;
@@ -170,15 +192,17 @@ export function TabNav({
               role="tab"
               type="button"
               aria-selected={isActive}
+              tabIndex={isActive ? 0 : -1}
               disabled={t.disabled}
+              title={t.disabled ? `${t.label} (available once approved)` : t.label}
               onClick={() => onSelect(t.id)}
-              className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2.5 text-sm transition-colors ${
+              className={`flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2.5 text-sm transition-colors ${
                 isActive
                   ? "border-[color:var(--color-gold)] font-semibold text-[color:var(--color-gold)]"
                   : "border-transparent text-muted-foreground hover:text-foreground"
               } ${t.disabled ? "cursor-not-allowed opacity-40" : ""}`}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
               {t.label}
             </button>
           );
