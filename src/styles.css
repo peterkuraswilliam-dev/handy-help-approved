@@ -359,17 +359,6 @@ html, body { overflow-x: hidden; }
 .tab-scroll::-webkit-scrollbar { height: 4px; }
 .tab-scroll::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 9999px; }
 
-@utility launch-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  border-radius: var(--radius-md);
-  border: 1px solid color-mix(in oklch, var(--color-gold) 35%, transparent);
-  background: color-mix(in oklch, var(--color-gold) 10%, transparent);
-  padding: 0.65rem 0.85rem;
-  font-size: 0.8rem;
-  color: var(--color-foreground);
-}
 
 /* Skeleton shimmer for loading states */
 .skeleton {

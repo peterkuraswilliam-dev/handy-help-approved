@@ -202,9 +202,6 @@ function Dashboard() {
             You haven't started an Approved Contractor application yet. It takes a few minutes, and you
             can save and come back at any time.
           </p>
-          <p className="launch-note">
-            Free while the Handy Help Aberdeenshire application is being developed.
-          </p>
           <Link to="/application" className="btn-gold w-fit">
             <Pencil className="h-4 w-4" /> Start application
           </Link>
