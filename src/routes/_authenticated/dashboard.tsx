@@ -177,7 +177,21 @@ function Dashboard() {
     setBusy(false);
   }
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) {
+    return (
+      <div className="mx-auto w-full max-w-3xl space-y-4" aria-busy="true" aria-live="polite">
+        <span className="sr-only">Loading your application…</span>
+        <div className="skeleton h-36 w-full" />
+        <div className="skeleton h-11 w-full" />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="skeleton h-28 w-full" />
+          <div className="skeleton h-28 w-full" />
+          <div className="skeleton h-28 w-full" />
+          <div className="skeleton h-28 w-full" />
+        </div>
+      </div>
+    );
+  }
 
   if (!app) {
     return (
@@ -185,7 +199,11 @@ function Dashboard() {
         <div className="card-panel space-y-3">
           <h1 className="text-2xl font-bold">Start your application</h1>
           <p className="text-sm text-muted-foreground">
-            You haven't started an Approved Contractor application yet.
+            You haven't started an Approved Contractor application yet. It takes a few minutes, and you
+            can save and come back at any time.
+          </p>
+          <p className="launch-note">
+            Free while the Handy Help Aberdeenshire application is being developed.
           </p>
           <Link to="/application" className="btn-gold w-fit">
             <Pencil className="h-4 w-4" /> Start application
