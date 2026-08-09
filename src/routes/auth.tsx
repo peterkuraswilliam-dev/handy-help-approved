@@ -82,9 +82,6 @@ function AuthPage() {
   return (
     <div className="max-w-md mx-auto space-y-4">
       <h1 className="sr-only">Contractor sign in</h1>
-      <p className="launch-note">
-        Free while the Handy Help Aberdeenshire application is being developed.
-      </p>
       <div className="card-panel">
         <div className="flex mb-4 rounded-md border border-border overflow-hidden">
           <button
