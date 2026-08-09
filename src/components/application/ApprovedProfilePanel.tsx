@@ -282,7 +282,7 @@ export function ApprovedProfilePanel({
                     }`}
                   >
                     {g.url ? (
-                      <img src={g.url} alt="Work photo" className="h-full w-full object-cover" />
+                      <img src={g.url} alt="Work photo" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                     ) : (
                       <span className="grid h-full place-items-center text-xs text-muted-foreground">No preview</span>
                     )}
