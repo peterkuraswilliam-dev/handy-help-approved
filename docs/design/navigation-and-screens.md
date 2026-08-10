@@ -4,11 +4,11 @@ Purpose: map repository-confirmed routes separately from future screens.
 
 ## Existing routes
 
-- Public: `/`, `/auth`, `/reset-password`, `/become-approved`, `/contractors`, `/contractors/$contractorSlug`, `/community-rules` and `/privacy`.
+- Public: `/`, `/auth`, `/reset-password`, `/become-approved`, `/invite/$token`, `/contractors`, `/contractors/$contractorSlug`, `/community-rules` and `/privacy`.
 - Authenticated: `/dashboard`, `/application`, `/notifications` and `/settings`.
-- Admin: `/admin`, `/admin/applications/$applicationId` and `/admin/roles`.
+- Admin: `/admin`, `/admin/applications/$applicationId`, `/admin/invitations` and `/admin/roles`.
 
-TanStack Start derives these paths from files under `src/routes`; `_authenticated` is a pathless authenticated layout. The current `/auth` screen exposes contractor sign-up and `/become-approved` links to it. No invitation-management or invitation-acceptance route was found, which conflicts with the confirmed invitation-only launch rule.
+TanStack Start derives these paths from files under `src/routes`; `_authenticated` is a pathless authenticated layout. `/auth` is sign-in-only, `/become-approved` explains invitation-only access, and the invitation routes implement manual admin link creation and email-bound acceptance.
 
 ## Future marketplace
 

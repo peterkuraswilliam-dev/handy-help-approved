@@ -20,8 +20,7 @@ Purpose: central register of unresolved choices. Do not implement assumptions as
 11. How are admin and super-admin roles granted and reviewed?
 12. What retention periods apply to rejected applications, identity/insurance files, messages and audit logs?
 13. Is a postcode/radius model sufficient for service areas, or are polygons/settlement lists needed?
-14. How long do contractor invitations remain valid, may they be resent, must they match a pre-entered email, and what invitation rate limits apply?
-15. How should an existing authenticated user accept a contractor invitation without creating a duplicate account?
+14. Should revoked or expired contractor invitations ever be restorable, or must an admin always create a replacement?
 
 ## Product/business
 

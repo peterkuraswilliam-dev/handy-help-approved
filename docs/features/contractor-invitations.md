@@ -2,11 +2,11 @@
 
 ## Status
 
-Current confirmed launch requirement; repository audit found no invitation route, table, generated type or application implementation. The existing public contractor sign-up flow conflicts with this requirement.
+Current confirmed launch requirement. The bounded manual-link slice is implemented in the repository; migration application and live permission/flow verification remain pending.
 
 ## Implementation Status
 
-Ready for the approved implementation slice below, subject to first inspecting the repository and verifying what already exists. Invitation delivery automation is not approved until a provider is selected.
+Approved implementation slice implemented in code. Do not treat it as deployed or fully verified until the migration is reviewed/applied and the permission and end-to-end test matrix passes against an isolated Supabase environment. Invitation delivery automation remains unapproved until a provider is selected.
 
 ## Goal
 
@@ -33,16 +33,12 @@ App owner, admin, invited contractor and super admin.
 
 ## Working Proposals
 
-Invite list with pending/accepted/revoked/expired filters, optional personal message, resend, copy-link action and automatic expiry reminders.
+Optional personal message, resend, automatic expiry reminders and bulk invitation management.
 
 ## Open Questions
 
-- How long should an invitation remain valid?
-- May admins resend an existing invitation, or must they revoke and replace it?
-- Should an invitation be restricted to a pre-entered email address?
 - What email provider and sender identity will deliver invitations?
 - Can the owner override or restore a revoked/expired invitation?
-- What rate limits and maximum outstanding invitations apply per admin?
 
 ## In Scope
 
@@ -60,6 +56,8 @@ Authorised invitation creation, secure token/link validation, invited contractor
 - Add or update migrations, constraints, indexes, RLS, generated types and negative-permission tests after verifying the existing schema.
 - Link successful invitation acceptance into the contractor onboarding flow.
 - Update this specification and the owning authentication/database/security documents with the verified implementation result.
+- Use a seven-day lifetime, bind acceptance to the invited email, permit a matching existing authenticated user to accept and enforce a maximum of 20 pending invitations per admin.
+- Display a newly generated secure link once for manual sharing; do not add email delivery or resend automation.
 
 ## Out of Scope
 
@@ -69,7 +67,7 @@ Public contractor self-registration, automatic contractor approval, customer inv
 
 - Public contractor sign-up or an open contractor-registration API.
 - Automatic contractor approval or automatic Approved Contractor badges.
-- A guessed invitation lifetime, resend policy, email provider or sender identity.
+- An email provider, resend automation, bulk invitations or expiry reminders.
 - Client-generated or plaintext-stored invitation tokens.
 - Client-controlled contractor/admin role assignment.
 - Reusing an accepted or revoked invitation.
@@ -83,7 +81,7 @@ Invalid, consumed, revoked or expired links must show a safe recovery message wi
 
 ## Screens and Routes
 
-No invitation-management or invitation-acceptance route exists. `/auth` currently exposes direct contractor sign-up and `/become-approved` links to that mode. Required future surfaces are an owner/admin invitation list and create/revoke control, an invitation acceptance/sign-up screen, and invalid/consumed-link states; reuse the repository's TanStack Start auth conventions.
+Implemented routes are `/admin/invitations` for authorised creation/list/revocation and `/invite/$token` for email-bound acceptance. `/auth` is sign-in-only and `/become-approved` explains the invitation requirement. New unauthorised auth-user creation fails closed in the database trigger; existing matching users can accept before entering onboarding.
 
 ## Business Rules
 
@@ -95,11 +93,11 @@ No invitation-management or invitation-acceptance route exists. `/auth` currentl
 
 ## States and Transitions
 
-See [core states](../product/states.md). At minimum, an invitation may be pending, accepted or revoked. Expiry exists only when a lifetime is confirmed. Consumption/revocation must be atomic and enforced server-side.
+See [core states](../product/states.md). An invitation is pending until accepted, revoked or seven days have elapsed. Acceptance and revocation must be atomic and enforced server-side. Accepted, revoked and expired invitations cannot be reused.
 
 ## Database Changes
 
-Proposed resource: `contractor_invitations`, linked to the inviting privileged user and, after acceptance, the created contractor account. Store a token digest rather than the raw token. See [tables](../database/tables.md) and [schema](../database/schema.md).
+Migration `20260810190000_add_contractor_invitations.sql` adds `contractor_invitations`, linked to the inviting privileged user and, after acceptance, the created contractor account. It stores a SHA-256 token digest rather than the raw token and enforces unique digests, normalised email, seven-day expiry, state consistency, admin/state indexes and a 20-pending-per-admin limit. It also removes automatic contractor-role assignment and requires a valid server-side invitation reservation for new auth users. See [tables](../database/tables.md) and [schema](../database/schema.md).
 
 ## Supabase RLS
 
@@ -115,7 +113,7 @@ Create invitation, validate/accept invitation and revoke invitation. Each action
 
 ## Notifications
 
-The invitation must provide a secure sign-up link. Automated email delivery remains deferred until a provider and sender identity are selected; do not silently introduce a provider.
+The first slice displays the secure sign-up link once to the creating admin for manual delivery. Automated email delivery remains deferred until a provider and sender identity are selected; do not silently introduce a provider.
 
 ## Security
 
@@ -131,7 +129,7 @@ Owner/admin may revoke an unused invitation. Invitation acceptance does not bypa
 
 ## Analytics
 
-Count invitations created, accepted, revoked and invalid attempts without recording raw tokens or unnecessary recipient details. Expiry metrics wait until an expiry rule is confirmed.
+Count invitations created, accepted and revoked without recording raw tokens or unnecessary recipient details. Do not add analytics for raw-link validation attempts in this slice.
 
 ## Edge Cases
 
@@ -153,6 +151,8 @@ Already-used link, revoked link, future expired link, contractor already has an 
 
 Test owner/admin creation, unauthorised creation, direct API access, valid acceptance, replay, revocation, concurrent acceptance, malformed tokens, account enumeration, role assignment, preservation of any existing customer sign-up, mobile/error states and accessibility.
 
+Static verification completed: production build, TypeScript type-check and targeted ESLint. Database/RLS and live end-to-end cases remain required because no migration was applied during implementation.
+
 ## Dependencies
 
 Supabase authentication, server-controlled roles, audit log, contractor onboarding and a future notification provider.
@@ -169,3 +169,5 @@ Bulk invitations, category/location recruitment campaigns, branded email templat
 
 - 3 August 2026 — CONFIRMED: invitation-only contractors; no public contractor sign-up; owner/admin secure-link flow.
 - 10 August 2026 — DOCUMENTATION: promoted into a bounded implementation specification and connected to onboarding, RLS and security requirements.
+- 10 August 2026 — CONFIRMED: seven-day, email-bound, single-use invitations; matching existing users may accept; maximum 20 pending invitations per admin; manual link delivery for the first slice.
+- 10 August 2026 — IMPLEMENTED IN CODE: migration, admin management route, acceptance route, sign-in-only public auth and trusted account/role enforcement; deployment and live verification pending.
