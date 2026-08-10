@@ -23,7 +23,7 @@ Purpose: map every Markdown file in this package. “Mixed” means the file del
 | `docs/project/principles.md` | Decision principles | Current |
 | `docs/project/goals.md` | Goals, measures and unverified dashboard metrics | Mixed/historical |
 | `docs/project/glossary.md` | Canonical terms | Current |
-| `docs/project/source-inventory.md` | Accessible evidence and unavailable sources | Historical/current |
+| `docs/project/source-inventory.md` | Conversation, asset and repository evidence plus remaining external unknowns | Historical/current |
 
 ## Product
 
@@ -112,7 +112,7 @@ Purpose: map every Markdown file in this package. “Mixed” means the file del
 | `docs/security/contact-protection.md` | Cross-cutting anti-bypass/privacy rule | Current/open details |
 | `docs/security/moderation-and-audit.md` | Abuse controls and immutable audit | Current/future |
 | `docs/design/design-system-and-accessibility.md` | UI/accessibility requirements | Current requirements |
-| `docs/design/navigation-and-screens.md` | Screen inventory; routes unverified | Mixed |
+| `docs/design/navigation-and-screens.md` | Repository-confirmed routes and future screen inventory | Mixed |
 
 ## Development and decisions
 

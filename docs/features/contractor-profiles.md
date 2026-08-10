@@ -2,7 +2,7 @@
 
 ## Status
 
-Working proposal/current follow-on; visual mock-ups exist, code unverified.
+Current follow-on partially present in the repository: public contractor list/detail routes, profile helpers, profile/insurance UI, `contractor_profiles` migrations and public-read policies exist. Publication behaviour, privacy boundaries and live RLS state still require end-to-end verification.
 
 ## Goal
 
@@ -42,7 +42,7 @@ Approval → contractor reviews profile → admin/policy publishes safe fields �
 
 ## Screens and Routes
 
-Public profile and contractor profile editor; exact routes open.
+Public routes are `/contractors` and `/contractors/$contractorSlug`. Contractor/admin profile controls exist within authenticated application and admin surfaces; no separate profile-editor route was found.
 
 ## Business Rules
 
@@ -54,7 +54,7 @@ draft → pending_publication → published → hidden/suspended; linked to appr
 
 ## Database Changes
 
-Proposed contractor_profiles, contractor_services, service_areas, portfolio_items and a public-safe view.
+Existing schema includes `contractor_profiles`, `contractor_services`, `contractor_areas` and `contractor_gallery`; migrations include public-read policies for active profiles and selected public work photos. No separate `portfolio_items` table or public-safe database view was found.
 
 ## Supabase RLS
 

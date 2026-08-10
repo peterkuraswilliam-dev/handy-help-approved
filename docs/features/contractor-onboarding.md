@@ -2,7 +2,7 @@
 
 ## Status
 
-Current build; parts evidenced as built/in progress, but code was unavailable for verification.
+Current build; repository-confirmed application UI, authenticated route, admin review components, migrations, generated types and Supabase integration are present. The required invitation gate is not implemented, and end-to-end behaviour/live RLS state remain unverified.
 
 ## Implementation Status
 
@@ -27,7 +27,7 @@ Contractor applicant, admin, super admin.
 - Every contractor application requires a human admin approval decision.
 - Unapproved contractors cannot accept jobs or act as approved contractors.
 - Sensitive application documents must never be publicly accessible.
-- The current documented stack is React, TypeScript, Tailwind and Supabase, subject to repository verification.
+- The repository-confirmed stack is React, TypeScript, TanStack Start, Vite, Tailwind CSS and Supabase.
 - Applications support admin information requests and applicant resubmission.
 
 ## Working Proposals
@@ -75,7 +75,7 @@ Receive owner/admin invitation → open secure link → create/sign in to own ac
 
 ## Screens and Routes
 
-Routes are unverified. Expected screens: invitation acceptance/sign-in, application steps, review/consent, status, request response and decision outcome.
+The current onboarding surface is `/application` behind the authenticated pathless layout, with `/auth` for account access and `/dashboard` for status/navigation. Application and information-request components are present. No invitation-acceptance screen exists.
 
 ## Business Rules
 
@@ -87,7 +87,7 @@ See [core states](../product/states.md). Invalid or out-of-order transitions mus
 
 ## Database Changes
 
-Proposed resources: profiles, contractor_applications, application_services, service_areas, application_documents, information_requests and decision_events. See [schema](../database/schema.md).
+Existing resources include `profiles`, `contractor_applications`, `contractor_services`, `contractor_areas`, `contractor_documents`, `application_info_requests`, `application_info_request_items`, `application_review_checks` and `application_status_history`. Proposed names in the wider model must be reconciled with these existing resources. See [database overview](../database/overview.md) and [schema](../database/schema.md).
 
 ## Supabase RLS
 

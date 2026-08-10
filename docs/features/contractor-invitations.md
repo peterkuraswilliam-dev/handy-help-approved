@@ -2,7 +2,7 @@
 
 ## Status
 
-Current confirmed launch requirement; implementation was unavailable for verification.
+Current confirmed launch requirement; repository audit found no invitation route, table, generated type or application implementation. The existing public contractor sign-up flow conflicts with this requirement.
 
 ## Implementation Status
 
@@ -83,7 +83,7 @@ Invalid, consumed, revoked or expired links must show a safe recovery message wi
 
 ## Screens and Routes
 
-Routes are unverified. Expected surfaces are an owner/admin invitation list and create/revoke control, an invitation acceptance/sign-up screen, and invalid/consumed-link states. Reuse the repository's established auth route conventions.
+No invitation-management or invitation-acceptance route exists. `/auth` currently exposes direct contractor sign-up and `/become-approved` links to that mode. Required future surfaces are an owner/admin invitation list and create/revoke control, an invitation acceptance/sign-up screen, and invalid/consumed-link states; reuse the repository's TanStack Start auth conventions.
 
 ## Business Rules
 

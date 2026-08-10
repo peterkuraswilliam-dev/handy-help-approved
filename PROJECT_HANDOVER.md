@@ -26,7 +26,9 @@ The current build slice is invitation-only contractor access, onboarding and app
 
 ## Technical status
 
-React, TypeScript, Tailwind and Supabase are confirmed for the onboarding build. One later visual labels Next.js and PWA, but those are not verified in code. No repository, migrations, environment configuration or live database were accessible during this migration. All detailed schemas are therefore proposals pending code audit.
+Repository audit on 10 August 2026 confirms a React 19 and TypeScript application using TanStack Start file-based routing, Vite 8, Tailwind CSS 4 and Supabase. The repository contains 31 Supabase migrations, generated database types, browser/server Supabase clients and six documented Supabase environment-variable names. No Next.js or PWA implementation was found, and no automated test script or application test suite is currently configured. Live Supabase and deployment state were not inspected.
+
+The audit also found a material gap against the confirmed invitation-only rule: `/auth` currently exposes contractor sign-up and `/become-approved` links to it, while no contractor-invitation route, table or generated type was found. Treat the invitation gate as required but not implemented; do not mistake existing account creation for approved contractor access.
 
 ## Business direction
 
@@ -38,6 +40,6 @@ Customer accounts, job posting and moderation, limited matching, quotes, booking
 
 ## Biggest open questions
 
-Exact V1/MVP boundary, invitation lifetime/resend/email-matching rules, pricing model, legal booking/payment structure, precise contact-release event, verification standard, category/service-area taxonomy, notification provider, dispute responsibility, data retention and whether Next.js/PWA are actually in the repository.
+Exact V1/MVP boundary, invitation lifetime/resend/email-matching rules, pricing model, legal booking/payment structure, precise contact-release event, verification standard, category/service-area taxonomy, notification provider, dispute responsibility and data retention. The repository audit resolved the framework question: the application uses TanStack Start/Vite, not Next.js, and no PWA implementation was found.
 
 For detail use [MANIFEST.md](MANIFEST.md), [open questions](docs/decisions/open-questions.md) and the [feature index](docs/features/README.md).

@@ -1,17 +1,18 @@
 # Technical architecture
 
-Purpose: distinguish confirmed technology from unverified or proposed architecture.
+Purpose: distinguish repository-confirmed technology from unverified or proposed architecture.
 
-## Confirmed from project discussions
+## Confirmed from repository audit
 
-- React
-- TypeScript
-- Tailwind CSS
-- Supabase for backend/database/auth/storage direction
+- React 19 and TypeScript
+- TanStack Start with file-based TanStack Router routes
+- Vite 8 and Tailwind CSS 4
+- Supabase browser/server clients, generated types and SQL migrations
+- Lovable's Vite/TanStack configuration package, with Nitro configured by that package for builds
 
-## Unverified
+## Not found or externally unverified
 
-A 6 August visual included Next.js and PWA labels. No codebase/package manifest was accessible, so framework version, routing, deployment, test stack and PWA implementation are unknown.
+A 6 August visual included Next.js and PWA labels, but the repository uses TanStack Start and contains no Next.js or PWA implementation. There is no automated test script or application test suite in the repository. Live Supabase state, Vercel linkage, deployment history and production configuration were not inspected.
 
 ## Proposed logical boundaries
 
@@ -23,4 +24,4 @@ Web client
   -> immutable audit/event records
 ```
 
-Service-role operations must remain server-only and narrowly scoped. Inspect code before choosing server actions, API routes or edge functions. See [authentication](authentication-and-integrations.md) and [database overview](../database/overview.md).
+Service-role operations must remain server-only and narrowly scoped. Reconcile any new server action, API route or edge function with the existing TanStack Start and Supabase patterns. See [authentication](authentication-and-integrations.md) and [database overview](../database/overview.md).

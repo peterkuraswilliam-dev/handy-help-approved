@@ -2,7 +2,7 @@
 
 ## Status
 
-Current build; queue/detail concepts evidenced, implementation unverified.
+Current build; repository-confirmed admin queue, application detail, review checklist, private notes, information requests, decision actions, role routes and supporting migrations are present. End-to-end behaviour and live RLS state remain unverified.
 
 ## Implementation Status
 
@@ -71,7 +71,7 @@ Open queue → filter/search → claim/open application → review sections/docu
 
 ## Screens and Routes
 
-Expected admin queue, application detail tabs, decision dialogue and contractor management view; real routes require code audit.
+Repository routes include `/admin`, `/admin/applications/$applicationId` and `/admin/roles`, protected by authenticated/admin layouts. Review and contractor-management components are present; behaviour still requires permission and end-to-end testing.
 
 ## Business Rules
 
@@ -83,7 +83,7 @@ See [states](../product/states.md); every transition creates an immutable event.
 
 ## Database Changes
 
-Proposed review_assignments, admin_notes, checklist_responses and decision_events. See [tables](../database/tables.md).
+Existing schema includes `admin_notes`, `application_review_checks`, `application_info_requests`, `application_info_request_items`, `application_status_history` and `contractor_status_events`. No `review_assignments` table was found. See [database overview](../database/overview.md) and [tables](../database/tables.md).
 
 ## Supabase RLS
 

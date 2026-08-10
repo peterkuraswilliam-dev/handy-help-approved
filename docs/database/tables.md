@@ -1,6 +1,6 @@
-# Proposed table catalogue
+# Table catalogue
 
-Status: PROPOSED pending code audit.
+Status: MIXED. The repository contains a current onboarding/review/profile schema; later marketplace resources remain proposed. See [database overview](overview.md) for the verified existing table list.
 
 | Resource | Ownership/sensitivity | Key constraints/indexes |
 | --- | --- | --- |

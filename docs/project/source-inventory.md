@@ -1,6 +1,6 @@
 # Source inventory
 
-Purpose: record what informed this knowledge base and what could not be accessed.
+Purpose: record what informed this knowledge base, including the later repository audit, and what remains externally unverified.
 
 ## Accessible conversation areas
 
@@ -28,13 +28,19 @@ Purpose: record what informed this knowledge base and what could not be accessed
 - Handy Help Feature Roadmap.png — proposed contractor response, profiles, search, notifications and management.
 - Handy Help Aberdeenshire recruitment poster.png — free development-period recruitment and target trades.
 
-## Unavailable or unverified sources
+## Repository evidence reviewed on 10 August 2026
+
+- Application source, routes, package manifests, lockfiles and build configuration.
+- Supabase configuration, 31 SQL migrations, integration clients and generated database types.
+- Existing root and route-level README/agent guidance.
+- Git branch and pull-request context for the documentation installation.
+
+## Still unavailable or unverified
 
 - Full verbatim contents of every historical project chat.
-- Any application repository, current README, package manifests, routes or tests.
-- Supabase project, live schema, migrations, functions, policies, buckets and generated types.
-- Vercel project/configuration and deployment history.
-- GitHub issues, branches, commits and pull requests.
+- Live Supabase schema, applied-migration state, functions, policies, buckets and data.
+- Vercel project linkage, environment values and deployment history.
+- Historical GitHub issues and pull requests outside the documentation-installation work.
 - Uploaded artefacts named in a visual (`HandyHelp_Requirements_v2.pdf`, `Database_Schema.sql`, `Contractor_Dashboard.fig`) were not found/read as source documents.
 - Original competitor research evidence and current pricing pages were not re-verified on 9 August 2026.
-- Source information unavailable — requires future review.
+- Original source information not listed above requires future review.
