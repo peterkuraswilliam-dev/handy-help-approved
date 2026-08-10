@@ -18,6 +18,8 @@ import {
   X,
 } from "lucide-react";
 import { getPublicProfile, type PublicPhoto, type PublicProfile } from "@/lib/public-profile.functions";
+import { StatusPage } from "@/components/StatusPage";
+import { APPROVAL_DISCLAIMER } from "@/lib/site-config";
 import { ContractorFallbackCover } from "@/components/ContractorFallbackCover";
 
 export const Route = createFileRoute("/contractors/$contractorSlug")({
@@ -50,8 +52,7 @@ export const Route = createFileRoute("/contractors/$contractorSlug")({
   component: ProfilePage,
 });
 
-const DISCLAIMER =
-  "Approval confirms that the contractor has supplied the requested information and agreed to follow our community standards. Customers should still carry out their own checks before agreeing to any work.";
+const DISCLAIMER = APPROVAL_DISCLAIMER;
 
 function formatDate(value: string | null) {
   if (!value) return null;
@@ -70,13 +71,13 @@ function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="mx-auto max-w-md card-panel text-center">
-        <h1 className="text-xl font-semibold">Profile unavailable</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          This contractor profile isn't publicly available at the moment.
-        </p>
-        <Link to="/contractors" className="btn-outline mt-4">Browse approved contractors</Link>
-      </div>
+      <StatusPage
+        title="Profile unavailable"
+        message="This contractor profile isn't publicly available at the moment. It may have been removed, suspended, or is still being reviewed."
+      >
+        <Link to="/contractors" className="btn-gold">Browse approved contractors</Link>
+        <Link to="/" className="btn-outline">Go home</Link>
+      </StatusPage>
     );
   }
 

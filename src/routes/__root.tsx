@@ -16,16 +16,19 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { MainMenu } from "@/components/MainMenu";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { StatusPage } from "@/components/StatusPage";
+import { APPROVAL_DISCLAIMER, FREE_NOTICE, SHOW_FREE_NOTICE, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/site-config";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-6xl font-bold text-[color:var(--color-gold)]">404</h1>
-        <p className="mt-3 text-muted-foreground">This page doesn't exist.</p>
-        <Link to="/" className="btn-gold mt-6">Go home</Link>
-      </div>
-    </div>
+    <StatusPage
+      code="404"
+      title="Page not found"
+      message="The page you were looking for doesn't exist or has been moved."
+    >
+      <Link to="/" className="btn-gold">Go home</Link>
+      <Link to="/contractors" className="btn-outline">Approved contractors</Link>
+    </StatusPage>
   );
 }
 
@@ -33,13 +36,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
   useEffect(() => { reportLovableError(error, { boundary: "root" }); }, [error]);
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-2xl font-semibold">Something went wrong</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{friendlyMessage(error)}</p>
-        <button className="btn-gold mt-6" onClick={() => { router.invalidate(); reset(); }}>Try again</button>
-      </div>
-    </div>
+    <StatusPage
+      title="Something went wrong"
+      message={friendlyMessage(error)}
+    >
+      <button className="btn-gold" onClick={() => { router.invalidate(); reset(); }}>Try again</button>
+      <Link to="/" className="btn-outline">Go home</Link>
+    </StatusPage>
   );
 }
 
@@ -48,9 +51,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Handy Help Aberdeenshire — Approved Contractor Network" },
-      { name: "description", content: "Become an Approved Contractor with Handy Help Aberdeenshire. Free while our contractor application platform is being developed." },
-      { property: "og:title", content: "Handy Help Aberdeenshire" },
+      { title: `${SITE_NAME} — ${SITE_TAGLINE}` },
+      { name: "description", content: SITE_DESCRIPTION },
+      { property: "og:title", content: SITE_NAME },
       { property: "og:description", content: "Join our growing network of approved local contractors across Aberdeenshire." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -114,7 +117,6 @@ function Header() {
           </span>
         </Link>
         <nav className="flex items-center gap-1 text-sm">
-          <Link to="/contractors" className="btn-ghost hidden sm:inline-flex">Contractors</Link>
           {signedIn ? (
             <>
               <NotificationBell />
@@ -122,8 +124,10 @@ function Header() {
             </>
           ) : (
             <>
+              <Link to="/become-approved" className="btn-ghost hidden sm:inline-flex">Become approved</Link>
+              <Link to="/community-rules" className="btn-ghost hidden md:inline-flex">Community rules</Link>
               <Link to="/auth" search={{ mode: "signin" }} className="btn-ghost hidden sm:inline-flex">Sign in</Link>
-              <Link to="/become-approved" className="btn-gold">Apply</Link>
+              <Link to="/become-approved" className="btn-gold sm:hidden">Apply</Link>
             </>
           )}
         </nav>
@@ -134,9 +138,10 @@ function Header() {
 
 
 function Banner() {
+  if (!SHOW_FREE_NOTICE) return null;
   return (
     <div className="bg-[color:var(--color-gold)] text-[color:var(--color-primary-foreground)] text-center text-sm font-semibold px-3 py-2">
-      Free while the Handy Help Aberdeenshire application is being developed.
+      {FREE_NOTICE}
     </div>
   );
 }
@@ -151,12 +156,8 @@ function Footer() {
           <Link to="/community-rules" className="hover:text-[color:var(--color-gold)]">Community rules</Link>
           <Link to="/privacy" className="hover:text-[color:var(--color-gold)]">Privacy information</Link>
         </nav>
-        <p className="max-w-2xl leading-relaxed">
-          Approval confirms that the contractor has supplied the requested information and agreed to
-          follow our community standards. Customers should still carry out their own checks before
-          agreeing to any work.
-        </p>
-        <p>© {new Date().getFullYear()} Handy Help Aberdeenshire</p>
+        <p className="max-w-2xl leading-relaxed">{APPROVAL_DISCLAIMER}</p>
+        <p>© {new Date().getFullYear()} {SITE_NAME}</p>
       </div>
     </footer>
   );

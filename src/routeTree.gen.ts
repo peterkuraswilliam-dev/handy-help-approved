@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as CommunityRulesRouteImport } from './routes/community-rules'
 import { Route as BecomeApprovedRouteImport } from './routes/become-approved'
@@ -26,6 +27,11 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminRolesRouteImport } from './routes/_authenticated/admin.roles'
 import { Route as AuthenticatedAdminApplicationsApplicationIdRouteImport } from './routes/_authenticated/admin.applications.$applicationId'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/become-approved': typeof BecomeApprovedRoute
   '/community-rules': typeof CommunityRulesRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/application': typeof AuthenticatedApplicationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByTo {
   '/become-approved': typeof BecomeApprovedRoute
   '/community-rules': typeof CommunityRulesRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/application': typeof AuthenticatedApplicationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/become-approved': typeof BecomeApprovedRoute
   '/community-rules': typeof CommunityRulesRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/application': typeof AuthenticatedApplicationRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
     | '/become-approved'
     | '/community-rules'
     | '/privacy'
+    | '/reset-password'
     | '/admin'
     | '/application'
     | '/dashboard'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/become-approved'
     | '/community-rules'
     | '/privacy'
+    | '/reset-password'
     | '/application'
     | '/dashboard'
     | '/notifications'
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/become-approved'
     | '/community-rules'
     | '/privacy'
+    | '/reset-password'
     | '/_authenticated/admin'
     | '/_authenticated/application'
     | '/_authenticated/dashboard'
@@ -223,12 +235,20 @@ export interface RootRouteChildren {
   BecomeApprovedRoute: typeof BecomeApprovedRoute
   CommunityRulesRoute: typeof CommunityRulesRoute
   PrivacyRoute: typeof PrivacyRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ContractorsContractorSlugRoute: typeof ContractorsContractorSlugRoute
   ContractorsIndexRoute: typeof ContractorsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -386,6 +406,7 @@ const rootRouteChildren: RootRouteChildren = {
   BecomeApprovedRoute: BecomeApprovedRoute,
   CommunityRulesRoute: CommunityRulesRoute,
   PrivacyRoute: PrivacyRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ContractorsContractorSlugRoute: ContractorsContractorSlugRoute,
   ContractorsIndexRoute: ContractorsIndexRoute,
 }
