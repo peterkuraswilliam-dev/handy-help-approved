@@ -31,6 +31,34 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Admins land on the review dashboard, contractors on their own dashboard.
+  async function goToHome() {
+    const { data } = await supabase.auth.getUser();
+    const uid = data.user?.id;
+    if (uid) {
+      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: uid, _role: "admin" });
+      if (isAdmin) return void navigate({ to: "/admin" });
+    }
+    void navigate({ to: "/dashboard" });
+  }
+
+  async function forgotPassword() {
+    const emailOk = emailSchema.safeParse(email);
+    if (!emailOk.success) return toast.error("Enter your email address first, then choose Reset password.");
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/reset-password",
+      });
+      if (error) throw error;
+      toast.success("If that email is registered, a reset link is on its way.");
+    } catch (err) {
+      toast.error(friendlyMessage(err, "We could not send the reset email."));
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const emailOk = emailSchema.safeParse(email);
@@ -54,7 +82,7 @@ function AuthPage() {
         if (error) throw error;
         toast.success("Welcome back");
       }
-      navigate({ to: "/dashboard" });
+      await goToHome();
     } catch (err) {
       toast.error(friendlyMessage(err, "Something went wrong"));
     } finally {
@@ -71,7 +99,7 @@ function AuthPage() {
       if (result.error) throw result.error;
       if (result.redirected) return;
       toast.success("Signed in with Google");
-      navigate({ to: "/dashboard" });
+      await goToHome();
     } catch (err) {
       toast.error(friendlyMessage(err, "Google sign-in failed"));
     } finally {
@@ -160,6 +188,16 @@ function AuthPage() {
               At least 8 characters.
             </p>
           </div>
+          {tab === "signin" && (
+            <button
+              type="button"
+              onClick={forgotPassword}
+              disabled={loading}
+              className="text-xs text-[color:var(--color-gold)] underline underline-offset-2"
+            >
+              Forgot your password?
+            </button>
+          )}
           <button type="submit" className="btn-gold w-full" disabled={loading}>
             {loading ? "Please wait…" : tab === "signup" ? "Create contractor account" : "Sign in"}
           </button>
