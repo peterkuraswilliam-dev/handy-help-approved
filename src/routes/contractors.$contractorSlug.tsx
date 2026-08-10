@@ -51,8 +51,7 @@ export const Route = createFileRoute("/contractors/$contractorSlug")({
   component: ProfilePage,
 });
 
-const DISCLAIMER =
-  "Approval confirms that the contractor has supplied the requested information and agreed to follow our community standards. Customers should still carry out their own checks before agreeing to any work.";
+const DISCLAIMER = APPROVAL_DISCLAIMER;
 
 function formatDate(value: string | null) {
   if (!value) return null;
