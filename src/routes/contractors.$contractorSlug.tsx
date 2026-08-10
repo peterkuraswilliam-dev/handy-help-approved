@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { getPublicProfile, type PublicPhoto, type PublicProfile } from "@/lib/public-profile.functions";
 import { StatusPage } from "@/components/StatusPage";
+import { APPROVAL_DISCLAIMER } from "@/lib/site-config";
 import { ContractorFallbackCover } from "@/components/ContractorFallbackCover";
 
 export const Route = createFileRoute("/contractors/$contractorSlug")({
