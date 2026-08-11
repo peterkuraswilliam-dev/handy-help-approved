@@ -92,6 +92,7 @@ function ContractorInvitations() {
       await load();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not revoke invitation.");
+      await load();
     } finally {
       setBusy(false);
     }
