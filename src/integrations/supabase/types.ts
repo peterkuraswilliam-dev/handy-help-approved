@@ -489,6 +489,51 @@ export type Database = {
           },
         ]
       }
+      contractor_invitations: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          created_at: string
+          created_by: string
+          email: string
+          expires_at: string
+          id: string
+          reservation_id: string | null
+          reserved_at: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          token_hash: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          created_by: string
+          email: string
+          expires_at?: string
+          id?: string
+          reservation_id?: string | null
+          reserved_at?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          token_hash: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          created_by?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          reservation_id?: string | null
+          reserved_at?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          token_hash?: string
+        }
+        Relationships: []
+      }
       contractor_profiles: {
         Row: {
           application_id: string
@@ -771,6 +816,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_contractor_invitation: {
+        Args: { _token: string }
+        Returns: undefined
+      }
       activate_contractor_profile: {
         Args: { _application_id: string }
         Returns: string
@@ -780,6 +829,24 @@ export type Database = {
           _app: Database["public"]["Tables"]["contractor_applications"]["Row"]
         }
         Returns: string
+      }
+      complete_contractor_invitation: {
+        Args: {
+          _invitation_id: string
+          _reservation_id: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
+      create_contractor_invitation: {
+        Args: { _email: string }
+        Returns: {
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          token: string
+        }[]
       }
       generate_contractor_slug: { Args: { _name: string }; Returns: string }
       has_role: {
@@ -813,6 +880,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      release_contractor_invitation: {
+        Args: { _invitation_id: string; _reservation_id: string }
+        Returns: undefined
+      }
+      reserve_contractor_invitation: {
+        Args: { _email: string; _reservation_id: string; _token: string }
+        Returns: string
+      }
       restore_contractor: {
         Args: {
           _admin_note?: string
@@ -821,6 +896,10 @@ export type Database = {
           _reason: string
         }
         Returns: string
+      }
+      revoke_contractor_invitation: {
+        Args: { _invitation_id: string }
+        Returns: undefined
       }
       suspend_contractor: {
         Args: {
