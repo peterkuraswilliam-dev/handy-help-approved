@@ -22,7 +22,7 @@ export const Route = createFileRoute("/become-approved")({
 
 function BecomeApproved() {
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="shell-prose space-y-6">
       <h1 className="text-3xl font-bold">Become an Approved Contractor</h1>
       <p className="text-muted-foreground">
         Apply once. Get reviewed by our team. Show customers you meet our community standards with

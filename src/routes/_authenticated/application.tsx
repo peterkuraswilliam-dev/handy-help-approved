@@ -290,7 +290,7 @@ function ApplicationForm() {
   const locked = ["under_review", "approved", "rejected", "suspended"].includes(status);
 
   return (
-    <div className="max-w-3xl mx-auto space-y-5">
+    <div className="shell-prose space-y-5">
       <Link to="/dashboard" className="btn-ghost -ml-2 text-sm"><ArrowLeft className="h-4 w-4" /> Back to dashboard</Link>
       <h1 className="text-2xl font-bold">Contractor Application</h1>
       {locked && <p className="text-sm text-[color:var(--color-gold)]">This application is locked while under review. You'll be notified if we need more information.</p>}

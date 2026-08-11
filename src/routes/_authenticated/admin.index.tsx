@@ -377,7 +377,7 @@ function AdminApplicationList() {
   }, { draft: 0, submitted: 0, under_review: 0, more_info_required: 0, approved: 0, rejected: 0, suspended: 0 });
 
   return (
-    <div className="cinematic-admin mx-auto max-w-5xl space-y-6">
+    <div className="cinematic-admin w-full space-y-6">
       <Link to="/" className="btn-ghost -ml-2 inline-flex w-fit items-center gap-2">
         <ArrowLeft className="h-4 w-4" /> Back to main app
       </Link>

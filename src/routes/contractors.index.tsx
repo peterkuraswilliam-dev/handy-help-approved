@@ -50,7 +50,7 @@ function Directory() {
   });
 
   return (
-    <div className="profile-cinematic max-w-5xl mx-auto space-y-6">
+    <div className="profile-cinematic w-full space-y-6">
       <header className="directory-hero relative overflow-hidden rounded-2xl px-5 py-8 sm:px-8 sm:py-12">
         <span className="cinematic-admin-orb cinematic-admin-orb-one" aria-hidden />
         <span className="cinematic-admin-orb cinematic-admin-orb-two" aria-hidden />
@@ -77,7 +77,7 @@ function Directory() {
       </header>
 
       {loading ? (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {[0, 1, 2, 3].map((i) => (
             <li key={i} className="directory-card h-56 animate-pulse" />
           ))}
@@ -87,7 +87,7 @@ function Directory() {
           {rows.length === 0 ? "No approved contractors yet — check back soon." : "No matches for that search."}
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {filtered.map((r) => (
             <li key={r.slug}>
               <Link

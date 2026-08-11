@@ -24,7 +24,7 @@ const RULES: [string, string][] = [
 
 function Rules() {
   return (
-    <div className="max-w-3xl mx-auto space-y-4">
+    <div className="shell-prose space-y-4">
       <h1 className="text-3xl font-bold">Community Rules</h1>
       <p className="text-muted-foreground text-sm">
         All Approved Contractors agree to follow these standards. Breaches may lead to suspension.

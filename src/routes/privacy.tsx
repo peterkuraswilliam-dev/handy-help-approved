@@ -61,7 +61,7 @@ const SECTIONS: [string, string[]][] = [
 
 function Privacy() {
   return (
-    <div className="mx-auto max-w-3xl space-y-5">
+    <div className="shell-prose space-y-5">
       <h1 className="text-3xl font-bold">Privacy Information</h1>
       <p className="text-sm text-muted-foreground">
         Handy Help Aberdeenshire only collects the information needed to review contractor applications
