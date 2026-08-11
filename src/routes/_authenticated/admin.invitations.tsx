@@ -99,7 +99,7 @@ function ContractorInvitations() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="shell-prose space-y-6">
       <Link to="/admin" className="btn-ghost -ml-2 inline-flex items-center gap-2">
         <ArrowLeft className="h-4 w-4" /> Admin dashboard
       </Link>

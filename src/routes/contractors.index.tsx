@@ -50,7 +50,7 @@ function Directory() {
   });
 
   return (
-    <div className="profile-cinematic max-w-5xl mx-auto space-y-6">
+    <div className="profile-cinematic w-full space-y-6">
       <header className="directory-hero relative overflow-hidden rounded-2xl px-5 py-8 sm:px-8 sm:py-12">
         <span className="cinematic-admin-orb cinematic-admin-orb-one" aria-hidden />
         <span className="cinematic-admin-orb cinematic-admin-orb-two" aria-hidden />

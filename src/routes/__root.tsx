@@ -108,7 +108,7 @@ function Header() {
   }, []);
   return (
     <header className="border-b border-border/60 sticky top-0 z-30 backdrop-blur bg-[color:var(--color-background)]/85">
-      <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between gap-3">
+      <div className="shell py-3 flex items-center justify-between gap-3">
         <Link to="/" className="flex items-center gap-2">
           <span className="inline-block h-8 w-8 rounded-md bg-[color:var(--color-gold)] text-[color:var(--color-primary-foreground)] font-bold grid place-items-center">H</span>
           <span className="font-display text-lg leading-tight">
@@ -149,7 +149,7 @@ function Banner() {
 function Footer() {
   return (
     <footer className="border-t border-border/60 mt-16">
-      <div className="mx-auto max-w-5xl px-4 py-6 space-y-4 text-xs text-muted-foreground">
+      <div className="shell py-6 space-y-4 text-xs text-muted-foreground">
         <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2">
           <Link to="/contractors" className="hover:text-[color:var(--color-gold)]">Approved contractors</Link>
           <Link to="/become-approved" className="hover:text-[color:var(--color-gold)]">Become approved</Link>
@@ -169,7 +169,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Banner />
       <Header />
-      <main className="mx-auto max-w-5xl px-4 py-6 min-h-[70vh]">
+      <main className="shell py-6 min-h-[70vh]">
         <Outlet />
       </main>
       <Footer />
