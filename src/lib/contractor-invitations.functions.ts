@@ -64,7 +64,17 @@ export const revokeContractorInvitation = createServerFn({ method: "POST" })
     const { error } = await context.supabase.rpc("revoke_contractor_invitation", {
       _invitation_id: data.invitationId,
     });
-    if (error) throw new Error("That invitation could not be revoked.");
+    if (error) {
+      if (error.message.includes("invitation cannot be revoked")) {
+        throw new Error(
+          "That invitation can no longer be revoked — it has already been accepted or revoked.",
+        );
+      }
+      if (error.message.includes("not authorised")) {
+        throw new Error("You do not have permission to do this.");
+      }
+      throw new Error("That invitation could not be revoked.");
+    }
     return { ok: true };
   });
 
