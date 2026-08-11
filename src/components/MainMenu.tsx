@@ -1,6 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { BadgeCheck, Bell, LayoutDashboard, Lock, Menu, Repeat, Settings, Shield, Users, X } from "lucide-react";
+import {
+  BadgeCheck,
+  Bell,
+  LayoutDashboard,
+  Lock,
+  MailPlus,
+  Menu,
+  Repeat,
+  Settings,
+  Shield,
+  Users,
+  X,
+} from "lucide-react";
 
 type Item = { to: string; label: string; icon: typeof Menu };
 
@@ -18,7 +30,9 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
@@ -28,6 +42,7 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
   const items: Item[] = adminView
     ? [
         { to: "/admin", label: "Applications dashboard", icon: LayoutDashboard },
+        { to: "/admin/invitations", label: "Contractor invitations", icon: MailPlus },
         { to: "/notifications", label: "Notifications", icon: Bell },
         { to: "/admin/roles", label: "Role management", icon: Users },
         { to: "/settings", label: "Settings", icon: Settings },
@@ -46,10 +61,6 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
     setMode(next);
     if (typeof window !== "undefined") window.localStorage.setItem(MODE_KEY, next);
   };
-
-
-
-
 
   return (
     <div className="relative">
@@ -89,7 +100,6 @@ export function MainMenu({ isAdmin }: { isAdmin: boolean }) {
             )}
             <nav className="flex flex-col py-1">
               {items.map(({ to, label, icon: Icon }) => (
-
                 <Link
                   key={to}
                   to={to}

@@ -28,7 +28,7 @@ The current build slice is invitation-only contractor access, onboarding and app
 
 Repository audit on 10 August 2026 confirms a React 19 and TypeScript application using TanStack Start file-based routing, Vite 8, Tailwind CSS 4 and Supabase. The repository contains 31 Supabase migrations, generated database types, browser/server Supabase clients and six documented Supabase environment-variable names. No Next.js or PWA implementation was found, and no automated test script or application test suite is currently configured. Live Supabase and deployment state were not inspected.
 
-The audit also found a material gap against the confirmed invitation-only rule: `/auth` currently exposes contractor sign-up and `/become-approved` links to it, while no contractor-invitation route, table or generated type was found. Treat the invitation gate as required but not implemented; do not mistake existing account creation for approved contractor access.
+The confirmed invitation-only rule now has a bounded implementation in the repository: sign-in-only public auth, admin manual-link management, email-bound seven-day acceptance, digest-only token storage and database-enforced role/account gating. The migration has not been applied to a Supabase project and the permission/end-to-end matrix remains to be verified before launch.
 
 ## Business direction
 
