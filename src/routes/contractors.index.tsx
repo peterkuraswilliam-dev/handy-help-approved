@@ -77,7 +77,7 @@ function Directory() {
       </header>
 
       {loading ? (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {[0, 1, 2, 3].map((i) => (
             <li key={i} className="directory-card h-56 animate-pulse" />
           ))}
@@ -87,7 +87,7 @@ function Directory() {
           {rows.length === 0 ? "No approved contractors yet — check back soon." : "No matches for that search."}
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {filtered.map((r) => (
             <li key={r.slug}>
               <Link
