@@ -169,7 +169,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Banner />
       <Header />
-      <main className="shell py-6 min-h-[70vh]">
+      <main className="shell py-fluid-lg min-h-[70vh]">
         <Outlet />
       </main>
       <Footer />
