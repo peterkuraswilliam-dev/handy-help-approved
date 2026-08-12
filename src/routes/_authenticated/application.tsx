@@ -290,7 +290,7 @@ function ApplicationForm() {
   const locked = ["under_review", "approved", "rejected", "suspended"].includes(status);
 
   return (
-    <div className="shell-prose space-y-5">
+    <div className="shell-prose space-y-fluid-md">
       <Link to="/dashboard" className="btn-ghost -ml-2 text-sm"><ArrowLeft className="h-4 w-4" /> Back to dashboard</Link>
       <h1 className="text-2xl font-bold">Contractor Application</h1>
       {locked && <p className="text-sm text-[color:var(--color-gold)]">This application is locked while under review. You'll be notified if we need more information.</p>}
@@ -303,14 +303,14 @@ function ApplicationForm() {
         <Field label="Company registration number"><input value={form.company_registration_number} onChange={(e) => upd("company_registration_number", e.target.value)} disabled={locked} maxLength={20} /></Field>
         <div>
           <label>Working hours</label>
-          <div className="mt-1 space-y-2 rounded-md border border-border p-3">
+          <div className="mt-fluid-2xs space-y-fluid-xs rounded-md border border-border p-fluid-sm">
             {weekDays.map((day) => {
               const hours = workingHours.days[day];
               return (
-                <div key={day} className="grid grid-cols-[minmax(5rem,1fr)_auto] items-center gap-2 sm:grid-cols-[8rem_auto_1fr]">
+                <div key={day} className="grid grid-cols-[minmax(5rem,1fr)_auto] items-center gap-fluid-xs sm:grid-cols-[8rem_auto_1fr]">
                   <span className="text-sm font-medium">{day}</span>
                   <label className="flex items-center gap-1 text-sm text-muted-foreground"><input type="checkbox" className="w-auto" checked={hours.closed} disabled={locked} onChange={(e) => setWorkingHours((current) => ({ ...current, days: { ...current.days, [day]: { ...current.days[day], closed: e.target.checked } } }))} /> Closed</label>
-                  {!hours.closed && <div className="col-span-2 flex items-center gap-2 sm:col-span-1"><input aria-label={`${day} opening time`} type="time" value={hours.opens} disabled={locked} onChange={(e) => setWorkingHours((current) => ({ ...current, days: { ...current.days, [day]: { ...current.days[day], opens: e.target.value } } }))} /><span className="text-sm text-muted-foreground">to</span><input aria-label={`${day} closing time`} type="time" value={hours.closes} disabled={locked} onChange={(e) => setWorkingHours((current) => ({ ...current, days: { ...current.days, [day]: { ...current.days[day], closes: e.target.value } } }))} /></div>}
+                  {!hours.closed && <div className="col-span-2 flex items-center gap-fluid-xs sm:col-span-1"><input aria-label={`${day} opening time`} type="time" value={hours.opens} disabled={locked} onChange={(e) => setWorkingHours((current) => ({ ...current, days: { ...current.days, [day]: { ...current.days[day], opens: e.target.value } } }))} /><span className="text-sm text-muted-foreground">to</span><input aria-label={`${day} closing time`} type="time" value={hours.closes} disabled={locked} onChange={(e) => setWorkingHours((current) => ({ ...current, days: { ...current.days, [day]: { ...current.days[day], closes: e.target.value } } }))} /></div>}
                 </div>
               );
             })}
@@ -328,7 +328,7 @@ function ApplicationForm() {
       <Section title="Areas covered">
         <TagList items={areas.map(a => a.area)} onRemove={(i) => removeArea(areas[i].id)} disabled={locked} />
         {!locked && (
-          <div className="flex gap-2 mt-2">
+          <div className="mt-fluid-xs flex flex-wrap gap-fluid-xs">
             <input value={newArea} onChange={(e) => setNewArea(e.target.value)} placeholder="e.g. Aberdeen, Ellon" />
             <button className="btn-outline" onClick={addArea}>Add</button>
           </div>
@@ -338,7 +338,7 @@ function ApplicationForm() {
       <Section title="Services offered">
         <TagList items={services.map(s => s.service)} onRemove={(i) => removeService(services[i].id)} disabled={locked} />
         {!locked && (
-          <div className="flex gap-2 mt-2">
+          <div className="mt-fluid-xs flex flex-wrap gap-fluid-xs">
             <input value={newService} onChange={(e) => setNewService(e.target.value)} placeholder="e.g. Plumbing" />
             <button className="btn-outline" onClick={addService}>Add</button>
           </div>
@@ -351,7 +351,7 @@ function ApplicationForm() {
       </Section>
 
       <Section title="Photos of previous work">
-        <div className="grid grid-cols-3 gap-2 mb-2">
+        <div className="mb-fluid-xs grid grid-cols-2 gap-fluid-xs sm:grid-cols-3 lg:grid-cols-4">
           {gallery.map((g) => (
             <div key={g.id} className="relative border border-border rounded p-2 text-xs">
               <span className="block truncate">{g.path.split("/").pop()}</span>
@@ -386,17 +386,17 @@ function ApplicationForm() {
       </Section>
 
       <Section title="Declarations">
-        <label className="flex items-start gap-2 text-sm">
+        <label className="flex items-start gap-fluid-xs text-sm">
           <input type="checkbox" className="w-auto mt-1" checked={form.agreed_rules} onChange={(e) => upd("agreed_rules", e.target.checked)} disabled={locked} />
           <span>I have read and agree to follow the <Link to="/community-rules" className="text-[color:var(--color-gold)] underline">community rules</Link>.</span>
         </label>
-        <label className="flex items-start gap-2 text-sm mt-2">
+        <label className="mt-fluid-xs flex items-start gap-fluid-xs text-sm">
           <input type="checkbox" className="w-auto mt-1" checked={form.confirmed_accurate} onChange={(e) => upd("confirmed_accurate", e.target.checked)} disabled={locked} />
           <span>I confirm that all information provided is accurate and true to the best of my knowledge.</span>
         </label>
       </Section>
 
-      <div className="flex flex-wrap gap-2 sticky bottom-3 bg-[color:var(--color-background)]/90 backdrop-blur p-2 rounded-md">
+      <div className="sticky bottom-3 flex flex-wrap gap-fluid-xs rounded-md bg-[color:var(--color-background)]/90 p-fluid-xs backdrop-blur">
         <button className="btn-outline flex-1" onClick={save} disabled={saving || locked}>{saving ? "Saving…" : "Save draft"}</button>
         {status === "draft" && <button className="btn-gold flex-1" onClick={submit} disabled={saving || locked}>{saving ? "Saving…" : "Submit application"}</button>}
         <button className="btn-outline" onClick={() => router.navigate({ to: "/dashboard" })}>Done</button>
@@ -407,7 +407,7 @@ function ApplicationForm() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="card-panel space-y-3">
+    <section className="card-panel space-y-fluid-sm">
       <h2 className="font-semibold">{title}</h2>
       {children}
     </section>
@@ -419,7 +419,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function TagList({ items, onRemove, disabled }: { items: string[]; onRemove: (i: number) => void; disabled: boolean }) {
   if (items.length === 0) return <p className="text-sm text-muted-foreground">None added yet.</p>;
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-fluid-xs">
       {items.map((t, i) => (
         <span key={i} className="badge-status flex items-center gap-1">
           {t}
@@ -441,9 +441,9 @@ function FileInput({ accept, disabled, onFile }: { accept: string; disabled: boo
 function DocList({ docs, onRemove, locked }: { docs: Doc[]; onRemove: (d: Doc) => void; locked: boolean }) {
   if (docs.length === 0) return null;
   return (
-    <ul className="text-sm space-y-1">
+    <ul className="space-y-fluid-2xs text-sm">
       {docs.map((d) => (
-        <li key={d.id} className="flex items-center justify-between border border-border rounded px-2 py-1">
+        <li key={d.id} className="flex items-center justify-between rounded border border-border px-fluid-xs py-fluid-2xs">
           <span className="truncate">{d.original_name ?? d.path.split("/").pop()}</span>
           {!locked && <button onClick={() => onRemove(d)}><Trash2 className="h-4 w-4 text-destructive" /></button>}
         </li>
