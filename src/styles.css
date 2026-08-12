@@ -108,26 +108,35 @@
     color: var(--color-foreground);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    padding: 0.6rem 0.75rem;
+    padding: var(--control-pad-y) var(--control-pad-x);
     width: 100%;
+    font-size: var(--text-base);
+    min-height: 2.75rem;
+  }
+  textarea { min-height: 6rem; }
+  input[type="checkbox"], input[type="radio"] {
+    min-height: 0;
+    padding: 0;
+    width: auto;
   }
   input:focus, textarea:focus, select:focus {
     outline: 2px solid var(--color-gold);
     outline-offset: 1px;
   }
-  label { font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem; display: block; }
+  label { font-size: var(--text-sm); font-weight: 500; margin-bottom: var(--spacing-fluid-2xs); display: block; }
 }
 
 @utility btn-gold {
   background-color: var(--color-gold);
   color: var(--color-primary-foreground);
-  padding: 0.65rem 1.1rem;
+  padding: var(--control-pad-y) var(--control-btn-pad-x);
+  min-height: 2.75rem;
   border-radius: var(--radius-md);
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--spacing-fluid-xs);
   transition: filter .15s;
   &:hover { filter: brightness(1.08); }
   &:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -136,22 +145,24 @@
 @utility btn-outline {
   border: 1px solid var(--color-gold);
   color: var(--color-gold);
-  padding: 0.6rem 1.05rem;
+  padding: var(--control-pad-y) var(--control-btn-pad-x);
+  min-height: 2.75rem;
   border-radius: var(--radius-md);
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--spacing-fluid-xs);
   &:hover { background-color: color-mix(in oklch, var(--color-gold) 12%, transparent); }
 }
 
 @utility btn-ghost {
   color: var(--color-foreground);
-  padding: 0.5rem 0.9rem;
+  padding: var(--control-pad-y) var(--control-pad-x);
   border-radius: var(--radius-md);
   &:hover { background-color: var(--color-secondary); }
 }
+
 
 @utility card-panel {
   background-color: var(--color-card);
