@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 import { uploadFile } from "@/lib/application-helpers";
 import { insuranceSummary, VERIFICATION_LABEL } from "@/lib/insurance";
 import { InsuranceBadge } from "@/components/insurance/InsuranceBadge";
+import { FileDropzone } from "@/components/uploads/FileDropzone";
+import { DOCUMENT_TYPES, MAX_DOCUMENT_BYTES, describeTypes, formatBytes } from "@/lib/file-validation";
 
 type DocRow = {
   id: string;
