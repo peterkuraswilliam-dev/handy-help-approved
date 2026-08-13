@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, RotateCcw, UploadCloud } from "lucide-react";
 import { describeTypes, formatBytes, validateFile } from "@/lib/file-validation";
+import { MAX_UPLOAD_ATTEMPTS, describeUploadError, isRetryableUploadError } from "@/lib/upload-error";
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export function FileDropzone({
   accept,
@@ -25,6 +28,9 @@ export function FileDropzone({
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
   const [current, setCurrent] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
+  const [lastFile, setLastFile] = useState<File | null>(null);
+  const [canRetry, setCanRetry] = useState(false);
 
   useEffect(() => () => { if (timer.current) clearInterval(timer.current); }, []);
 
@@ -32,6 +38,8 @@ export function FileDropzone({
     if (disabled || busy) return;
     setError(null);
     setDone(null);
+    setCanRetry(false);
+    setLastFile(file);
     const problem = validateFile(file, allowedTypes, maxBytes);
     if (problem) {
       setError(problem);
@@ -41,16 +49,34 @@ export function FileDropzone({
     setBusy(true);
     setProgress(6);
     timer.current = setInterval(() => setProgress((p) => (p < 90 ? p + Math.max(1, (90 - p) / 12) : p)), 180);
+
+    let lastError: unknown = null;
+    let tries = 0;
     try {
-      await onFile(file);
-      setProgress(100);
-      setDone(file.name);
-    } catch {
-      setError("That upload did not complete. Please try again.");
+      for (let i = 1; i <= MAX_UPLOAD_ATTEMPTS; i += 1) {
+        tries = i;
+        setAttempt(i);
+        try {
+          await onFile(file);
+          setProgress(100);
+          setDone(file.name);
+          setError(null);
+          setCanRetry(false);
+          return;
+        } catch (err) {
+          lastError = err;
+          if (i === MAX_UPLOAD_ATTEMPTS || !isRetryableUploadError(err)) break;
+          setProgress(6);
+          await sleep(600 * i);
+        }
+      }
+      setError(describeUploadError(lastError, file.name, tries));
+      setCanRetry(true);
     } finally {
       if (timer.current) clearInterval(timer.current);
       timer.current = null;
       setBusy(false);
+      setAttempt(0);
       setTimeout(() => setProgress(0), 600);
     }
   }
@@ -87,7 +113,9 @@ export function FileDropzone({
           <UploadCloud className="h-6 w-6 text-[color:var(--color-gold)]" />
         )}
         <p className="text-sm font-medium">
-          {busy ? `Uploading ${current}…` : "Drag and drop a file here, or tap to browse"}
+          {busy
+            ? `Uploading ${current}…${attempt > 1 ? ` (retry ${attempt} of ${MAX_UPLOAD_ATTEMPTS})` : ""}`
+            : "Drag and drop a file here, or tap to browse"}
         </p>
         <p className="text-xs text-muted-foreground">
           {hint ?? `${describeTypes(allowedTypes)} · up to ${formatBytes(maxBytes)}`}
@@ -123,9 +151,20 @@ export function FileDropzone({
       )}
 
       {error && (
-        <p className="flex items-start gap-1.5 text-xs text-destructive">
-          <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {error}
-        </p>
+        <div role="alert" className="space-y-1.5 rounded-md border border-destructive/40 bg-destructive/10 p-2.5">
+          <p className="flex items-start gap-1.5 text-xs text-destructive">
+            <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {error}
+          </p>
+          {canRetry && lastFile && !busy && (
+            <button
+              type="button"
+              onClick={() => void handle(lastFile)}
+              className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--color-gold)]/50 px-2.5 py-1 text-xs font-medium text-[color:var(--color-gold)] transition-colors hover:bg-[color:var(--color-gold)]/10"
+            >
+              <RotateCcw className="h-3.5 w-3.5" /> Retry upload
+            </button>
+          )}
+        </div>
       )}
       {done && !busy && !error && (
         <p className="flex items-start gap-1.5 text-xs text-emerald-400">
