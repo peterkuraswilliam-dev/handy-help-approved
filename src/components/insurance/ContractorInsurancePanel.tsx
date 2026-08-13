@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 import { uploadFile } from "@/lib/application-helpers";
 import { insuranceSummary, VERIFICATION_LABEL } from "@/lib/insurance";
 import { InsuranceBadge } from "@/components/insurance/InsuranceBadge";
+import { FileDropzone } from "@/components/uploads/FileDropzone";
+import { DOCUMENT_TYPES, MAX_DOCUMENT_BYTES, describeTypes, formatBytes } from "@/lib/file-validation";
 
 type DocRow = {
   id: string;
@@ -165,17 +167,19 @@ export function ContractorInsurancePanel({
             onChange={(e) => setForm({ ...form, expiryDate: e.target.value })}
           />
         </label>
-        <label className="space-y-1 text-sm">
+        <div className="space-y-1 text-sm sm:col-span-2">
           <span className="text-xs text-muted-foreground">
             {current ? "Replace insurance document" : "Upload insurance document"}
           </span>
-          <input
-            type="file"
+          <FileDropzone
             accept="image/*,application/pdf"
-            className="w-full rounded-md border border-white/15 bg-secondary px-3 py-2 text-sm"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+            allowedTypes={DOCUMENT_TYPES}
+            maxBytes={MAX_DOCUMENT_BYTES}
+            onFile={(f) => setFile(f)}
+            hint={`${describeTypes(DOCUMENT_TYPES)} · up to ${formatBytes(MAX_DOCUMENT_BYTES)} · saved when you press Save`}
           />
-        </label>
+          {file && <p className="text-xs text-muted-foreground">Selected: {file.name}</p>}
+        </div>
       </div>
 
       {current && (

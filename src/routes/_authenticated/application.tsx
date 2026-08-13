@@ -5,7 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
 import { uploadFile } from "@/lib/application-helpers";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2, Upload, X } from "lucide-react";
+import { ArrowLeft, Trash2, X } from "lucide-react";
+import { FileDropzone } from "@/components/uploads/FileDropzone";
+import {
+  DOCUMENT_TYPES,
+  IMAGE_TYPES,
+  MAX_DOCUMENT_BYTES,
+  MAX_IMAGE_BYTES,
+} from "@/lib/file-validation";
 
 export const Route = createFileRoute("/_authenticated/application")({
   head: () => ({ meta: [{ title: "Application — Handy Help Aberdeenshire" }] }),
@@ -272,6 +279,7 @@ function ApplicationForm() {
 
     } catch (err) {
       toast.error(friendlyMessage(err, "Upload failed"));
+      throw err;
     }
   }
 
@@ -347,7 +355,7 @@ function ApplicationForm() {
 
       <Section title="Business logo">
         {logoPath && <p className="text-xs text-muted-foreground mb-2">Uploaded ✓</p>}
-        <FileInput accept="image/*" disabled={locked} onFile={(f) => handleUpload("logo", f)} />
+        <FileInput accept="image/*" kind="image" disabled={locked} onFile={(f) => handleUpload("logo", f)} />
       </Section>
 
       <Section title="Photos of previous work">
@@ -359,7 +367,7 @@ function ApplicationForm() {
             </div>
           ))}
         </div>
-        <FileInput accept="image/*" disabled={locked} onFile={(f) => handleUpload("gallery", f)} />
+        <FileInput accept="image/*" kind="image" disabled={locked} onFile={(f) => handleUpload("gallery", f)} />
       </Section>
 
       <Section title="Public liability insurance">
@@ -429,13 +437,25 @@ function TagList({ items, onRemove, disabled }: { items: string[]; onRemove: (i:
     </div>
   );
 }
-function FileInput({ accept, disabled, onFile }: { accept: string; disabled: boolean; onFile: (f: File) => void }) {
+function FileInput({
+  accept,
+  disabled,
+  onFile,
+  kind = "document",
+}: {
+  accept: string;
+  disabled: boolean;
+  onFile: (f: File) => void | Promise<void>;
+  kind?: "image" | "document";
+}) {
   return (
-    <label className={`btn-outline w-fit cursor-pointer ${disabled ? "opacity-50" : ""}`}>
-      <Upload className="h-4 w-4" /> Upload file
-      <input type="file" accept={accept} className="hidden" disabled={disabled}
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) { onFile(f); e.target.value = ""; } }} />
-    </label>
+    <FileDropzone
+      accept={accept}
+      allowedTypes={kind === "image" ? IMAGE_TYPES : DOCUMENT_TYPES}
+      maxBytes={kind === "image" ? MAX_IMAGE_BYTES : MAX_DOCUMENT_BYTES}
+      disabled={disabled}
+      onFile={onFile}
+    />
   );
 }
 function DocList({ docs, onRemove, locked }: { docs: Doc[]; onRemove: (d: Doc) => void; locked: boolean }) {
