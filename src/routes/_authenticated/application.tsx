@@ -429,13 +429,25 @@ function TagList({ items, onRemove, disabled }: { items: string[]; onRemove: (i:
     </div>
   );
 }
-function FileInput({ accept, disabled, onFile }: { accept: string; disabled: boolean; onFile: (f: File) => void }) {
+function FileInput({
+  accept,
+  disabled,
+  onFile,
+  kind = "document",
+}: {
+  accept: string;
+  disabled: boolean;
+  onFile: (f: File) => void | Promise<void>;
+  kind?: "image" | "document";
+}) {
   return (
-    <label className={`btn-outline w-fit cursor-pointer ${disabled ? "opacity-50" : ""}`}>
-      <Upload className="h-4 w-4" /> Upload file
-      <input type="file" accept={accept} className="hidden" disabled={disabled}
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) { onFile(f); e.target.value = ""; } }} />
-    </label>
+    <FileDropzone
+      accept={accept}
+      allowedTypes={kind === "image" ? IMAGE_TYPES : DOCUMENT_TYPES}
+      maxBytes={kind === "image" ? MAX_IMAGE_BYTES : MAX_DOCUMENT_BYTES}
+      disabled={disabled}
+      onFile={onFile}
+    />
   );
 }
 function DocList({ docs, onRemove, locked }: { docs: Doc[]; onRemove: (d: Doc) => void; locked: boolean }) {
