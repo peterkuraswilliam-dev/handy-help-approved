@@ -279,6 +279,7 @@ function ApplicationForm() {
 
     } catch (err) {
       toast.error(friendlyMessage(err, "Upload failed"));
+      throw err;
     }
   }
 
@@ -354,7 +355,7 @@ function ApplicationForm() {
 
       <Section title="Business logo">
         {logoPath && <p className="text-xs text-muted-foreground mb-2">Uploaded ✓</p>}
-        <FileInput accept="image/*" disabled={locked} onFile={(f) => handleUpload("logo", f)} />
+        <FileInput accept="image/*" kind="image" disabled={locked} onFile={(f) => handleUpload("logo", f)} />
       </Section>
 
       <Section title="Photos of previous work">
@@ -366,7 +367,7 @@ function ApplicationForm() {
             </div>
           ))}
         </div>
-        <FileInput accept="image/*" disabled={locked} onFile={(f) => handleUpload("gallery", f)} />
+        <FileInput accept="image/*" kind="image" disabled={locked} onFile={(f) => handleUpload("gallery", f)} />
       </Section>
 
       <Section title="Public liability insurance">
