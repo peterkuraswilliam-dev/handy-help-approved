@@ -5,7 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { db } from "@/lib/db";
 import { uploadFile } from "@/lib/application-helpers";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2, Upload, X } from "lucide-react";
+import { ArrowLeft, Trash2, X } from "lucide-react";
+import { FileDropzone } from "@/components/uploads/FileDropzone";
+import {
+  DOCUMENT_TYPES,
+  IMAGE_TYPES,
+  MAX_DOCUMENT_BYTES,
+  MAX_IMAGE_BYTES,
+} from "@/lib/file-validation";
 
 export const Route = createFileRoute("/_authenticated/application")({
   head: () => ({ meta: [{ title: "Application — Handy Help Aberdeenshire" }] }),
