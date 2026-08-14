@@ -27,7 +27,10 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
   --color-gold: var(--gold);
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -93,9 +96,12 @@
   --destructive-foreground: oklch(0.98 0.005 250);
   --success: oklch(0.62 0.17 150);
   --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.78 0.15 70);
+  --info: oklch(0.7 0.13 240);
   --border: oklch(0.32 0.04 260);
   --input: oklch(0.28 0.04 260);
   --ring: oklch(0.82 0.14 85);
+
 }
 
 @layer base {
@@ -435,3 +441,59 @@ html, body { overflow-x: hidden; }
 }
 @keyframes skeleton-shimmer { to { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
+
+
+/* ---- Unified status pills (text + colour, never colour alone) ---- */
+@utility pill-base {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.22rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.3;
+  border: 1px solid var(--color-border);
+  background-color: color-mix(in oklch, var(--color-secondary) 70%, transparent);
+  color: var(--color-foreground);
+  white-space: nowrap;
+}
+@utility pill-neutral {
+  border-color: var(--color-border);
+  background-color: color-mix(in oklch, var(--color-secondary) 70%, transparent);
+  color: var(--color-muted-foreground);
+}
+@utility pill-info {
+  border-color: color-mix(in oklch, var(--color-info) 55%, transparent);
+  background-color: color-mix(in oklch, var(--color-info) 18%, transparent);
+  color: oklch(0.86 0.09 240);
+}
+@utility pill-warning {
+  border-color: color-mix(in oklch, var(--color-warning) 55%, transparent);
+  background-color: color-mix(in oklch, var(--color-warning) 18%, transparent);
+  color: oklch(0.88 0.12 75);
+}
+@utility pill-success {
+  border-color: color-mix(in oklch, var(--color-success) 60%, transparent);
+  background-color: color-mix(in oklch, var(--color-success) 20%, transparent);
+  color: oklch(0.85 0.15 150);
+}
+@utility pill-danger {
+  border-color: color-mix(in oklch, var(--color-destructive) 55%, transparent);
+  background-color: color-mix(in oklch, var(--color-destructive) 18%, transparent);
+  color: oklch(0.82 0.13 25);
+}
+@utility pill-gold {
+  border-color: color-mix(in oklch, var(--color-gold) 55%, transparent);
+  background-color: color-mix(in oklch, var(--color-gold) 14%, transparent);
+  color: var(--color-gold);
+}
+
+/* Shared empty / error / loading panel */
+@utility state-panel {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-fluid-lg) var(--spacing-fluid-md);
+  text-align: center;
+}
