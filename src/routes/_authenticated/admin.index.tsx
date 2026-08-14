@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { ArrowLeft, Sparkles, CircleAlert, CircleCheck, ChevronDown, FileWarning, LayoutGrid, Send, Eye, MessageCircleQuestion, BadgeCheck, type LucideIcon } from "lucide-react";
 import { db } from "@/lib/db";
-import { STATUS_LABEL, missingFields, type AppStatus } from "@/lib/application-helpers";
+import { STATUS_LABEL, STATUS_PILL_CLASS, STATUS_ORDER_LIST, missingFields, type AppStatus } from "@/lib/application-helpers";
 import { insuranceSummary, type InsuranceState } from "@/lib/insurance";
 import { InsuranceBadge } from "@/components/insurance/InsuranceBadge";
 
