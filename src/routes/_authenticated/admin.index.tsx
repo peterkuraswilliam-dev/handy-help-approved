@@ -626,9 +626,8 @@ function AdminApplicationList() {
                     Contact: {contactName}
                   </p>
                   <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                    <span
-                      className={`inline-flex rounded-full border px-2 py-0.5 font-semibold ${STATUS_BADGE_CLASS[application.status]}`}
-                    >
+                    <span className={STATUS_PILL_CLASS[application.status]}>
+
                       {STATUS_LABEL[application.status]}
                     </span>
                     {attention && (
