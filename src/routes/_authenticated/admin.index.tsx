@@ -519,68 +519,47 @@ function AdminApplicationList() {
         </>
       )}
 
-      {loading && (
-        <div className="space-y-3" aria-live="polite" aria-busy="true">
-          <span className="sr-only">Loading contractor applications…</span>
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="card-panel animate-pulse space-y-3 p-4" aria-hidden="true">
-              <div className="h-4 w-1/2 rounded bg-secondary/70" />
-              <div className="h-3 w-1/3 rounded bg-secondary/70" />
-              <div className="flex gap-2">
-                <div className="h-5 w-20 rounded-full bg-secondary/70" />
-                <div className="h-5 w-28 rounded-full bg-secondary/70" />
-              </div>
-              <div className="h-2 w-full rounded bg-secondary/70" />
-              <div className="h-9 w-full rounded bg-secondary/70" />
-            </div>
-          ))}
-        </div>
-      )}
+      {loading && <LoadingCards count={3} label="Loading contractor applications…" />}
 
       {!loading && error && (
-        <section className="card-panel space-y-3 py-10 text-center" role="alert">
-          <h2 className="text-lg font-semibold">Applications could not be loaded</h2>
-          <p className="text-sm text-muted-foreground">
-            Please check your connection and try again.
-          </p>
-          <button className="btn-outline min-h-11" onClick={() => void loadApplications()}>
-            Retry
-          </button>
-        </section>
+        <ErrorPanel
+          title="Applications could not be loaded"
+          onRetry={() => void loadApplications()}
+        />
       )}
 
       {!loading && !error && applications.length === 0 && (
-        <section className="card-panel space-y-2 py-12 text-center">
-          <h2 className="text-lg font-semibold">No contractor applications yet</h2>
-          <p className="mx-auto max-w-md text-sm text-muted-foreground">
-            New contractor applications will appear here once they have been started.
-          </p>
-        </section>
+        <EmptyPanel
+          title="No contractor applications yet"
+          message="New contractor applications will appear here once a contractor has started one."
+        />
       )}
-
 
       {!loading &&
         !error &&
         applications.length > 0 &&
         visibleApplications.length === 0 && (
-          <section className="card-panel space-y-3 py-10 text-center">
-            <p className="text-sm text-muted-foreground">
-              {normalizedSearch
+          <EmptyPanel
+            title={normalizedSearch ? "No matching applications" : "Nothing in this status"}
+            message={
+              normalizedSearch
                 ? "No contractor applications match your search."
-                : "No applications match this status."}
-            </p>
-            <button
-              type="button"
-              className="btn-outline min-h-11"
-              onClick={() =>
-
-                normalizedSearch ? setSearchTerm("") : setSelectedStatus("all")
-              }
-            >
-              {normalizedSearch ? "Clear Search" : "View All Applications"}
-            </button>
-          </section>
+                : "No applications currently have this status."
+            }
+            action={
+              <button
+                type="button"
+                className="btn-outline"
+                onClick={() =>
+                  normalizedSearch ? setSearchTerm("") : setSelectedStatus("all")
+                }
+              >
+                {normalizedSearch ? "Clear search" : "View all applications"}
+              </button>
+            }
+          />
         )}
+
 
       {!loading && !error && visibleApplications.length > 0 && (
         <ul className="space-y-3">
