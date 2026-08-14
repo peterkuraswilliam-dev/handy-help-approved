@@ -5,12 +5,34 @@ export type AppStatus = "draft" | "submitted" | "under_review" | "more_info_requ
 export const STATUS_LABEL: Record<AppStatus, string> = {
   draft: "Draft",
   submitted: "Submitted",
-  under_review: "Under Review",
-  more_info_required: "More Info Required",
+  under_review: "Under review",
+  more_info_required: "More information required",
   approved: "Approved",
   rejected: "Rejected",
   suspended: "Suspended",
 };
+
+/** Token-based pill classes so a status looks the same everywhere it appears. */
+export const STATUS_PILL_CLASS: Record<AppStatus, string> = {
+  draft: "pill-base pill-neutral",
+  submitted: "pill-base pill-info",
+  under_review: "pill-base pill-gold",
+  more_info_required: "pill-base pill-warning",
+  approved: "pill-base pill-success",
+  rejected: "pill-base pill-danger",
+  suspended: "pill-base pill-danger",
+};
+
+export const STATUS_ORDER_LIST: AppStatus[] = [
+  "draft",
+  "submitted",
+  "under_review",
+  "more_info_required",
+  "approved",
+  "rejected",
+  "suspended",
+];
+
 
 export const REQUIRED_FIELDS = [
   "business_name",
