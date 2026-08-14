@@ -103,24 +103,9 @@ type SortOption =
 
 const STATUS_FILTERS: Array<{ label: string; value: StatusFilter }> = [
   { label: "All", value: "all" },
-  { label: "Draft", value: "draft" },
-  { label: "Submitted", value: "submitted" },
-  { label: "Under Review", value: "under_review" },
-  { label: "More Information Required", value: "more_info_required" },
-  { label: "Approved", value: "approved" },
-  { label: "Rejected", value: "rejected" },
-  { label: "Suspended", value: "suspended" },
+  ...STATUS_ORDER_LIST.map((value) => ({ label: STATUS_LABEL[value], value })),
 ];
 
-const STATUS_BADGE_CLASS: Record<AppStatus, string> = {
-  draft: "border-slate-500 bg-slate-600 text-white",
-  submitted: "border-blue-500 bg-blue-600 text-white",
-  under_review: "border-yellow-300 bg-yellow-400 text-slate-950",
-  more_info_required: "border-orange-400 bg-orange-500 text-slate-950",
-  approved: "border-green-500 bg-green-600 text-white",
-  rejected: "border-red-500 bg-red-600 text-white",
-  suspended: "border-red-950 bg-red-900 text-white",
-};
 
 const STATUS_ORDER: Record<AppStatus, number> = {
   submitted: 1,
