@@ -96,9 +96,12 @@
   --destructive-foreground: oklch(0.98 0.005 250);
   --success: oklch(0.62 0.17 150);
   --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.78 0.15 70);
+  --info: oklch(0.7 0.13 240);
   --border: oklch(0.32 0.04 260);
   --input: oklch(0.28 0.04 260);
   --ring: oklch(0.82 0.14 85);
+
 }
 
 @layer base {
