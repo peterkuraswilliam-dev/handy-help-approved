@@ -33,14 +33,24 @@ type Row = {
 function Directory() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [q, setQ] = useState("");
 
-  useEffect(() => {
-    void (async () => {
+  async function load() {
+    setLoading(true);
+    setFailed(false);
+    try {
       const data = await listPublicProfiles();
       setRows((data as Row[]) ?? []);
+    } catch {
+      setFailed(true);
+    } finally {
       setLoading(false);
-    })();
+    }
+  }
+
+  useEffect(() => {
+    void load();
   }, []);
 
   const filtered = rows.filter((r) => {
@@ -48,6 +58,7 @@ function Directory() {
     const hay = `${r.businessName ?? ""} ${r.mainArea ?? ""} ${r.description ?? ""} ${r.services.join(" ")} ${(r.areas ?? []).join(" ")}`.toLowerCase();
     return hay.includes(q.toLowerCase());
   });
+
 
   return (
     <div className="profile-cinematic w-full space-y-6">
