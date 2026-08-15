@@ -89,15 +89,35 @@ function Directory() {
 
       {loading ? (
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <span className="sr-only">Loading approved contractors…</span>
           {[0, 1, 2, 3].map((i) => (
-            <li key={i} className="directory-card h-56 animate-pulse" />
+            <li key={i} className="directory-card h-56 skeleton" aria-hidden="true" />
           ))}
         </ul>
+      ) : failed ? (
+        <ErrorPanel
+          title="Approved contractors could not be loaded"
+          onRetry={() => void load()}
+        />
       ) : filtered.length === 0 ? (
-        <div className="profile-card text-center text-sm text-muted-foreground">
-          {rows.length === 0 ? "No approved contractors yet — check back soon." : "No matches for that search."}
-        </div>
+        <EmptyPanel
+          icon={ShieldCheck}
+          title={rows.length === 0 ? "No approved contractors yet" : "No matches for that search"}
+          message={
+            rows.length === 0
+              ? "Approved local trades will be listed here as soon as they complete our review."
+              : "Try a different business name, service or area."
+          }
+          action={
+            rows.length > 0 ? (
+              <button type="button" className="btn-outline" onClick={() => setQ("")}>
+                Clear search
+              </button>
+            ) : undefined
+          }
+        />
       ) : (
+
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {filtered.map((r) => (
             <li key={r.slug}>
