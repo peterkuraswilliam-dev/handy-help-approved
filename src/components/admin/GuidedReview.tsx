@@ -287,11 +287,11 @@ export function GuidedReview({
 
   const overallTone =
     overall === "Complete"
-      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+      ? "border-success/40 bg-success/10 text-success"
       : overall === "Needs Information"
-        ? "border-orange-400/40 bg-orange-400/10 text-orange-300"
+        ? "border-warning/40 bg-warning/10 text-warning"
         : overall === "In Progress"
-          ? "border-amber-400/40 bg-amber-400/10 text-amber-300"
+          ? "border-warning/40 bg-warning/10 text-warning"
           : "border-white/10 bg-white/5 text-muted-foreground";
 
   const sectionsToRender: SectionId[] = desktop
@@ -444,8 +444,8 @@ export function GuidedReview({
         </div>
 
         {state === "needs_info" && (
-          <div className="space-y-2 rounded-lg border border-orange-400/30 bg-orange-400/5 p-3">
-            <label htmlFor={`issue-${check.key}`} className="text-xs font-medium text-orange-300">
+          <div className="space-y-2 rounded-lg border border-warning/30 bg-warning/5 p-3">
+            <label htmlFor={`issue-${check.key}`} className="text-xs font-medium text-warning">
               Internal issue description (admin only)
             </label>
             <textarea
@@ -501,11 +501,11 @@ export function GuidedReview({
             onClick={() => goTo(c.key)}
             className={`w-full rounded-xl border p-3 text-left transition ${
               active
-                ? "border-[color:var(--color-gold,#f5c542)] bg-amber-400/10"
+                ? "border-[color:var(--color-gold,#f5c542)] bg-warning/10"
                 : state === "checked"
-                  ? "border-emerald-500/30 bg-emerald-500/5"
+                  ? "border-success/30 bg-success/5"
                   : state === "needs_info"
-                    ? "border-orange-400/30 bg-orange-400/5"
+                    ? "border-warning/30 bg-warning/5"
                     : "border-white/10 bg-white/5"
             } ${dimmed ? "opacity-70" : ""}`}
           >
@@ -576,7 +576,7 @@ export function GuidedReview({
                 }}
                 className={`card-panel scroll-mt-24 space-y-3 ${
                   needsAttention
-                    ? "border-orange-400/40"
+                    ? "border-warning/40"
                     : isActive
                       ? "border-[color:var(--color-gold,#f5c542)]/60"
                       : ""
@@ -585,7 +585,7 @@ export function GuidedReview({
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:justify-between">
                   <h3 className="min-w-0 truncate font-semibold">{SECTION_TITLES[section]}</h3>
                   {needsAttention && (
-                    <span className="shrink-0 rounded-full border border-orange-400/40 bg-orange-400/10 px-2 py-0.5 text-[11px] text-orange-300">
+                    <span className="shrink-0 rounded-full border border-warning/40 bg-warning/10 px-2 py-0.5 text-[11px] text-warning">
                       Needs attention
                     </span>
                   )}

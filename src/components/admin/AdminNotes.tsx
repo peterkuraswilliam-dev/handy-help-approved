@@ -154,7 +154,7 @@ export function AdminNotes({ applicationId }: { applicationId: string }) {
       </div>
 
       {error && (
-        <p className="rounded-lg border border-red-500/30 bg-red-500/10 p-2 text-sm text-red-300">{error}</p>
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 p-2 text-sm text-destructive">{error}</p>
       )}
 
       {adding && (
@@ -236,7 +236,7 @@ export function AdminNotes({ applicationId }: { applicationId: string }) {
                           <Pencil className="h-3.5 w-3.5" /> Edit
                         </button>
                         <button
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/30 px-3 py-1.5 text-xs text-red-300"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-destructive/30 px-3 py-1.5 text-xs text-destructive"
                           onClick={() => setConfirmId(n.id)}
                         >
                           <Trash2 className="h-3.5 w-3.5" /> Delete
@@ -244,11 +244,11 @@ export function AdminNotes({ applicationId }: { applicationId: string }) {
                       </div>
                     )}
                     {confirmId === n.id && (
-                      <div className="mt-2 space-y-2 rounded-lg border border-red-500/30 bg-red-500/10 p-2">
-                        <p className="text-xs text-red-200">Delete this private note? This cannot be undone.</p>
+                      <div className="mt-2 space-y-2 rounded-lg border border-destructive/30 bg-destructive/10 p-2">
+                        <p className="text-xs text-destructive">Delete this private note? This cannot be undone.</p>
                         <div className="flex flex-wrap gap-2">
                           <button
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/80 px-3 py-1.5 text-xs font-medium text-white"
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-destructive/80 px-3 py-1.5 text-xs font-medium text-white"
                             disabled={busy}
                             onClick={() => void remove(n.id)}
                           >

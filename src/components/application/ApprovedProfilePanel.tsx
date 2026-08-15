@@ -288,7 +288,7 @@ export function ApprovedProfilePanel({
                     )}
                     {isPublic && (
                       <span className="absolute right-1.5 top-1.5 rounded-full bg-background/80 p-1">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                        <CheckCircle2 className="h-4 w-4 text-success" />
                       </span>
                     )}
                   </button>

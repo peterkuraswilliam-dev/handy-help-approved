@@ -137,9 +137,9 @@ export function ReviewChecklist({
   const overall = done === 0 ? "Not Started" : done === total ? "Complete" : "In Progress";
   const overallTone =
     overall === "Complete"
-      ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+      ? "bg-success/15 text-success border-success/30"
       : overall === "In Progress"
-        ? "bg-amber-400/15 text-amber-300 border-amber-400/30"
+        ? "bg-warning/15 text-warning border-warning/30"
         : "bg-white/5 text-muted-foreground border-white/10";
 
   return (
@@ -172,7 +172,7 @@ export function ReviewChecklist({
                 notRequired
                   ? "border-white/10 bg-white/[0.02] opacity-70"
                   : checked
-                    ? "border-emerald-500/30 bg-emerald-500/5"
+                    ? "border-success/30 bg-success/5"
                     : "border-white/10 bg-white/5"
               }`}
             >
@@ -192,9 +192,9 @@ export function ReviewChecklist({
                         Not Required
                       </span>
                     )}
-                    {saving === c.key && <Loader2 className="h-3.5 w-3.5 animate-spin text-amber-300" />}
+                    {saving === c.key && <Loader2 className="h-3.5 w-3.5 animate-spin text-warning" />}
                     {checked && !notRequired && saving !== c.key && (
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                      <CheckCircle2 className="h-4 w-4 text-success" />
                     )}
                   </span>
                   {checked && row?.completed_at && (

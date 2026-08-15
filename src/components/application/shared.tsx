@@ -53,9 +53,9 @@ export function MetricCard({
 }) {
   const toneClass =
     tone === "warning"
-      ? "text-orange-400"
+      ? "text-warning"
       : tone === "success"
-        ? "text-emerald-400"
+        ? "text-success"
         : tone === "gold"
           ? "text-[color:var(--color-gold)]"
           : "text-primary";

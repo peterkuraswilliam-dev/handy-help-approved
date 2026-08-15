@@ -167,7 +167,7 @@ export function FileDropzone({
         </div>
       )}
       {done && !busy && !error && (
-        <p className="flex items-start gap-1.5 text-xs text-emerald-400">
+        <p className="flex items-start gap-1.5 text-xs text-success">
           <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" /> “{done}” uploaded.
         </p>
       )}

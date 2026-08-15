@@ -85,11 +85,11 @@ export function InfoRequestList({
           {rows.map((r) => (
             <li
               key={r.id}
-              className="space-y-2 rounded-lg border border-orange-500/40 bg-orange-500/10 p-3"
+              className="space-y-2 rounded-lg border border-warning/40 bg-warning/10 p-3"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <MessageSquareWarning className="h-4 w-4 text-orange-400" />
-                <span className="text-sm font-medium text-orange-300">
+                <MessageSquareWarning className="h-4 w-4 text-warning" />
+                <span className="text-sm font-medium text-warning">
                   {r.status === "open"
                     ? "More information required"
                     : r.status === "responded"
@@ -124,8 +124,8 @@ export function InfoRequestList({
                 </div>
               )}
               {(r.response_message || r.responded_at) && (
-                <div className="rounded-md border border-emerald-500/40 bg-emerald-500/10 p-2 text-sm">
-                  <p className="text-xs text-emerald-300">
+                <div className="rounded-md border border-success/40 bg-success/10 p-2 text-sm">
+                  <p className="text-xs text-success">
                     {role === "admin" ? "Contractor response" : "Your response"}
                     {r.responded_at ? ` — ${new Date(r.responded_at).toLocaleString()}` : ""}
                     {r.resubmitted_at

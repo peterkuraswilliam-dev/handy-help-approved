@@ -191,7 +191,7 @@ export function ContractorInsurancePanel({
 
       {error && <p className="text-xs text-destructive">{error}</p>}
       {saved && (
-        <p className="text-xs text-emerald-400">
+        <p className="text-xs text-success">
           Saved. Your insurance details have been sent to our team for review.
         </p>
       )}

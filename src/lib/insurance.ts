@@ -36,12 +36,12 @@ export const INSURANCE_SHORT_LABEL: Record<InsuranceState, string> = {
 };
 
 export const INSURANCE_TONE: Record<InsuranceState, string> = {
-  valid: "border-emerald-500/40 bg-emerald-500/10 text-emerald-300",
+  valid: "border-success/40 bg-success/10 text-success",
   expiring_soon: "border-[color:var(--color-gold)]/50 bg-[color:var(--color-gold)]/10 text-[color:var(--color-gold)]",
   expired: "border-destructive/50 bg-destructive/10 text-destructive",
   awaiting_review: "border-white/20 bg-white/5 text-muted-foreground",
-  missing_expiry: "border-orange-400/40 bg-orange-400/10 text-orange-300",
-  not_provided: "border-orange-400/40 bg-orange-400/10 text-orange-300",
+  missing_expiry: "border-warning/40 bg-warning/10 text-warning",
+  not_provided: "border-warning/40 bg-warning/10 text-warning",
 };
 
 export const VERIFICATION_LABEL: Record<string, string> = {

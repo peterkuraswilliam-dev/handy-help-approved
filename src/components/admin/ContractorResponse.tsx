@@ -102,11 +102,11 @@ export function ContractorResponse({ applicationId }: { applicationId: string })
   const newDocs = docs.filter((d) => d.is_active && latest.requested_at && d.created_at > latest.requested_at);
 
   return (
-    <section className="card-panel space-y-3 border-emerald-500/40">
+    <section className="card-panel space-y-3 border-success/40">
       <h2 className="font-semibold">Contractor response</h2>
 
-      <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm">
-        <p className="text-xs text-emerald-300">
+      <div className="rounded-lg border border-success/40 bg-success/10 p-3 text-sm">
+        <p className="text-xs text-success">
           Responded {latest.responded_at ? new Date(latest.responded_at).toLocaleString() : "—"}
           {latest.resubmitted_at
             ? ` · Resubmitted ${new Date(latest.resubmitted_at).toLocaleString()}`
@@ -130,9 +130,9 @@ export function ContractorResponse({ applicationId }: { applicationId: string })
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     {status === "not_updated" ? (
-                      <Circle className="h-4 w-4 shrink-0 text-orange-300" />
+                      <Circle className="h-4 w-4 shrink-0 text-warning" />
                     ) : (
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
                     )}
                     <span className="min-w-0 break-words">{itemLabel(item)}</span>
                   </span>

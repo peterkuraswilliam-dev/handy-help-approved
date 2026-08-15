@@ -191,8 +191,8 @@ export function DecisionActions({
           <span
             className={
               status === "approved"
-                ? "rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-300"
-                : "rounded-full border border-red-500/40 bg-red-500/15 px-3 py-1 text-xs font-medium text-red-300"
+                ? "rounded-full border border-success/40 bg-success/15 px-3 py-1 text-xs font-medium text-success"
+                : "rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive"
             }
           >
             {STATUS_LABEL[status]}
@@ -218,19 +218,19 @@ export function DecisionActions({
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="text-muted-foreground">Items marked Needs Information</span>
-          <span className={checks?.needsInfo ? "font-medium text-orange-400" : "font-medium text-emerald-400"}>
+          <span className={checks?.needsInfo ? "font-medium text-warning" : "font-medium text-success"}>
             {checks ? checks.needsInfo : "…"}
           </span>
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="text-muted-foreground">Missing information</span>
-          <span className={missingInfo.length ? "font-medium text-orange-400" : "font-medium text-emerald-400"}>
+          <span className={missingInfo.length ? "font-medium text-warning" : "font-medium text-success"}>
             {missingInfo.length}
           </span>
         </div>
         <div className="flex items-start justify-between gap-2">
           <span className="text-muted-foreground">Missing documents</span>
-          <span className={missingDocs.length ? "font-medium text-orange-400" : "font-medium text-emerald-400 text-right"}>
+          <span className={missingDocs.length ? "font-medium text-warning" : "font-medium text-success text-right"}>
             {missingDocs.length === 0
               ? "0"
               : missingDocs.join(", ")}
@@ -238,20 +238,20 @@ export function DecisionActions({
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="text-muted-foreground">Open information requests</span>
-          <span className={openRequests ? "font-medium text-orange-400" : "font-medium text-emerald-400"}>
+          <span className={openRequests ? "font-medium text-warning" : "font-medium text-success"}>
             {openRequests === null ? "…" : openRequests}
           </span>
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="text-muted-foreground">Insurance</span>
-          <span className={insuranceOk ? "font-medium text-emerald-400" : "font-medium text-orange-400"}>
+          <span className={insuranceOk ? "font-medium text-success" : "font-medium text-warning"}>
             {insuranceStatus?.trim() || "Not provided"}
           </span>
         </div>
       </div>
 
       {!decided && blockers.length > 0 && (
-        <div className="space-y-1 rounded-lg border border-orange-500/40 bg-orange-500/10 p-3 text-sm text-orange-300">
+        <div className="space-y-1 rounded-lg border border-warning/40 bg-warning/10 p-3 text-sm text-warning">
           <p className="flex items-start gap-2 font-medium">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
             <span>Approval is blocked until these are resolved:</span>
@@ -268,7 +268,7 @@ export function DecisionActions({
       {mode === "none" && (
         <div className="flex flex-wrap gap-2">
           <button
-            className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success disabled:cursor-not-allowed disabled:opacity-50"
             disabled={blocked || status === "approved"}
             onClick={() => {
               setMode("approve");
@@ -278,7 +278,7 @@ export function DecisionActions({
             <CheckCircle2 className="h-4 w-4" /> Approve application
           </button>
           <button
-            className="inline-flex items-center gap-2 rounded-lg border border-red-500/50 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm font-semibold text-destructive disabled:cursor-not-allowed disabled:opacity-50"
             disabled={status === "rejected"}
             onClick={() => {
               setMode("reject");
@@ -332,7 +332,7 @@ export function DecisionActions({
           {error && <p className="text-sm text-destructive">{error}</p>}
           <div className="flex flex-wrap gap-2">
             <button
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success disabled:cursor-not-allowed disabled:opacity-50"
               disabled={!confirmed || busy || blocked}
               onClick={() => void decide("approved")}
             >
@@ -403,7 +403,7 @@ export function DecisionActions({
           {error && <p className="text-sm text-destructive">{error}</p>}
           <div className="flex flex-wrap gap-2">
             <button
-              className="inline-flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
               disabled={!confirmed || busy || !rejectReason || contractorMessage.trim().length === 0}
               onClick={() => void decide("rejected")}
             >
