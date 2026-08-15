@@ -128,7 +128,7 @@ export function SuspendRestore({
           {!suspended && status === "approved" && (
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground disabled:opacity-50"
               onClick={() => setMode("suspend")}
             >
               <ShieldAlert className="h-4 w-4" /> Suspend contractor
@@ -137,7 +137,7 @@ export function SuspendRestore({
           {suspended && (
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success-foreground disabled:opacity-50"
               onClick={() => setMode("restore")}
             >
               <RotateCcw className="h-4 w-4" /> Restore contractor
@@ -214,7 +214,7 @@ export function SuspendRestore({
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground disabled:cursor-not-allowed disabled:opacity-50"
               disabled={busy || !confirmed || !finalReason || message.trim().length === 0}
               onClick={() => void run("suspend")}
             >
@@ -279,7 +279,7 @@ export function SuspendRestore({
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success-foreground disabled:cursor-not-allowed disabled:opacity-50"
               disabled={busy || !confirmed || reason.trim().length === 0}
               onClick={() => void run("restore")}
             >
@@ -304,7 +304,7 @@ export function SuspendRestore({
                     className={
                       ev.action === "suspend"
                         ? "rounded-full border border-destructive/40 bg-destructive/15 px-2 py-0.5 text-xs text-destructive"
-                        : "rounded-full border border-success/40 bg-success/15 px-2 py-0.5 text-xs text-success"
+                        : "rounded-full border border-success/40 bg-success/15 px-2 py-0.5 text-xs text-success-foreground"
                     }
                   >
                     {ev.action === "suspend" ? "Suspended" : "Restored"}

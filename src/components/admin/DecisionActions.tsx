@@ -191,7 +191,7 @@ export function DecisionActions({
           <span
             className={
               status === "approved"
-                ? "rounded-full border border-success/40 bg-success/15 px-3 py-1 text-xs font-medium text-success"
+                ? "rounded-full border border-success/40 bg-success/15 px-3 py-1 text-xs font-medium text-success-foreground"
                 : "rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive"
             }
           >
@@ -268,7 +268,7 @@ export function DecisionActions({
       {mode === "none" && (
         <div className="flex flex-wrap gap-2">
           <button
-            className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success-foreground disabled:cursor-not-allowed disabled:opacity-50"
             disabled={blocked || status === "approved"}
             onClick={() => {
               setMode("approve");
@@ -332,7 +332,7 @@ export function DecisionActions({
           {error && <p className="text-sm text-destructive">{error}</p>}
           <div className="flex flex-wrap gap-2">
             <button
-              className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success-foreground disabled:cursor-not-allowed disabled:opacity-50"
               disabled={!confirmed || busy || blocked}
               onClick={() => void decide("approved")}
             >
@@ -403,7 +403,7 @@ export function DecisionActions({
           {error && <p className="text-sm text-destructive">{error}</p>}
           <div className="flex flex-wrap gap-2">
             <button
-              className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground disabled:cursor-not-allowed disabled:opacity-50"
               disabled={!confirmed || busy || !rejectReason || contractorMessage.trim().length === 0}
               onClick={() => void decide("rejected")}
             >
