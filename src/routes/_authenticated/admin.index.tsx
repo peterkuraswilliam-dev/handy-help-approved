@@ -5,6 +5,8 @@ import { db } from "@/lib/db";
 import { STATUS_LABEL, STATUS_PILL_CLASS, STATUS_ORDER_LIST, missingFields, type AppStatus } from "@/lib/application-helpers";
 import { insuranceSummary, type InsuranceState } from "@/lib/insurance";
 import { InsuranceBadge } from "@/components/insurance/InsuranceBadge";
+import { EmptyPanel, ErrorPanel, LoadingCards } from "@/components/ui/states";
+
 
 type InsuranceFilter = "all" | InsuranceState;
 
