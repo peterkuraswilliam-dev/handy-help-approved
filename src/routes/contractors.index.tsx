@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { listPublicProfiles } from "@/lib/public-profile.functions";
 import { ContractorFallbackCover } from "@/components/ContractorFallbackCover";
+import { EmptyPanel, ErrorPanel } from "@/components/ui/states";
+
 import { ArrowRight, CheckCircle2, MapPin, Search, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/contractors/")({
@@ -33,14 +35,24 @@ type Row = {
 function Directory() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [q, setQ] = useState("");
 
-  useEffect(() => {
-    void (async () => {
+  async function load() {
+    setLoading(true);
+    setFailed(false);
+    try {
       const data = await listPublicProfiles();
       setRows((data as Row[]) ?? []);
+    } catch {
+      setFailed(true);
+    } finally {
       setLoading(false);
-    })();
+    }
+  }
+
+  useEffect(() => {
+    void load();
   }, []);
 
   const filtered = rows.filter((r) => {
@@ -48,6 +60,7 @@ function Directory() {
     const hay = `${r.businessName ?? ""} ${r.mainArea ?? ""} ${r.description ?? ""} ${r.services.join(" ")} ${(r.areas ?? []).join(" ")}`.toLowerCase();
     return hay.includes(q.toLowerCase());
   });
+
 
   return (
     <div className="profile-cinematic w-full space-y-6">
@@ -78,15 +91,35 @@ function Directory() {
 
       {loading ? (
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <span className="sr-only">Loading approved contractors…</span>
           {[0, 1, 2, 3].map((i) => (
-            <li key={i} className="directory-card h-56 animate-pulse" />
+            <li key={i} className="directory-card h-56 skeleton" aria-hidden="true" />
           ))}
         </ul>
+      ) : failed ? (
+        <ErrorPanel
+          title="Approved contractors could not be loaded"
+          onRetry={() => void load()}
+        />
       ) : filtered.length === 0 ? (
-        <div className="profile-card text-center text-sm text-muted-foreground">
-          {rows.length === 0 ? "No approved contractors yet — check back soon." : "No matches for that search."}
-        </div>
+        <EmptyPanel
+          icon={ShieldCheck}
+          title={rows.length === 0 ? "No approved contractors yet" : "No matches for that search"}
+          message={
+            rows.length === 0
+              ? "Approved local trades will be listed here as soon as they complete our review."
+              : "Try a different business name, service or area."
+          }
+          action={
+            rows.length > 0 ? (
+              <button type="button" className="btn-outline" onClick={() => setQ("")}>
+                Clear search
+              </button>
+            ) : undefined
+          }
+        />
       ) : (
+
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {filtered.map((r) => (
             <li key={r.slug}>

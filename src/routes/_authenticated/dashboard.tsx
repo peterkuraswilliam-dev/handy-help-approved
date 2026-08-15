@@ -346,7 +346,7 @@ function Dashboard() {
           )}
 
           {app.status === "approved" && (
-            <section className="card-panel space-y-2 border-emerald-500/40 bg-emerald-500/10">
+            <section className="card-panel space-y-2 border-success/40 bg-success/10">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="badge-approved">Approved Contractor</span>
                 {app.approved_at && (
@@ -365,9 +365,9 @@ function Dashboard() {
           )}
 
           {app.status === "rejected" && (
-            <section className="card-panel space-y-2 border-red-500/40 bg-red-500/10">
+            <section className="card-panel space-y-2 border-destructive/40 bg-destructive/10">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-red-500/40 bg-red-500/15 px-3 py-1 text-xs font-medium text-red-300">
+                <span className="rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive-soft">
                   Application not approved
                 </span>
                 {app.rejected_at && (

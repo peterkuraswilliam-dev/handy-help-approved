@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Bell, CheckCheck } from "lucide-react";
 import { useNotifications } from "@/hooks/use-notifications";
 import { NotificationRow } from "@/components/notifications/NotificationRow";
+import { EmptyPanel, LoadingCards } from "@/components/ui/states";
+
 
 export const Route = createFileRoute("/_authenticated/notifications")({
   head: () => ({
@@ -68,12 +70,21 @@ function NotificationsPage() {
 
       <div className="card-panel overflow-hidden !p-0">
         {loading ? (
-          <p className="px-4 py-10 text-center text-sm text-muted-foreground">Loading…</p>
+          <div className="p-4">
+            <LoadingCards count={2} label="Loading your notifications…" />
+          </div>
         ) : shown.length === 0 ? (
-          <p className="px-4 py-10 text-center text-sm text-muted-foreground">
-            {filter === "unread" ? "No unread notifications." : "No notifications yet."}
-          </p>
+          <EmptyPanel
+            icon={Bell}
+            title={filter === "unread" ? "No unread notifications" : "No notifications yet"}
+            message={
+              filter === "unread"
+                ? "You have read everything for now."
+                : "Updates about your application, information requests and documents will appear here."
+            }
+          />
         ) : (
+
           shown.map((n) => (
             <div key={n.id} className="relative">
               <NotificationRow item={n} onOpen={(item) => !item.is_read && void readOne(item.id)} />

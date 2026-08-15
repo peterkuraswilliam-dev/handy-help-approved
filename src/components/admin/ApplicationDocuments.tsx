@@ -88,7 +88,7 @@ function DocumentCard({
         <Row label="Upload date" value={new Date(doc.created_at).toLocaleDateString()} />
         {extra}
       </div>
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p className="text-xs text-destructive-soft">{error}</p>}
       <div className="flex flex-wrap gap-2">
         <button className="btn-gold" onClick={() => onView(doc)}>
           <Eye className="h-4 w-4" /> View Document
@@ -250,7 +250,7 @@ export function ApplicationDocuments({
         </div>
       ) : (
         <div className="space-y-5">
-          {viewerError && <p className="text-xs text-destructive">{viewerError}</p>}
+          {viewerError && <p className="text-xs text-destructive-soft">{viewerError}</p>}
 
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-primary">Insurance Documents</h3>

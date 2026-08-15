@@ -133,7 +133,7 @@ export function AdminInsurancePanel({
         />
       </div>
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p className="text-xs text-destructive-soft">{error}</p>}
 
       <div className="flex flex-wrap gap-2">
         <button className="btn-gold" disabled={busy} onClick={() => void setVerification("verified")}>

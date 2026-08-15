@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { AlertTriangle, CheckCircle2, ClipboardList, FileWarning, ShieldCheck } from "lucide-react";
-import { STATUS_LABEL, type AppStatus } from "@/lib/application-helpers";
+import { STATUS_LABEL, STATUS_PILL_CLASS, type AppStatus } from "@/lib/application-helpers";
 
 export type TabDef = {
   id: string;
@@ -10,15 +10,14 @@ export type TabDef = {
 };
 
 export function StatusBadge({ status }: { status: AppStatus }) {
-  if (status === "approved") {
-    return (
-      <span className="badge-approved">
-        <CheckCircle2 className="h-3.5 w-3.5" /> Approved
-      </span>
-    );
-  }
-  return <span className="badge-status">{STATUS_LABEL[status]}</span>;
+  return (
+    <span className={STATUS_PILL_CLASS[status]}>
+      {status === "approved" && <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />}
+      {STATUS_LABEL[status]}
+    </span>
+  );
 }
+
 
 export function NeedsAttentionBadge() {
   return (
@@ -54,9 +53,9 @@ export function MetricCard({
 }) {
   const toneClass =
     tone === "warning"
-      ? "text-orange-400"
+      ? "text-warning-soft"
       : tone === "success"
-        ? "text-emerald-400"
+        ? "text-success-soft"
         : tone === "gold"
           ? "text-[color:var(--color-gold)]"
           : "text-primary";

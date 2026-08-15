@@ -110,7 +110,7 @@ export function SuspendRestore({
         <span
           className={
             suspended
-              ? "rounded-full border border-red-500/40 bg-red-500/15 px-3 py-1 text-xs font-medium text-red-300"
+              ? "rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive-soft"
               : "badge-approved"
           }
         >
@@ -128,7 +128,7 @@ export function SuspendRestore({
           {!suspended && status === "approved" && (
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground disabled:opacity-50"
               onClick={() => setMode("suspend")}
             >
               <ShieldAlert className="h-4 w-4" /> Suspend contractor
@@ -137,7 +137,7 @@ export function SuspendRestore({
           {suspended && (
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success-foreground disabled:opacity-50"
               onClick={() => setMode("restore")}
             >
               <RotateCcw className="h-4 w-4" /> Restore contractor
@@ -147,7 +147,7 @@ export function SuspendRestore({
       )}
 
       {mode === "suspend" && (
-        <div className="space-y-3 rounded-lg border border-red-500/40 bg-red-500/10 p-3">
+        <div className="space-y-3 rounded-lg border border-destructive/40 bg-destructive/10 p-3">
           <div className="space-y-1">
             <label htmlFor="susp-reason" className="text-sm font-medium">
               Suspension reason (required)
@@ -214,7 +214,7 @@ export function SuspendRestore({
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground disabled:cursor-not-allowed disabled:opacity-50"
               disabled={busy || !confirmed || !finalReason || message.trim().length === 0}
               onClick={() => void run("suspend")}
             >
@@ -229,7 +229,7 @@ export function SuspendRestore({
       )}
 
       {mode === "restore" && (
-        <div className="space-y-3 rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3">
+        <div className="space-y-3 rounded-lg border border-success/40 bg-success/10 p-3">
           <div className="space-y-1">
             <label htmlFor="rest-reason" className="text-sm font-medium">
               Restoration reason (required)
@@ -279,7 +279,7 @@ export function SuspendRestore({
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success-foreground disabled:cursor-not-allowed disabled:opacity-50"
               disabled={busy || !confirmed || reason.trim().length === 0}
               onClick={() => void run("restore")}
             >
@@ -303,8 +303,8 @@ export function SuspendRestore({
                   <span
                     className={
                       ev.action === "suspend"
-                        ? "rounded-full border border-red-500/40 bg-red-500/15 px-2 py-0.5 text-xs text-red-300"
-                        : "rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-xs text-emerald-300"
+                        ? "rounded-full border border-destructive/40 bg-destructive/15 px-2 py-0.5 text-xs text-destructive-soft"
+                        : "rounded-full border border-success/40 bg-success/15 px-2 py-0.5 text-xs text-success-foreground"
                     }
                   >
                     {ev.action === "suspend" ? "Suspended" : "Restored"}

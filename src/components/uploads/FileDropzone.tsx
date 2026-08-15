@@ -152,7 +152,7 @@ export function FileDropzone({
 
       {error && (
         <div role="alert" className="space-y-1.5 rounded-md border border-destructive/40 bg-destructive/10 p-2.5">
-          <p className="flex items-start gap-1.5 text-xs text-destructive">
+          <p className="flex items-start gap-1.5 text-xs text-destructive-soft">
             <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {error}
           </p>
           {canRetry && lastFile && !busy && (
@@ -167,7 +167,7 @@ export function FileDropzone({
         </div>
       )}
       {done && !busy && !error && (
-        <p className="flex items-start gap-1.5 text-xs text-emerald-400">
+        <p className="flex items-start gap-1.5 text-xs text-success-soft">
           <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" /> “{done}” uploaded.
         </p>
       )}

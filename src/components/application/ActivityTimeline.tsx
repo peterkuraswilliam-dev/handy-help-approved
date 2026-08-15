@@ -56,9 +56,9 @@ type PhotoRow = { id: string; created_at: string };
 const TONE_RING: Record<Tone, string> = {
   neutral: "border-white/15 text-primary",
   gold: "border-[color:var(--color-gold)] text-[color:var(--color-gold)]",
-  green: "border-emerald-500/50 text-emerald-400",
-  orange: "border-orange-500/50 text-orange-400",
-  red: "border-destructive/60 text-destructive",
+  green: "border-success/50 text-success-soft",
+  orange: "border-warning/50 text-warning-soft",
+  red: "border-destructive/60 text-destructive-soft",
 };
 
 const STATUS_META: Record<
@@ -307,7 +307,7 @@ function EventCard({ event, admin }: { event: TimelineEvent; admin: boolean }) {
       <div
         className={`rounded-lg border bg-white/5 p-3 ${
           event.tone === "orange"
-            ? "border-orange-500/40"
+            ? "border-warning/40"
             : event.tone === "red"
               ? "border-destructive/40"
               : "border-white/10"
@@ -331,7 +331,7 @@ function EventCard({ event, admin }: { event: TimelineEvent; admin: boolean }) {
         {showRequest && (
           <>
             {admin ? (
-              <p className="mt-2 break-words rounded-md border border-orange-500/30 bg-orange-500/10 p-2 text-sm">
+              <p className="mt-2 break-words rounded-md border border-warning/30 bg-warning/10 p-2 text-sm">
                 {event.request}
               </p>
             ) : (

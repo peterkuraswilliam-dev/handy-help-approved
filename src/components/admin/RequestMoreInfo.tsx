@@ -173,7 +173,7 @@ export function RequestMoreInfo({
       </div>
 
       {done && !open && (
-        <p className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-2 text-sm text-emerald-300">
+        <p className="rounded-lg border border-success/40 bg-success/10 p-2 text-sm text-success-soft">
           The request was sent and the application is now marked More Information Required.
         </p>
       )}
@@ -247,7 +247,7 @@ export function RequestMoreInfo({
             />
           </div>
 
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <p className="text-sm text-destructive-soft">{error}</p>}
 
           <div className="flex flex-wrap gap-2">
             <button

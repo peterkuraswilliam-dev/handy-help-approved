@@ -502,7 +502,7 @@ function SectionRow({ label, done }: { label: string; done: boolean }) {
   return (
     <div className="flex items-center justify-between gap-3 text-sm">
       <span className="min-w-0 truncate">{label}</span>
-      <span className={done ? "text-emerald-400" : "text-orange-400"}>{done ? "Complete" : "Incomplete"}</span>
+      <span className={done ? "text-success-soft" : "text-warning-soft"}>{done ? "Complete" : "Incomplete"}</span>
     </div>
   );
 }

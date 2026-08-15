@@ -196,10 +196,10 @@ export function RespondToRequest({
   }
 
   return (
-    <section className="card-panel space-y-4 border-orange-500/40">
+    <section className="card-panel space-y-4 border-warning/40">
       <div className="space-y-1">
         <h2 className="font-semibold">Respond and resubmit</h2>
-        <p className="flex items-start gap-2 rounded-lg border border-orange-500/40 bg-orange-500/10 p-3 text-sm text-orange-200">
+        <p className="flex items-start gap-2 rounded-lg border border-warning/40 bg-warning/10 p-3 text-sm text-warning-soft">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           More information is required before your application review can continue.
         </p>
@@ -207,8 +207,8 @@ export function RespondToRequest({
 
       <div className="space-y-3">
         {open.map((r) => (
-          <div key={r.id} className="rounded-lg border border-orange-500/40 bg-orange-500/10 p-3">
-            <p className="text-xs text-orange-300">
+          <div key={r.id} className="rounded-lg border border-warning/40 bg-warning/10 p-3">
+            <p className="text-xs text-warning-soft">
               Message from the review team — {new Date(r.requested_at).toLocaleString()} · Status:{" "}
               {r.status === "open" ? "Open" : r.status === "responded" ? "Responded" : "Closed"}
             </p>
@@ -235,9 +235,9 @@ export function RespondToRequest({
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     {status === "not_updated" ? (
-                      <Circle className="h-4 w-4 shrink-0 text-orange-300" />
+                      <Circle className="h-4 w-4 shrink-0 text-warning-soft" />
                     ) : (
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-success-soft" />
                     )}
                     <span className="min-w-0 break-words">{itemLabel(item)}</span>
                   </span>
@@ -262,7 +262,7 @@ export function RespondToRequest({
             })}
           </ul>
           {readyToResubmit && (
-            <p className="flex items-center gap-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm text-emerald-300">
+            <p className="flex items-center gap-2 rounded-lg border border-success/40 bg-success/10 p-3 text-sm text-success-soft">
               <CheckCircle2 className="h-4 w-4" /> Ready to Resubmit
             </p>
           )}
@@ -279,8 +279,8 @@ export function RespondToRequest({
       </div>
 
       {(outstandingItems.length > 0 || outstandingRequired.length > 0) && (
-        <div className="rounded-lg border border-orange-500/40 bg-orange-500/10 p-3 text-sm">
-          <p className="flex items-center gap-2 font-medium text-orange-300">
+        <div className="rounded-lg border border-warning/40 bg-warning/10 p-3 text-sm">
+          <p className="flex items-center gap-2 font-medium text-warning-soft">
             <AlertTriangle className="h-4 w-4" /> Still to do before you can resubmit
           </p>
           <ul className="mt-1 list-inside list-disc">

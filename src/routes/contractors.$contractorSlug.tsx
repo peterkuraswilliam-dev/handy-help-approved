@@ -262,7 +262,7 @@ function ProfilePage() {
           <h2 className="text-lg font-semibold">Insurance &amp; qualifications</h2>
           <div className="flex items-start gap-3">
             {insured ? (
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success-soft" />
             ) : (
               <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
             )}
@@ -361,7 +361,7 @@ function TrustItem({
 }) {
   return (
     <div className="profile-card flex flex-col items-center gap-1 px-3 py-4 text-center">
-      <Icon className={`h-5 w-5 ${tone === "success" ? "text-emerald-400" : "text-[color:var(--color-gold)]"}`} />
+      <Icon className={`h-5 w-5 ${tone === "success" ? "text-success-soft" : "text-[color:var(--color-gold)]"}`} />
       <span className="text-sm font-semibold">{label}</span>
       <span className="text-xs text-muted-foreground">{value}</span>
     </div>
