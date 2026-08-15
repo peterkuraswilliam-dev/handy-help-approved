@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Bell, CheckCheck } from "lucide-react";
 import { useNotifications } from "@/hooks/use-notifications";
 import { NotificationRow } from "@/components/notifications/NotificationRow";
+import { EmptyPanel, LoadingCards } from "@/components/ui/states";
+
 
 export const Route = createFileRoute("/_authenticated/notifications")({
   head: () => ({
