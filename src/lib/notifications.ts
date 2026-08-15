@@ -51,7 +51,7 @@ export const NOTIFICATION_META: Record<string, Meta> = {
   information_request: {
     label: "Information request",
     icon: MessageCircleQuestion,
-    tone: "border-warning/40 bg-warning/10 text-warning",
+    tone: "border-warning/40 bg-warning/10 text-warning-soft",
   },
   document: {
     label: "Document",
@@ -66,22 +66,22 @@ export const NOTIFICATION_META: Record<string, Meta> = {
   approval: {
     label: "Approval",
     icon: BadgeCheck,
-    tone: "border-success/40 bg-success/10 text-success",
+    tone: "border-success/40 bg-success/10 text-success-soft",
   },
   rejection: {
     label: "Rejection",
     icon: XCircle,
-    tone: "border-destructive/50 bg-destructive/10 text-destructive",
+    tone: "border-destructive/50 bg-destructive/10 text-destructive-soft",
   },
   suspension: {
     label: "Suspension",
     icon: ShieldAlert,
-    tone: "border-destructive/40 bg-destructive/10 text-destructive",
+    tone: "border-destructive/40 bg-destructive/10 text-destructive-soft",
   },
   profile: {
     label: "Profile",
     icon: UserRound,
-    tone: "border-success/40 bg-success/10 text-success",
+    tone: "border-success/40 bg-success/10 text-success-soft",
   },
   warning: { label: "Alert", icon: AlertTriangle, tone: DEFAULT_META.tone },
 };

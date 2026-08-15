@@ -137,9 +137,9 @@ export function ReviewChecklist({
   const overall = done === 0 ? "Not Started" : done === total ? "Complete" : "In Progress";
   const overallTone =
     overall === "Complete"
-      ? "bg-success/15 text-success border-success/30"
+      ? "bg-success/15 text-success-soft border-success/30"
       : overall === "In Progress"
-        ? "bg-warning/15 text-warning border-warning/30"
+        ? "bg-warning/15 text-warning-soft border-warning/30"
         : "bg-white/5 text-muted-foreground border-white/10";
 
   return (
@@ -192,9 +192,9 @@ export function ReviewChecklist({
                         Not Required
                       </span>
                     )}
-                    {saving === c.key && <Loader2 className="h-3.5 w-3.5 animate-spin text-warning" />}
+                    {saving === c.key && <Loader2 className="h-3.5 w-3.5 animate-spin text-warning-soft" />}
                     {checked && !notRequired && saving !== c.key && (
-                      <CheckCircle2 className="h-4 w-4 text-success" />
+                      <CheckCircle2 className="h-4 w-4 text-success-soft" />
                     )}
                   </span>
                   {checked && row?.completed_at && (

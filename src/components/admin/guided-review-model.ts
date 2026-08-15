@@ -113,8 +113,8 @@ export const STATE_LABEL: Record<ReviewState, string> = {
 
 export const STATE_TONE: Record<ReviewState, string> = {
   not_reviewed: "border-white/15 bg-white/5 text-muted-foreground",
-  checked: "border-success/40 bg-success/10 text-success",
-  needs_info: "border-warning/40 bg-warning/10 text-warning",
+  checked: "border-success/40 bg-success/10 text-success-soft",
+  needs_info: "border-warning/40 bg-warning/10 text-warning-soft",
   not_applicable: "border-white/10 bg-white/[0.03] text-muted-foreground",
 };
 

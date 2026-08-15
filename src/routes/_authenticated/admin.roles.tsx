@@ -70,7 +70,7 @@ function AdminRoles() {
 
       {error && (
         <div className="card-panel border-destructive/40">
-          <p className="text-sm text-destructive">{error}</p>
+          <p className="text-sm text-destructive-soft">{error}</p>
         </div>
       )}
 

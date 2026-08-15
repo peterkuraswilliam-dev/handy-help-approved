@@ -35,7 +35,7 @@ export function SuspendedNotice({
   return (
     <section className="card-panel space-y-3 border-destructive/40 bg-destructive/10">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive-soft">
           <ShieldAlert className="h-3.5 w-3.5" /> Suspended
         </span>
         {event?.created_at && (

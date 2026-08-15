@@ -106,7 +106,7 @@ export function ContractorResponse({ applicationId }: { applicationId: string })
       <h2 className="font-semibold">Contractor response</h2>
 
       <div className="rounded-lg border border-success/40 bg-success/10 p-3 text-sm">
-        <p className="text-xs text-success">
+        <p className="text-xs text-success-soft">
           Responded {latest.responded_at ? new Date(latest.responded_at).toLocaleString() : "—"}
           {latest.resubmitted_at
             ? ` · Resubmitted ${new Date(latest.resubmitted_at).toLocaleString()}`
@@ -130,9 +130,9 @@ export function ContractorResponse({ applicationId }: { applicationId: string })
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     {status === "not_updated" ? (
-                      <Circle className="h-4 w-4 shrink-0 text-warning" />
+                      <Circle className="h-4 w-4 shrink-0 text-warning-soft" />
                     ) : (
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-success-soft" />
                     )}
                     <span className="min-w-0 break-words">{itemLabel(item)}</span>
                   </span>

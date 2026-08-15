@@ -638,7 +638,7 @@ function AdminApplicationList() {
                       <button
                         type="button"
                         onClick={() => toggleWarning(application.id)}
-                        className="flex w-full items-center justify-between gap-2 rounded-md border border-warning/30 bg-warning/10 px-2.5 py-2 text-left text-xs font-semibold text-warning transition-colors hover:bg-warning/20"
+                        className="flex w-full items-center justify-between gap-2 rounded-md border border-warning/30 bg-warning/10 px-2.5 py-2 text-left text-xs font-semibold text-warning-soft transition-colors hover:bg-warning/20"
                         aria-expanded={expanded}
                       >
                         <span className="flex items-center gap-1.5">
@@ -648,12 +648,12 @@ function AdminApplicationList() {
                         <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
                       </button>
                     ) : (
-                      <p className="flex items-center gap-1.5 rounded-md border border-success/30 bg-success/10 px-2.5 py-2 text-xs font-semibold text-success">
+                      <p className="flex items-center gap-1.5 rounded-md border border-success/30 bg-success/10 px-2.5 py-2 text-xs font-semibold text-success-soft">
                         <CircleCheck className="h-3.5 w-3.5" /> Required information complete
                       </p>
                     )}
                     {expanded && !auxError && missing.length > 0 && (
-                      <ul className="list-disc space-y-1 pl-6 text-xs text-warning">
+                      <ul className="list-disc space-y-1 pl-6 text-xs text-warning-soft">
                         {missing.map((field) => <li key={field}>{field}</li>)}
                       </ul>
                     )}
@@ -665,7 +665,7 @@ function AdminApplicationList() {
                       <button
                         type="button"
                         onClick={() => toggleDocs(application.id)}
-                        className="flex w-full items-center justify-between gap-2 rounded-md border border-warning/30 bg-warning/10 px-2.5 py-2 text-left text-xs font-semibold text-warning transition-colors hover:bg-warning/20"
+                        className="flex w-full items-center justify-between gap-2 rounded-md border border-warning/30 bg-warning/10 px-2.5 py-2 text-left text-xs font-semibold text-warning-soft transition-colors hover:bg-warning/20"
                         aria-expanded={docsExpanded}
                       >
                         <span className="flex items-center gap-1.5">
@@ -678,7 +678,7 @@ function AdminApplicationList() {
                       <button
                         type="button"
                         onClick={() => toggleDocs(application.id)}
-                        className="flex w-full items-center justify-between gap-2 rounded-md border border-success/30 bg-success/10 px-2.5 py-2 text-left text-xs font-semibold text-success"
+                        className="flex w-full items-center justify-between gap-2 rounded-md border border-success/30 bg-success/10 px-2.5 py-2 text-left text-xs font-semibold text-success-soft"
                         aria-expanded={docsExpanded}
                       >
                         <span className="flex items-center gap-1.5">
@@ -692,7 +692,7 @@ function AdminApplicationList() {
                     {docsExpanded && !docError && (
                       <ul className="space-y-1 pl-1 text-xs">
                         {docs.required.map((item) => (
-                          <li key={item} className="text-warning">• {item}</li>
+                          <li key={item} className="text-warning-soft">• {item}</li>
                         ))}
                         {docs.optional.map((item) => (
                           <li key={item} className="text-muted-foreground">• {item} (optional)</li>
@@ -746,12 +746,12 @@ function SummaryCard({
     >
       <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         <Icon
-          className={`h-4 w-4 ${approved ? "text-success" : "text-[color:var(--color-gold)]"}`}
+          className={`h-4 w-4 ${approved ? "text-success-soft" : "text-[color:var(--color-gold)]"}`}
         />
         {label}
       </span>
       <span
-        className={`text-3xl font-bold ${approved ? "text-success" : "text-[color:var(--color-gold)]"}`}
+        className={`text-3xl font-bold ${approved ? "text-success-soft" : "text-[color:var(--color-gold)]"}`}
       >
         {value}
       </span>

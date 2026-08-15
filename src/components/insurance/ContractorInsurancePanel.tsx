@@ -128,7 +128,7 @@ export function ContractorInsurancePanel({
         <div
           className={`rounded-lg border p-3 text-sm ${
             summary.state === "expired"
-              ? "border-destructive/50 bg-destructive/10 text-destructive"
+              ? "border-destructive/50 bg-destructive/10 text-destructive-soft"
               : "border-[color:var(--color-gold)]/50 bg-[color:var(--color-gold)]/10"
           }`}
         >
@@ -189,9 +189,9 @@ export function ContractorInsurancePanel({
         </p>
       )}
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p className="text-xs text-destructive-soft">{error}</p>}
       {saved && (
-        <p className="text-xs text-success">
+        <p className="text-xs text-success-soft">
           Saved. Your insurance details have been sent to our team for review.
         </p>
       )}

@@ -192,7 +192,7 @@ export function DecisionActions({
             className={
               status === "approved"
                 ? "rounded-full border border-success/40 bg-success/15 px-3 py-1 text-xs font-medium text-success-foreground"
-                : "rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive"
+                : "rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive-soft"
             }
           >
             {STATUS_LABEL[status]}
@@ -218,19 +218,19 @@ export function DecisionActions({
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="text-muted-foreground">Items marked Needs Information</span>
-          <span className={checks?.needsInfo ? "font-medium text-warning" : "font-medium text-success"}>
+          <span className={checks?.needsInfo ? "font-medium text-warning-soft" : "font-medium text-success-soft"}>
             {checks ? checks.needsInfo : "…"}
           </span>
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="text-muted-foreground">Missing information</span>
-          <span className={missingInfo.length ? "font-medium text-warning" : "font-medium text-success"}>
+          <span className={missingInfo.length ? "font-medium text-warning-soft" : "font-medium text-success-soft"}>
             {missingInfo.length}
           </span>
         </div>
         <div className="flex items-start justify-between gap-2">
           <span className="text-muted-foreground">Missing documents</span>
-          <span className={missingDocs.length ? "font-medium text-warning" : "font-medium text-success text-right"}>
+          <span className={missingDocs.length ? "font-medium text-warning-soft" : "font-medium text-success-soft text-right"}>
             {missingDocs.length === 0
               ? "0"
               : missingDocs.join(", ")}
@@ -238,20 +238,20 @@ export function DecisionActions({
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="text-muted-foreground">Open information requests</span>
-          <span className={openRequests ? "font-medium text-warning" : "font-medium text-success"}>
+          <span className={openRequests ? "font-medium text-warning-soft" : "font-medium text-success-soft"}>
             {openRequests === null ? "…" : openRequests}
           </span>
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="text-muted-foreground">Insurance</span>
-          <span className={insuranceOk ? "font-medium text-success" : "font-medium text-warning"}>
+          <span className={insuranceOk ? "font-medium text-success-soft" : "font-medium text-warning-soft"}>
             {insuranceStatus?.trim() || "Not provided"}
           </span>
         </div>
       </div>
 
       {!decided && blockers.length > 0 && (
-        <div className="space-y-1 rounded-lg border border-warning/40 bg-warning/10 p-3 text-sm text-warning">
+        <div className="space-y-1 rounded-lg border border-warning/40 bg-warning/10 p-3 text-sm text-warning-soft">
           <p className="flex items-start gap-2 font-medium">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
             <span>Approval is blocked until these are resolved:</span>
@@ -278,7 +278,7 @@ export function DecisionActions({
             <CheckCircle2 className="h-4 w-4" /> Approve application
           </button>
           <button
-            className="inline-flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm font-semibold text-destructive disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm font-semibold text-destructive-soft disabled:cursor-not-allowed disabled:opacity-50"
             disabled={status === "rejected"}
             onClick={() => {
               setMode("reject");
@@ -329,7 +329,7 @@ export function DecisionActions({
               Approved Contractor badge and a live public profile.
             </span>
           </label>
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <p className="text-sm text-destructive-soft">{error}</p>}
           <div className="flex flex-wrap gap-2">
             <button
               className="inline-flex items-center gap-2 rounded-lg bg-success px-4 py-2 text-sm font-semibold text-success-foreground disabled:cursor-not-allowed disabled:opacity-50"
@@ -400,7 +400,7 @@ export function DecisionActions({
             />
             <span>I confirm this application should be rejected and the message above sent to the contractor.</span>
           </label>
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <p className="text-sm text-destructive-soft">{error}</p>}
           <div className="flex flex-wrap gap-2">
             <button
               className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground disabled:cursor-not-allowed disabled:opacity-50"

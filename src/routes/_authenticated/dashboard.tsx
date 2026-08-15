@@ -367,7 +367,7 @@ function Dashboard() {
           {app.status === "rejected" && (
             <section className="card-panel space-y-2 border-destructive/40 bg-destructive/10">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive">
+                <span className="rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive-soft">
                   Application not approved
                 </span>
                 {app.rejected_at && (

@@ -29,6 +29,10 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-info: var(--info);
+  --color-success-soft: var(--success-soft);
+  --color-warning-soft: var(--warning-soft);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-info-soft: var(--info-soft);
   --color-gold: var(--gold);
 
   --color-border: var(--border);
@@ -98,6 +102,11 @@
   --success-foreground: oklch(0.99 0 0);
   --warning: oklch(0.78 0.15 70);
   --info: oklch(0.7 0.13 240);
+  /* Readable text tones on the dark navy surfaces */
+  --success-soft: oklch(0.85 0.15 150);
+  --warning-soft: oklch(0.88 0.12 75);
+  --destructive-soft: oklch(0.82 0.13 25);
+  --info-soft: oklch(0.86 0.09 240);
   --border: oklch(0.32 0.04 260);
   --input: oklch(0.28 0.04 260);
   --ring: oklch(0.82 0.14 85);

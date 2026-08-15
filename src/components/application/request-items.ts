@@ -21,9 +21,9 @@ export const ITEM_STATUS_LABEL: Record<ItemStatus, string> = {
 };
 
 export const ITEM_STATUS_TONE: Record<ItemStatus, string> = {
-  not_updated: "border-warning/40 bg-warning/10 text-warning",
-  updated: "border-success/40 bg-success/10 text-success",
-  document_uploaded: "border-success/40 bg-success/10 text-success",
+  not_updated: "border-warning/40 bg-warning/10 text-warning-soft",
+  updated: "border-success/40 bg-success/10 text-success-soft",
+  document_uploaded: "border-success/40 bg-success/10 text-success-soft",
 };
 
 /** Which application tab a requested item lives on, so we can deep link. */

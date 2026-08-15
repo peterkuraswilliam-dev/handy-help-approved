@@ -465,7 +465,7 @@ function DocList({ docs, onRemove, locked }: { docs: Doc[]; onRemove: (d: Doc) =
       {docs.map((d) => (
         <li key={d.id} className="flex items-center justify-between rounded border border-border px-fluid-xs py-fluid-2xs">
           <span className="truncate">{d.original_name ?? d.path.split("/").pop()}</span>
-          {!locked && <button onClick={() => onRemove(d)}><Trash2 className="h-4 w-4 text-destructive" /></button>}
+          {!locked && <button onClick={() => onRemove(d)}><Trash2 className="h-4 w-4 text-destructive-soft" /></button>}
         </li>
       ))}
     </ul>

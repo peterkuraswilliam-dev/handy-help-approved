@@ -54,9 +54,9 @@ export function InfoRequestBanner({
   return (
     <section className="space-y-3 rounded-xl border-2 border-warning bg-warning/15 p-4 shadow-lg">
       <div className="flex items-start gap-2">
-        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning-soft" />
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-warning">
+          <h2 className="text-base font-semibold text-warning-soft">
             More information is required before your application review can continue.
           </h2>
           <p className="text-xs text-muted-foreground">
@@ -69,7 +69,7 @@ export function InfoRequestBanner({
         <div key={r.id} className="rounded-lg border border-warning/40 bg-black/20 p-3">
           <p className="whitespace-pre-wrap break-words text-sm">{r.message}</p>
           {r.due_date && (
-            <p className="mt-2 flex items-center gap-1.5 text-xs text-warning">
+            <p className="mt-2 flex items-center gap-1.5 text-xs text-warning-soft">
               <CalendarClock className="h-3.5 w-3.5" /> Please respond by{" "}
               {new Date(r.due_date).toLocaleDateString()}
             </p>

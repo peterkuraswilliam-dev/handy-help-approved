@@ -56,9 +56,9 @@ type PhotoRow = { id: string; created_at: string };
 const TONE_RING: Record<Tone, string> = {
   neutral: "border-white/15 text-primary",
   gold: "border-[color:var(--color-gold)] text-[color:var(--color-gold)]",
-  green: "border-success/50 text-success",
-  orange: "border-warning/50 text-warning",
-  red: "border-destructive/60 text-destructive",
+  green: "border-success/50 text-success-soft",
+  orange: "border-warning/50 text-warning-soft",
+  red: "border-destructive/60 text-destructive-soft",
 };
 
 const STATUS_META: Record<

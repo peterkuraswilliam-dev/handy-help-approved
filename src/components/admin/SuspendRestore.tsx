@@ -110,7 +110,7 @@ export function SuspendRestore({
         <span
           className={
             suspended
-              ? "rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive"
+              ? "rounded-full border border-destructive/40 bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive-soft"
               : "badge-approved"
           }
         >
@@ -303,7 +303,7 @@ export function SuspendRestore({
                   <span
                     className={
                       ev.action === "suspend"
-                        ? "rounded-full border border-destructive/40 bg-destructive/15 px-2 py-0.5 text-xs text-destructive"
+                        ? "rounded-full border border-destructive/40 bg-destructive/15 px-2 py-0.5 text-xs text-destructive-soft"
                         : "rounded-full border border-success/40 bg-success/15 px-2 py-0.5 text-xs text-success-foreground"
                     }
                   >

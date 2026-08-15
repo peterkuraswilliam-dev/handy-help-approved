@@ -287,11 +287,11 @@ export function GuidedReview({
 
   const overallTone =
     overall === "Complete"
-      ? "border-success/40 bg-success/10 text-success"
+      ? "border-success/40 bg-success/10 text-success-soft"
       : overall === "Needs Information"
-        ? "border-warning/40 bg-warning/10 text-warning"
+        ? "border-warning/40 bg-warning/10 text-warning-soft"
         : overall === "In Progress"
-          ? "border-warning/40 bg-warning/10 text-warning"
+          ? "border-warning/40 bg-warning/10 text-warning-soft"
           : "border-white/10 bg-white/5 text-muted-foreground";
 
   const sectionsToRender: SectionId[] = desktop
@@ -445,7 +445,7 @@ export function GuidedReview({
 
         {state === "needs_info" && (
           <div className="space-y-2 rounded-lg border border-warning/30 bg-warning/5 p-3">
-            <label htmlFor={`issue-${check.key}`} className="text-xs font-medium text-warning">
+            <label htmlFor={`issue-${check.key}`} className="text-xs font-medium text-warning-soft">
               Internal issue description (admin only)
             </label>
             <textarea
@@ -585,7 +585,7 @@ export function GuidedReview({
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:justify-between">
                   <h3 className="min-w-0 truncate font-semibold">{SECTION_TITLES[section]}</h3>
                   {needsAttention && (
-                    <span className="shrink-0 rounded-full border border-warning/40 bg-warning/10 px-2 py-0.5 text-[11px] text-warning">
+                    <span className="shrink-0 rounded-full border border-warning/40 bg-warning/10 px-2 py-0.5 text-[11px] text-warning-soft">
                       Needs attention
                     </span>
                   )}
