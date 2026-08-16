@@ -17,3 +17,15 @@ export const APPROVAL_DISCLAIMER =
 
 export const SITE_DESCRIPTION =
   "Become an Approved Contractor with Handy Help Aberdeenshire — local tradespeople checked against our community standards.";
+
+export const ADMIN_ATTENTION_THRESHOLDS = {
+  /** Days without update before an in-flight application is considered stuck. */
+  stuckDays: 7,
+  /** Days before an information-request due date that it appears in the queue. */
+  dueSoonDays: 3,
+  /** Days before insurance expiry that approved contractors appear in the queue. */
+  insuranceWarningDays: 30,
+  /** Days before an invitation expires that it appears in the queue. */
+  invitationExpiryDays: 7,
+};
+
